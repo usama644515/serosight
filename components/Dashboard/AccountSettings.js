@@ -28,9 +28,9 @@ const AccountSettings = () => {
       <div className={styles.cardContainer}>
         <div className={styles.card}>
           <span className={styles.cardIcon}>
-            <img src="/images/lock.png" alt="" className={styles.icons} />
+            <img src="/images/setting.png" alt="" className={styles.icons} />
           </span>
-          <p>Activation Code</p>
+          <p>Account Setting</p>
         </div>
         <div className={styles.card}>
           <span className={styles.cardIcon}>

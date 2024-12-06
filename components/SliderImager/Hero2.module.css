@@ -180,7 +180,7 @@
   .hero {
     flex-direction: row;
     padding: 60px 40px;
-    height: 90vh;
+    height: 450px;
   }
 
   .content {
