@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-image: url('../../public/images/home-banner.jpeg');
+  background-image: url('../../public/images/banner-test.jpeg');
   background-size: cover;
   background-position: center;
   position: relative;
@@ -28,7 +28,7 @@
 /* Header Styling */
 .content h2 {
   color: #18206F;
-  font-size: 64px; /* Increased from 48px */
+  font-size: 64px; 
   font-weight: 400;
   margin: 0px 0px;
 }
@@ -40,7 +40,7 @@
 
 .content h3 {
   color: #98a2ff;
-  font-size: 40px; /* Increased from 32px */
+  font-size: 40px;
   margin: 0px 0;
   font-weight: bold;
 }
@@ -180,7 +180,7 @@
   .hero {
     flex-direction: row;
     padding: 60px 40px;
-    height: 90vh;
+    height: 450px;
   }
 
   .content {
@@ -199,20 +199,20 @@
 /* For very large screens */
 @media (min-width: 1200px) {
   .content h2 {
-    font-size: 72px; /* Increased from 56px */
+    font-size: 60px; /* Increased from 56px */
   }
 
   .content h3 {
-    font-size: 48px; /* Increased from 40px */
+    font-size: 40px; /* Increased from 40px */
   }
 
   .content p {
-    font-size: 24px; /* Increased from 20px */
+    font-size: 20px; /* Increased from 20px */
   }
 
   .heroButton {
     font-size: 20px;
-    padding: 18px 60px;
+    padding: 15px 60px;
   }
 
   .heroImage {
