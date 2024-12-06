@@ -6,7 +6,7 @@ const Hero = () => {
   const router = useRouter();
 
   const handleClick = () => {
-    router.push('/shop');
+    router.push('/array-report');
   };
   return (
     <section className={styles.hero}>
