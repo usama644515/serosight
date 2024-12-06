@@ -1,0 +1,108 @@
+/* HealthInsight.module.css */
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+    margin-top: 100px;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    /* gap: 20px; */
+    align-items: center;
+}
+
+.imageContainer {
+    overflow: hidden;
+    width: 100%;
+    max-width: 600px;
+    height: 200px;
+    /* border-radius: 8px; */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Subtle shadow for the image */
+}
+
+.image {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    transition: transform 0.3s ease-in-out;
+}
+
+.imageContainer:hover .image {
+    transform: scale(1.05);
+    /* Zoom effect */
+}
+
+.textContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #18206F;
+    color: #ffffff;
+    height: 200px;
+    /* padding: 20px; */
+    padding: 0px 20px;
+    max-width: 500px;
+    text-align: left;
+}
+
+.title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.description {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 20px;
+    color: #18206F;
+    /* Theme color for the text */
+    background-color: #ffffff;
+    /* White background for the button */
+    border: 2px solid #ffffff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+}
+
+.button:hover {
+    background-color: #ffffff;
+    color: #18206F;
+    /* Inverted color on hover */
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .content {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .imageContainer {
+        flex: 1;
+        max-width: 50%;
+    }
+
+    .textContainer {
+        flex: 1;
+        max-width: 50%;
+    }
+}

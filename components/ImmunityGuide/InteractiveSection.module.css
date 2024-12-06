@@ -1,0 +1,135 @@
+.container {
+  padding: 20px 40px;
+  text-align: center;
+  background-color: #f4f6fa;
+}
+
+.diagram {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.mainCircle {
+  background-color: #18206f;
+  color: white;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.subCircles {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 30px;
+}
+
+.branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px;
+}
+
+.subCircle {
+  background-color: #002984;
+  color: white;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.subCircle:hover {
+  transform: scale(1.05);
+}
+
+.subLine {
+  width: 2px;
+  height: 50px;
+  background-color: #18206f;
+  margin: 0 auto;
+}
+
+.children {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.childCircle {
+  background-color: #3f51b5;
+  color: white;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.childCircle:hover {
+  transform: scale(1.1);
+}
+
+.infoSection {
+  margin-top: 40px;
+  padding: 20px;
+}
+
+.infoBox {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.infoBox h3 {
+  color: #18206f;
+  margin-bottom: 15px;
+}
+
+.infoBox ul {
+  list-style: none;
+  padding: 0;
+}
+
+.infoBox ul li {
+  margin-bottom: 10px;
+  color: #444;
+}
+
+@media (max-width: 768px) {
+  .subCircles {
+    flex-direction: column;
+  }
+
+  .children {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .subCircle,
+  .childCircle {
+    margin-bottom: 10px;
+  }
+}

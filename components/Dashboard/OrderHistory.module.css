@@ -1,0 +1,262 @@
+/* General Container */
+.container {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    min-height: 50vh;
+    padding-right: 0px;
+    box-sizing: border-box;
+    overflow-x: hidden; 
+  }
+  
+  /* Header Section */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    /* flex-wrap: wrap;  */
+  }
+  
+  /* Title Styling */
+  .title {
+    font-size: 2rem;
+    color: #18206f;
+    margin: 0;
+    flex: 1 1 100%;
+    margin-left: 10%;
+
+  }
+  
+  /* Search Section */
+  .searchSection {
+    display: flex;
+    align-items: center;
+    background: linear-gradient(90deg, #DFE2FF 0%, #98A2FF 100%);
+    padding: 0.8rem 1.2rem;
+    border-top-left-radius: 90px;
+    border-bottom-left-radius: 90px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+    flex-shrink: 0;
+    margin-left: auto; 
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .searchSection:hover {
+    transform: scale(1.05);
+    background: linear-gradient(90deg, #c9d1ff 0%, #7d8cff 100%);
+  }
+  
+  .searchIcon {
+    width: 50px;
+    height: 50px;
+    margin-right: 0.8rem;
+  }
+  
+  .searchText {
+    font-size: 1rem;
+    color: #18206f;
+    font-weight: 600;
+  }
+  
+  /* Timeline Section */
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    /* max-width: 700px; */
+    position: relative;
+    padding-left: 0;
+    box-sizing: border-box;
+    overflow-x: hidden; 
+   
+  }
+  
+  .line {
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background-color: #d6d6d6;
+  }
+  
+  /* Orders Section - Centering and Styling */
+  .orders {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-left: 2.5rem;
+    box-sizing: border-box;
+    width: 100%; 
+    margin: 0 auto; 
+    overflow-x: hidden; 
+    max-height: 100%; 
+  }
+  
+  /* Card Styling */
+  .card {
+    background-color: #ffffff;
+    border: 1px solid #e6e6e6;
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05); /* Added shadow to all cards */
+    position: relative;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    width: 50%; /* Ensure cards fit inside the parent container */
+    box-sizing: border-box;
+    margin-bottom: 1rem; /* Add some space between the cards */
+     margin: 0px 10%;
+  }
+  
+
+  
+  .card:hover {
+    transform: scale(1.03);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+
+  /* Card Header */
+  .cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .bundleTitle {
+    font-size: 1.2rem;
+    color: #18206f;
+    font-weight: 600;
+  }
+  
+  .status {
+    font-size: 0.9rem;
+    color: #a72608;
+    font-weight: 500;
+  }
+  
+  /* Report Button */
+  .reportButton {
+    font-size: 0.9rem;
+    color: #ffffff;
+    background-color: #a72608;
+    border: none;
+    border-radius: 48px;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  .reportButton:hover {
+    background-color: #bf3e3e;
+  }
+  
+  /* Card Details */
+  .details {
+    font-size: 0.9rem;
+    color: #7d7d7d;
+    margin: 0.2rem 0;
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .title {
+      font-size: 1.8rem;
+      margin-left: 0px;
+    }
+  
+    .header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+  
+    .searchSection {
+      align-self: flex-end;
+      width: 100%; /* Ensure it doesn't overflow */
+      max-width: none; /* Remove any max-width to avoid overflow */
+      margin-left: 0; /* Ensure no margin to the left in mobile view */
+    }
+  
+    .timeline {
+      padding-left: 1.5rem;
+      width: 100%;
+      overflow-x: hidden; /* Prevent horizontal scroll */
+    }
+  
+    .orders {
+      gap: 1rem;
+      padding-left: 0; /* Remove unnecessary padding */
+      width: 100%; /* Ensure orders section fits */
+      margin: 0 auto; /* Center the orders section */
+      
+    }
+  
+    .card {
+      padding: 1rem;
+      width: 90%; /* Ensure card fits in the available width */
+      box-sizing: border-box;
+      margin-bottom: 1rem; /* Space between cards */
+      margin-left: 0px;
+    }
+  
+    .cardHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  
+    .bundleTitle {
+      font-size: 1rem;
+    }
+  
+    .details {
+      font-size: 0.85rem;
+    }
+  
+    .status,
+    .reportButton {
+      align-self: flex-start;
+    }
+  
+    .reportButton {
+      font-size: 0.85rem;
+      padding: 0.3rem 0.7rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .title {
+      font-size: 2.5rem;
+    }
+  
+    .timeline {
+      /* max-width: 900px; */
+    }
+  
+    .card {
+      padding: 1.5rem 2rem;
+    }
+  
+    .bundleTitle {
+      font-size: 1.4rem;
+    }
+  
+    .details {
+      font-size: 1rem;
+    }
+  
+    .status {
+      font-size: 1rem;
+    }
+  
+    .reportButton {
+      font-size: 1rem;
+      padding: 0.5rem 1rem;
+    }
+  }
+  

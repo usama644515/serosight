@@ -1,0 +1,77 @@
+/* Hero Section */
+.hero {
+  display: flex;
+  /* flex-direction: column-reverse; */
+  align-items: center;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 20px;
+  position: relative;
+  /* Ensures proper positioning */
+  box-shadow: inset 0 10px 20px rgba(0, 68, 173, 0.3);
+  overflow: hidden;
+  /* Ensures the image slides in without overflowing */
+  height: 400px;
+}
+
+/* Content styling */
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0px 10%;
+  text-align: center;
+}
+
+.content h2 {
+  color: #18206F;
+  font-size: 50px;
+  margin-bottom: 20px;
+}
+
+.content p {
+  color: #434B8B;
+  font-size: 18px;
+  margin-bottom: 30px;
+  font-weight: 100;
+  opacity: 0.7;
+  width: 70%;
+}
+
+
+
+/* Animation for image sliding from the right */
+@keyframes slideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Media queries for responsiveness */
+@media (min-width: 768px) {
+  
+
+  .content h2 {
+    font-size: 50px;
+  }
+
+  .content p {
+    font-size: 20px;
+    width: 90%;
+  }
+
+}
+
+@media (min-width: 1200px) {
+  .content h2 {
+    font-size: 70px;
+  }
+
+}

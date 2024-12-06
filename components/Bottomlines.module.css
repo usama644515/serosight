@@ -1,0 +1,12 @@
+/* Bottomlines.module.css */
+.design {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.innerline {
+  width: 100%;
+  margin-top: 60px;
+  box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.5);
+}

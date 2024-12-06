@@ -1,0 +1,221 @@
+/* Main Hero Section */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../public/images/sliderimage-banner.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
+  height: 100vh;
+}
+
+/* Content Styling */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+  max-width: 700px;
+  margin-bottom: 20px;
+  z-index: 1;
+}
+
+/* Header Styling */
+.content h2 {
+  color: #18206F;
+  font-size: 64px; /* Increased from 48px */
+  font-weight: 400;
+  margin: 0px 0px;
+}
+
+.content h2 span {
+  color: #18206F;
+  font-weight: bold;
+}
+
+.content h3 {
+  color: #98a2ff;
+  font-size: 40px; /* Increased from 32px */
+  margin: 0px 0;
+  font-weight: bold;
+}
+
+/* Paragraph Styling */
+.content p {
+  color: #18206F;
+  font-size: 22px; /* Increased from 18px */
+  margin-bottom: 30px;
+  font-weight: 100;
+  opacity: 0.9;
+}
+
+.content p span {
+  font-weight: bold;
+  opacity: 0.9;
+}
+
+/* Button Styling */
+.heroButton {
+  background-color: #A72708;
+  border-radius: 50px;
+  border: 2px solid #A72708;
+  font-size: 20px; /* Increased from 18px */
+  color: white;
+  padding: 16px 50px; /* Increased padding for larger text */
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.heroButton:hover {
+  background-color: transparent;
+  border: 2px solid #A72708;
+  color: #A72708;
+}
+
+/* Image Container */
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+}
+
+/* Hero Image Styling */
+.heroImage {
+  width: 100%;
+  max-width: 700px; /* Increased max width */
+  height: auto;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 1s ease-out forwards;
+}
+
+/* Animation for Image Fade-in */
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media Queries for Responsiveness */
+
+/* For mobile devices */
+@media (max-width: 600px) {
+  .hero {
+    height: 80vh;
+    padding: 20px;
+  }
+
+  .content h2 {
+    font-size: 40px; /* Increased from 36px */
+  }
+
+  .content h3 {
+    font-size: 32px; /* Increased from 28px */
+  }
+
+  .content p {
+    font-size: 18px; /* Increased from 16px */
+  }
+
+  .heroButton {
+    font-size: 16px;
+    padding: 12px 35px;
+  }
+
+  .imageContainer {
+    max-width: 400px;
+  }
+
+  .heroImage {
+    max-width: 300px;
+  }
+}
+
+/* For tablets */
+@media (min-width: 600px) and (max-width: 1024px) {
+  .hero {
+    height: 85vh;
+  }
+
+  .content h2 {
+    font-size: 52px; /* Increased from 42px */
+  }
+
+  .content h3 {
+    font-size: 36px; /* Increased from 32px */
+  }
+
+  .content p {
+    font-size: 20px; /* Increased from 18px */
+  }
+
+  .heroButton {
+    font-size: 18px;
+    padding: 14px 45px;
+  }
+
+  .imageContainer {
+    max-width: 600px;
+  }
+
+  .heroImage {
+    max-width: 500px;
+  }
+}
+
+/* For larger screens */
+@media (min-width: 1024px) {
+  .hero {
+    flex-direction: row;
+    padding: 60px 40px;
+    height: 90vh;
+  }
+
+  .content {
+    align-items: flex-start;
+    text-align: left;
+    width: 50%;
+    max-width: 700px;
+    padding-right: 20px;
+  }
+
+  .imageContainer {
+    width: 50%;
+  }
+}
+
+/* For very large screens */
+@media (min-width: 1200px) {
+  .content h2 {
+    font-size: 72px; /* Increased from 56px */
+  }
+
+  .content h3 {
+    font-size: 48px; /* Increased from 40px */
+  }
+
+  .content p {
+    font-size: 24px; /* Increased from 20px */
+  }
+
+  .heroButton {
+    font-size: 20px;
+    padding: 18px 60px;
+  }
+
+  .heroImage {
+    max-width: 800px;
+  }
+}

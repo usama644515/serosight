@@ -1,0 +1,145 @@
+/* Main Container */
+.container {
+  padding: 40px 20px;
+  background-color: #fdfdfd;
+  text-align: center;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+/* Heading */
+.heading {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #b33c00;
+  margin-bottom: 40px;
+}
+
+/* Content Layout: Image + Features in a Row */
+.content {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start; /* Align the items at the top */
+  gap: 40px;
+  flex-wrap: wrap;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+}
+
+/* Image Section */
+.imageContainer {
+  flex: 1 1 40%; /* Image takes up 40% of the row */
+  display: flex;
+  justify-content: center;
+}
+
+.image {
+  max-width: 100%; /* Ensures responsiveness */
+  height: auto;
+  border-radius: 8px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.image:hover {
+  transform: scale(1.05);
+}
+
+/* Features Section */
+.features {
+  flex: 1 1 50%; /* Features take up 50% of the row */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Individual Feature Box */
+.featureBox {
+  display: flex;
+  align-items: center;
+  background-color: #0b1a57;
+  color: white;
+  padding: 20px 30px;
+  border-radius: 100px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  position: relative;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.featureBox:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* Middle FeatureBox Shift */
+.shiftRight {
+  transform: translateX(100px); /* Moves middle boxes to the right */
+}
+
+/* Circular Number */
+.circle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height: 60px;
+  background-color: #98a2ff;
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 50%;
+  margin-right: 20px; /* Adds space between the circle and the text */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease-in-out;
+}
+
+.circle:hover {
+  transform: scale(1.1);
+}
+
+/* Feature Text */
+.text {
+  text-align: left;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.description {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .content {
+    flex-direction: column; /* Stacks image and features vertically */
+    align-items: center;
+  }
+
+  .imageContainer,
+  .features {
+    flex: 1 1 100%; /* Both take up full width */
+  }
+
+  .shiftRight {
+    transform: translateX(0); /* Remove stagger effect on smaller screens */
+  }
+}
+
+@media (max-width: 768px) {
+  .featureBox {
+    flex-direction: column; /* Stacks circle and text */
+    text-align: center;
+  }
+
+  .circle {
+    margin-right: 0;
+    margin-bottom: 15px; /* Adds space below the circle */
+  }
+
+  .text {
+    text-align: center;
+  }
+}

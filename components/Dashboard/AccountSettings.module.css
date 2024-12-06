@@ -1,0 +1,141 @@
+.container {
+  padding: 2rem;
+  min-height: 50vh;
+  padding-right: 0px;
+  box-sizing: border-box;
+  overflow-x: hidden; /* Prevent horizontal overflow */
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+/* Title Styling */
+.title {
+  font-size: 2rem;
+  color: #18206f;
+  margin: 0;
+  flex: 1 1 100%; /* Ensure the title spans full width on mobile */
+  text-align: start;
+  margin-left: 10%;
+}
+
+/* Search Section */
+.searchSection {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #dfe2ff 0%, #98a2ff 100%);
+  padding: 0.8rem 1.2rem;
+  border-top-left-radius: 90px;
+  border-bottom-left-radius: 90px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  flex-shrink: 0;
+  margin-left: auto; /* Align to the right in laptop view */
+  max-width: 100%; /* Ensure it doesn't overflow */
+  box-sizing: border-box;
+}
+
+.searchSection:hover {
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #c9d1ff 0%, #7d8cff 100%);
+}
+
+.searchIcon {
+  width: 50px;
+  height: 50px;
+  margin-right: 0.8rem;
+}
+
+.searchText {
+  font-size: 1rem;
+  color: #18206f;
+  font-weight: 600;
+}
+.icon {
+  margin-right: 8px;
+}
+
+.cardContainer {
+  display: grid;
+  margin-right: 232px;
+  margin-left: 200px;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  background-color: #18206f; /* Navy blue */
+  color: white;
+  padding: 20px;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  border-radius: 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.cardIcon {
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+.icons {
+  height: 100px;
+  width: 100px;
+}
+
+.card p {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.8rem;
+    margin-left: 0px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .searchSection {
+    align-self: flex-end;
+    width: 100%; /* Ensure it doesn't overflow */
+    max-width: none; /* Remove any max-width to avoid overflow */
+    margin-left: 0; /* Ensure no margin to the left in mobile view */
+  }
+  .card {
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .cardContainer {
+    margin-left: 0px;
+    margin-right: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .title {
+    font-size: 2.5rem;
+  }
+}

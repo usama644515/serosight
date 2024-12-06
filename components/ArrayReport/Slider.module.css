@@ -1,0 +1,194 @@
+/* Main Container */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: #f9f9f9;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: bold;
+  color: #18206f;
+  margin-bottom: 20px;
+}
+
+/* Slider Wrapper */
+.sliderWrapper {
+  display: flex;
+  align-items: center;
+  /* justify-content: center; */
+  /* justify-content: space-between; */
+  position: relative;
+   width: 100%;
+  max-width: 1080px; 
+  overflow: hidden;
+}
+
+/* Arrow Buttons */
+.arrow {
+  background-color: transparent;
+  border: none;
+  font-size: 50px;
+  cursor: pointer;
+  color: #9ba2ff;
+  padding: 10px;
+  z-index: 2;
+  /* position: absolute; */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* .left {
+  left: 10px;
+}
+
+.right {
+  right: 10px;
+} */
+
+.arrow:hover {
+  color: #18206f;
+}
+
+/* Slider */
+.slider {
+  display: flex;
+  gap: 20px;
+  overflow-x: scroll;
+  scroll-behavior: smooth;
+  width: calc(100% - 60px); /* Adjust for arrow space */
+  padding: 10px 0;
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+  scroll-snap-type: x mandatory;
+}
+
+.slider::-webkit-scrollbar {
+  display: none; /* Hide scrollbar in Chrome, Safari, and Edge */
+}
+
+/* Card */
+.card {
+  flex: 0 0 280px;
+  background-color: #18206f;
+  color: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+  scroll-snap-align: center;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Title */
+.cardTitle {
+  font-size: 18px;
+  color: #98a2ff;
+  margin-bottom: 10px;
+}
+
+/* Status Icon */
+.statusIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.completedIcon {
+  width: 60px;
+}
+
+.pendingIcons {
+  display: flex;
+  gap: 10px;
+}
+
+.pendingDot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+/* Disease Name */
+.disease {
+  font-size: 20px;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.viewReport{
+  font-size: 14px;
+  color: #98a2ff;
+  margin-bottom: 10px;
+  text-decoration: underline;
+}
+.timetaken {
+  font-size: 14px;
+  color: #98a2ff;
+  margin-bottom: 10px;
+}
+
+/* Date */
+.date {
+  font-size: 12px;
+  color: #c9c9d9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container{
+    padding-left: 0px;
+    padding-right: 0px;
+  }
+  .title {
+    font-size: 24px;
+  }
+
+  .arrow {
+    font-size: 40px;
+  }
+
+  .card {
+    flex: 0 0 200px;
+    padding: 15px;
+  }
+
+  .cardTitle {
+    font-size: 16px;
+  }
+
+  .disease {
+    font-size: 18px;
+  }
+
+  .viewReport,
+  .timetaken {
+    font-size: 12px;
+  }
+
+  .completedIcon {
+    width: 50px;
+  }
+
+  .pendingDot {
+    width: 30px;
+    height: 30px;
+  }
+
+  .left {
+    left: -20px;
+  }
+
+  .right {
+    right: -20px;
+  }
+}

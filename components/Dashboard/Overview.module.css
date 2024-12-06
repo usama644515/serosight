@@ -1,0 +1,131 @@
+/* Overview Section */
+.overview {
+  padding: 20px;
+  background-color: #ffffff;
+}
+
+/* Heading */
+.heading {
+  font-size: clamp(28px, 4vw, 48px);
+  color: #18206f;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Content Layout */
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center; /* Ensure equal height */
+  gap: 30px;
+  margin: 0 10%;
+  /* max-width: 1200px; */
+
+}
+
+/* Graph Container */
+.graph {
+  flex: 2;
+  border-radius: 27px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 500px;
+}
+
+/* Summary Container */
+.summary {
+  flex: 1;
+  background-color: #ffffff;
+  border-radius: 27px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15); /* Shadow Effect */
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 500px;
+  text-align: left;
+}
+
+/* Summary Heading */
+.summary h2 {
+  font-size: clamp(22px, 3vw, 32px); /* Adjusted smaller */
+  font-weight: 700;
+  color: #18206f;
+  margin-bottom: 10px;
+}
+
+/* Summary Subheading */
+.summary h3 {
+  font-size: clamp(16px, 2.5vw, 24px); /* Adjusted smaller */
+  font-weight: 400;
+  color: #98a2ff;
+  margin-bottom: 15px;
+}
+
+/* Summary Paragraph */
+.summary p {
+  font-size: clamp(12px, 2vw, 16px); /* Adjusted smaller */
+  font-weight: 400;
+  color: #18206f;
+  line-height: 1.4; /* Slightly tighter spacing */
+  margin-bottom: 10px;
+}
+
+/* Linebox and Line */
+.linebox {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.summaryline {
+  height: 20px;
+  width: 80%;
+  border-radius: 48px;
+  background-color: #18206f;
+}
+
+/* Responsive Design */
+
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    margin: 0 auto;
+  }
+
+  .graph,
+  .summary {
+    max-width: 100%;
+    min-height: auto;
+  }
+
+  .summary {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 24px;
+  }
+
+  .summary h2 {
+    font-size: 20px; /* Further smaller on small screens */
+  }
+
+  .summary h3 {
+    font-size: 14px;
+  }
+
+  .summary p {
+    font-size: 12px;
+  }
+
+  .summaryline {
+    height: 15px;
+    width: 70%;
+  }
+}

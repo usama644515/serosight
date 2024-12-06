@@ -1,0 +1,80 @@
+.container {
+    padding: 2rem;
+    text-align: center;
+    font-family: 'PT Sans', sans-serif;
+    background: linear-gradient(to right, #243b8b, #7b9eea);
+    border-radius: 50px;
+    color: white;
+    margin: 1rem;
+    margin-bottom: 100px;
+  }
+  
+  .header p {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin: 0;
+    color: white;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+    margin: 0.5rem 0;
+  }
+  
+  .highlight {
+    color: #A72608; /* Orange color for LYRA */
+  }
+  
+  .comparison {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  
+  .competitor,
+  .lyra {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .image {
+    max-width: 150px;
+    margin: 0 auto;
+    border-radius: 8px;
+  }
+  
+  .title {
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 0.5rem 0 0.2rem;
+  }
+  
+  .subtitle {
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+  
+  .vs {
+    margin: 0 2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffffff;
+  }
+  
+  .footer {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #ccc;
+  }
+  
+  @media (max-width: 768px) {
+    .comparison {
+      flex-direction: column;
+    }
+  
+    .vs {
+      margin: 1rem 0;
+    }
+  }
+  
