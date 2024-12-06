@@ -1,7 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./Hero2.module.css";
+import { useRouter } from 'next/router';
 
 const Hero2 = () => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push('/array-report');
+  };
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
@@ -14,7 +20,7 @@ const Hero2 = () => {
           Take charge of your immunity with our blood testing technology and
           diagnostics. <br /> <br /> <span>Find the right test for you.</span>
         </p>
-        <button className={styles.heroButton}>Shop Now</button>
+        <button onClick={handleClick} className={styles.heroButton}>Shop Now</button>
       </div>
       <div className={styles.imageContainer}>
       </div>
