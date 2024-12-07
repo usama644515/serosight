@@ -1,19 +1,14 @@
-/* :root {
+:root {
   --primary-color: #98a2ff;
   --secondary-color: #ffffff;
   --dark-color: #18206f;
-} */
+}
 
 .container {
-  /* max-width: 900px; */
-  margin: 0px auto;
-  /* padding: 20px; */
-  /* font-family: Arial, sans-serif; */
-  /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--dark-color)); */
-  /* border-radius: 10px; */
-  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+  margin: 0 auto;
 }
-.banner{
+
+.banner {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -23,59 +18,61 @@
   background-position: center;
   position: relative;
   overflow: hidden;
-  padding: 40px 20px;
-  height: 40vh;
+  padding: 30px 20px;
+  height: 50vh;
 }
 
 .heading {
   text-align: center;
-  font-size: 3rem;
-  color: #18206F;
-  margin-bottom: 20px;
-}
-
-.backButton {
-  border: none;
-  background: none;
-  color: var(--dark-color);
-  font-size: 1rem;
-  margin-bottom: 20px;
-  cursor: pointer;
+  font-size: 3.5rem;
+  color: #18206f;
+  margin-bottom: 10px;
 }
 
 .formWrapper {
   display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
+  /* flex-wrap: wrap; */
+  gap: 50px;
+  margin: 20px 30px;
+  margin-top: 70px;
+  align-items: center;
 }
 
 .paymentMethods,
 .cardDetails,
 .billingAddress {
   flex: 1;
-  min-width: 280px;
+  min-width: 300px;
   padding: 20px;
-  background: #B1B1E5;
-  border-radius: 10px;
+  background: rgba(89, 105, 255, 0.2); /* Transparent background using rgba */
+  border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.paymentMethods {
+  margin-bottom: 20px;
+}
+.cardDetails{
+  height: 400px;
 }
 
 .paymentMethods h2,
 .cardDetails h2,
 .billingAddress h2 {
-  font-size: 1.2rem;
-  color: var(--dark-color);
-  margin-bottom: 10px;
+  font-size: 2rem;
+  color: #98A2FF;
+  margin-bottom: 30px;
+  text-align: center;
 }
 
 .methodIcons {
   display: flex;
-  gap: 10px;
+  gap: 40px;
   justify-content: center;
 }
 
 .methodIcons img {
-  width: 50px;
+  width: 90px;
   height: auto;
 }
 
@@ -84,10 +81,11 @@
 .billingAddress select {
   width: 100%;
   margin-top: 10px;
-  padding: 10px;
-  font-size: 0.9rem;
+  padding: 12px; /* Increased padding for better alignment */
+  font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 5px;
+  box-sizing: border-box; /* Ensure proper alignment with padding */
 }
 
 .expiryCvv {
@@ -103,29 +101,119 @@
 
 .continueButton {
   width: 100%;
-  background: var(--dark-color);
+  background: #9EA1FA;
   color: var(--secondary-color);
   border: none;
-  padding: 15px;
-  font-size: 1rem;
+  padding: 15px; /* Increased padding for better appearance */
+  font-size: 1.1rem;
   border-radius: 5px;
   cursor: pointer;
   margin-top: 20px;
+  transition: all 0.3s ease;
 }
 
 .continueButton:hover {
   background: #101547;
+  transform: translateY(-2px); /* Subtle hover effect */
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .banner {
+    padding: 20px 15px;
+    height: 25vh;
+  }
+
+  .heading {
+    font-size: 2rem;
+  }
+
+  .formWrapper {
+    margin: 20px;
+    gap: 15px;
+  }
+
+  .paymentMethods,
+  .cardDetails,
+  .billingAddress {
+    padding: 15px;
+  }
+
+  .methodIcons img {
+    width: 35px;
+  }
+
+  .cardDetails input,
+  .billingAddress input,
+  .billingAddress select {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .continueButton {
+    padding: 12px;
+    font-size: 1rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .banner {
+    height: 20vh;
+  }
+
+  .heading {
+    font-size: 1.8rem;
+  }
+
   .formWrapper {
     flex-direction: column;
+    margin: 15px;
   }
 
   .paymentMethods,
   .cardDetails,
   .billingAddress {
     min-width: 100%;
+  }
+
+  .methodIcons img {
+    width: 30px;
+  }
+
+  .continueButton {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 1.5rem;
+  }
+
+  .formWrapper {
+    margin: 10px;
+  }
+
+  .paymentMethods,
+  .cardDetails,
+  .billingAddress {
+    padding: 10px;
+  }
+
+  .methodIcons img {
+    width: 25px;
+  }
+
+  .cardDetails input,
+  .billingAddress input,
+  .billingAddress select {
+    padding: 8px;
+    font-size: 0.8rem;
+  }
+
+  .continueButton {
+    padding: 8px;
+    font-size: 0.8rem;
   }
 }
