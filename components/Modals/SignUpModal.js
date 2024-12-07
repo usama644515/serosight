@@ -22,7 +22,7 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
 
     try {
       // const response = await axios.post("http://localhost:5001/api/signup", {
-      const response = await axios.post("http://13.60.25.158:5001/api/signup", {
+      const response = await axios.post("/api/auth/signup", {
         username: fullName,
         email,
         password,

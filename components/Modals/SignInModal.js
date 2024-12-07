@@ -25,7 +25,7 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
 
     try {
       // const response = await axios.post("http://localhost:5001/api/login", {
-      const response = await axios.post("http://13.60.25.158:5001/api/login", {
+      const response = await axios.post("api/auth/login", {
         email,
         password,
       });
@@ -66,7 +66,7 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
 
     try {
       // const response = await axios.post("http://localhost:5001/api/forgot-password", {
-      const response = await axios.post("http://13.60.25.158:5001/api/forgot-password", {
+      const response = await axios.post("/api/auth/forgot-password", {
         email: forgotPasswordEmail,
       });
 
