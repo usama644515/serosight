@@ -1,0 +1,131 @@
+/* :root {
+  --primary-color: #98a2ff;
+  --secondary-color: #ffffff;
+  --dark-color: #18206f;
+} */
+
+.container {
+  /* max-width: 900px; */
+  margin: 0px auto;
+  /* padding: 20px; */
+  /* font-family: Arial, sans-serif; */
+  /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--dark-color)); */
+  /* border-radius: 10px; */
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+}
+.banner{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../public/images/order-banner.png');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
+  height: 40vh;
+}
+
+.heading {
+  text-align: center;
+  font-size: 3rem;
+  color: #18206F;
+  margin-bottom: 20px;
+}
+
+.backButton {
+  border: none;
+  background: none;
+  color: var(--dark-color);
+  font-size: 1rem;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+
+.formWrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.paymentMethods,
+.cardDetails,
+.billingAddress {
+  flex: 1;
+  min-width: 280px;
+  padding: 20px;
+  background: #B1B1E5;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.paymentMethods h2,
+.cardDetails h2,
+.billingAddress h2 {
+  font-size: 1.2rem;
+  color: var(--dark-color);
+  margin-bottom: 10px;
+}
+
+.methodIcons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.methodIcons img {
+  width: 50px;
+  height: auto;
+}
+
+.cardDetails input,
+.billingAddress input,
+.billingAddress select {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  font-size: 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.expiryCvv {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.expiryCvv select,
+.expiryCvv input {
+  flex: 1;
+}
+
+.continueButton {
+  width: 100%;
+  background: var(--dark-color);
+  color: var(--secondary-color);
+  border: none;
+  padding: 15px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.continueButton:hover {
+  background: #101547;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .formWrapper {
+    flex-direction: column;
+  }
+
+  .paymentMethods,
+  .cardDetails,
+  .billingAddress {
+    min-width: 100%;
+  }
+}
