@@ -1,16 +1,16 @@
 import Layout from '@/components/Layout';
 import Head from 'next/head';
 import Bottomlines from '../components/Bottomlines';
-import PaymentForm from '../components/Profile-Setting/PaymentForm';
+import OrderHistory from '../components/Profile-Setting/OrderHistory';
 
-export default function PaymentMethod() {
+export default function Orderhistory() {
   return (
     <Layout>
       <section>
         <Head>
-          <title>Payment Method - ImmunoMap</title>
+          <title>Order History - ImmunoMap</title>
         </Head>
-        <PaymentForm />
+        <OrderHistory />
         <Bottomlines/>
       </section>
     </Layout>

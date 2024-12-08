@@ -190,7 +190,7 @@ const Header = () => {
             </button>
           )}
 
-          <Link href="/payment-method" className={styles.cartLink}>
+          <Link href="" className={styles.cartLink}>
             <img src="/images/cart.svg" alt="Cart" className={styles.cartIcon} />
           </Link>
         </div>

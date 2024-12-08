@@ -2,11 +2,24 @@ import styles from "./PaymentForm.module.css";
 
 const PaymentForm = () => {
   const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  const years = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() + i);
+  const years = Array.from(
+    { length: 20 },
+    (_, i) => new Date().getFullYear() + i
+  );
 
   return (
     <div className={styles.container}>
@@ -68,8 +81,6 @@ const PaymentForm = () => {
           <button className={styles.continueButton}>Continue</button>
         </div>
       </div>
-
-      
     </div>
   );
 };
