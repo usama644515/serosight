@@ -1,14 +1,37 @@
 .container {
   padding: 20px 40px;
   text-align: center;
-  background-color: #f4f6fa;
 }
 
 .diagram {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
+  background-color: #f4f6fa;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  padding: 40px 0px;
+}
+.hightlight {
+  position: absolute;
+  left: 130px;
+  top: 110vh;
+}
+.hightlightImage {
+  width: 30px;
+  height: 30px;
+}
+.hightlight div {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  height: 40px;
+}
+.hightlight div h4 {
+  color: #18206f;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .mainCircle {
@@ -84,6 +107,8 @@
   font-size: 14px;
   cursor: pointer;
   transition: transform 0.3s;
+  border: 10px solid white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .childCircle:hover {
@@ -132,4 +157,95 @@
   .childCircle {
     margin-bottom: 10px;
   }
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .hightlight {
+    /* position: absolute; */
+    left: 30px;
+    top: 112vh;
+  }
+  .hightlightImage {
+    width: 20px;
+    height: 20px;
+  }
+  .hightlight div {
+    gap: 15px;
+    height: 30px;
+  }
+  .hightlight div h4 {
+    font-size: 17px;
+  }
+}
+
+/* Parent section for the info boxes */
+.infoSection {
+  background-color: white;
+  padding: 20px;
+  margin-top: 0px;
+  border-radius: 10px;
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
+}
+
+/* Title for the section */
+.infoSection h2 {
+  color: #18206f;
+  font-size: 2rem;
+  margin-bottom: 0px;
+  margin-top: 0px;
+  text-align: start;
+}
+
+.infoSection h3 {
+  color: #9ba2ff;
+  margin-bottom: 20px;
+  text-align: start;
+  margin-top: 0px;
+}
+
+/* Row slider container */
+.rowSlider {
+  display: flex;
+  flex-direction: row;
+  /* gap: 20px; */
+  overflow-x: auto;
+  scrollbar-width: thin; /* For Firefox */
+  -ms-overflow-style: none; /* For Internet Explorer */
+}
+
+.rowSlider::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
+
+/* Individual boxes in the slider */
+.infoBox {
+  flex: 0 0 auto; /* Prevent the boxes from shrinking */
+  /* background-color: #f9f9f9; */
+  padding: 20px;
+  /* border-radius: 10px; */
+  /* box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); */
+  min-width: 200px; /* Set the width for each box */
+  border: 2px solid #d9d9d9;
+  text-align: left;
+  border-radius: 0px;
+  color: #8d8d8d;
+  height: 160px;
+  width: 200px;
+}
+.infoBox div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.infoBoxIcon {
+  width: 30px;
+}
+.infoBox Strong {
+  font-size: 1.5rem;
+}
+.infoBox h4 {
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #3f51b5;
 }
