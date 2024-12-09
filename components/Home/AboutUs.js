@@ -1,7 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./AboutUs.module.css";
+import { useRouter } from "next/router";
 
 const AboutUs = () => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/about-us");
+  };
   return (
     <section className={styles.hero}>
       <img src="/images/aboutus.jpg" alt="About Us" className={styles.heroImage} />
@@ -13,7 +19,7 @@ const AboutUs = () => {
           <br />
           Let us help you live healthier.
         </p>
-        <button className={styles.heroButton}>Learn More</button>
+        <button onClick={handleClick} className={styles.heroButton}>Learn More</button>
       </div>
     </section>
   );

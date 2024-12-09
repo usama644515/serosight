@@ -4,7 +4,7 @@ import styles from "./Bottomlines.module.css";
 const Bottomlines = () => {
     return (
         <section className={styles.design}>
-            <img src="/images/design.png" alt="" className={styles.innerline} />
+            <img src="/images/design.png" alt="" className={styles.shadowImage} />
         </section>
     );
 };

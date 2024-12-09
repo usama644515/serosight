@@ -1,5 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./Cta.module.css";
+import Link from "next/link";
 
 export default function Cta() {
   return (
@@ -21,9 +22,9 @@ export default function Cta() {
             Purchase the test kit that will provide the most insgiht into your
             health concerns.
           </p>
-          <a href="#" className={styles.button}>
+          <Link href="/shop" className={styles.button}>
             Shop Now
-          </a>
+          </Link>
         </div>
       </div>
     </section>

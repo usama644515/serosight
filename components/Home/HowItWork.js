@@ -1,7 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./HowItWork.module.css";
+import { useRouter } from "next/router";
 
 const HowItWork = () => {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push('/how-it-works');
+  };
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
@@ -12,7 +18,7 @@ const HowItWork = () => {
           to track relative immunity levels. We monitor vulnerability levels to
           issues ranging from seasonal viruses to STDs.
         </p>
-        <button className={styles.heroButton}>Learn More</button>
+        <button onClick={handleClick} className={styles.heroButton}>Learn More</button>
       </div>
 
       <img src="/images/howitwork.webp" alt="" className={styles.heroImage} />

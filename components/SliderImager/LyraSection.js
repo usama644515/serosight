@@ -1,7 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import styles from "./LyraSection.module.css";
+import { useRouter } from "next/router";
 
 export default function LyraSection() {
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push("/shop");
+  };
   return (
     <section className={styles.container}>
       <div className={styles.header}>
@@ -74,7 +80,7 @@ export default function LyraSection() {
         <h1>
         Conserve lab space as the <span className={styles.highlight2}>LYRA</span> fits within footprint of a sheet of paper.
         </h1>
-        <button className={styles.heroButton}>Pre-Order</button>
+        <button onClick={handleClick} className={styles.heroButton}>Pre-Order</button>
       </div>
     </section>
   );

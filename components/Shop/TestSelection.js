@@ -5,9 +5,9 @@ import styles from "./TestSelection.module.css";
 const TestSelection = () => {
   const scrollToBundleSection = () => {
     // Get the reference to bundlesction
-    const BundleSection = document.getElementById('bundle-section');
+    const BundleSection = document.getElementById("bundle-section");
     if (BundleSection) {
-      BundleSection.scrollIntoView({ behavior: 'smooth' });
+      BundleSection.scrollIntoView({ behavior: "smooth" });
     }
   };
   const [selectedTests, setSelectedTests] = useState([]);
@@ -108,60 +108,70 @@ const TestSelection = () => {
       {/* Main Card */}
       <div className={styles.card}>
         <div className={styles.carditem}>
-        {/* Test Kit Image and Details */}
-        <div className={styles.cardHeader}>
-          <img src="/images/test kit.png" alt="Test kit" />
-        </div>
-        <div className={styles.cardDetails}>
-          {currentTest ? (
-            <>
-              <h3 className={styles.cardTitle}>{currentTest}</h3>
-              <p className={styles.cardDescription}>
-                {testDetails[currentTest].description}
-              </p>
-              <p className={styles.cardPrice}>
-                {testDetails[currentTest].price}
-              </p>
-              <button className={styles.addToCart}>Add to Cart</button>
-            </>
-          ) : (
-            <p className={styles.noTests}>No tests selected</p>
-          )}
+          {/* Test Kit Image and Details */}
+          <div className={styles.cardHeader}>
+            <img src="/images/test kit.png" alt="Test kit" />
+          </div>
+          <div className={styles.cardDetails}>
+            {currentTest ? (
+              <>
+                <h3 className={styles.cardTitle}>{currentTest}</h3>
+                <p className={styles.cardDescription}>
+                  {testDetails[currentTest].description}
+                </p>
+                <div className={styles.priceandcart}>
+                <p className={styles.cardPrice}>
+                  {testDetails[currentTest].price}
+                </p>
+                <button className={styles.addToCart}>Add to Cart</button>
+                </div>
+              </>
+            ) : (
+              <p className={styles.noTests}>No tests selected</p>
+            )}
+            {/* Bundle Section */}
+            <div className={styles.bundleHeading}>
+              <h4 className={styles.bundleTitle}>Choose a Bundle</h4>
+              <h4
+                className={styles.bundlelearmore}
+                onClick={scrollToBundleSection}
+              >
+                Learn More
+              </h4>
+            </div>
+            <div className={styles.bundleSection}>
+              <div className={styles.bundleOptions}>
+                {["Single Test", "Two Tests", "Subscription"].map((bundle) => (
+                  <label
+                    key={bundle}
+                    className={`${styles.bundleOption} ${
+                      selectedBundle === bundle ? styles.selected : ""
+                    }`}
+                  >
+                    <img
+                      src={`/images/${bundle
+                        .toLowerCase()
+                        .replace(" ", "-")}.png`}
+                      alt={bundle}
+                      className={styles.bundleImage}
+                    />
+                    <div className={styles.bundleText}>
+                      <input
+                        type="checkbox"
+                        value={bundle}
+                        checked={selectedBundle === bundle}
+                        onChange={() => handleBundleChange(bundle)}
+                        className={styles.radio}
+                      />{" "}
+                      {bundle}
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        
-        </div>
-        {/* Bundle Section */}
-        <div className={styles.bundleSection}>
-          <div>
-          <h4 className={styles.bundleTitle}>Choose a Bundle</h4>
-          <h4 className={styles.bundlelearmore} onClick={scrollToBundleSection}>Learn More</h4>
-          </div>
-          <div className={styles.bundleOptions}>
-            {["Single Test", "Two Tests", "Subscription"].map((bundle) => (
-              <label
-                key={bundle}
-                className={`${styles.bundleOption} ${
-                  selectedBundle === bundle ? styles.selected : ""
-                }`}
-              >
-                
-                <img
-                  src={`/images/${bundle.toLowerCase().replace(" ", "-")}.png`}
-                  alt={bundle}
-                  className={styles.bundleImage}
-                />
-               <div className={styles.bundleText}><input
-                  type="radio"
-                  value={bundle}
-                  checked={selectedBundle === bundle}
-                  onChange={() => handleBundleChange(bundle)}
-                  className={styles.radio}
-                /> {bundle}</div>
-              </label>
-            ))}
-          </div>
-        </div>
         {/* Slider Navigation */}
         {selectedTests.length > 1 && (
           <div className={styles.sliderNavigation}>

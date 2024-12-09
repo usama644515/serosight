@@ -9,7 +9,7 @@ export default function Footer() {
         {/* Branding Section */}
         <div className={styles.footerBranding}>
           <img
-            src="/images/logo.jpg"
+            src="/images/footer-logo.png"
             alt="Brand Logo"
             className={styles.logo}
           />

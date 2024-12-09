@@ -19,7 +19,7 @@ export default function BundleSection() {
       <p className={styles.subheading}>
         Our bundles can help you achieve maximum care by allowing you to choose between one-time and long-term services.
       </p>
-      <div className={styles.cardsContainer} onClick={openModal}>
+      <div className={styles.cardsContainer}>
         <div className={styles.card}>
         <h2 className={styles.cardTitle}>Single Test</h2>
         <p className={styles.cardType}>One-Time</p>
@@ -46,6 +46,7 @@ export default function BundleSection() {
           <p className={styles.cardDescription}>
             This is a long-term plan that offers up to <strong>4 tests per year</strong>.
           </p>
+          <p className={styles.learnmore}  onClick={openModal}>Learn More</p>
           {/* <a className={styles.learnMore} href="#">Learn More</a> */}
         </div>
       </div>

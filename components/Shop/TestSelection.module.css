@@ -12,6 +12,9 @@
 @media (min-width: 768px) {
     .container {
         flex-direction: row;
+        justify-content: right;
+        margin-right: 0px;
+        padding-right: 0px;
     }
 }
 
@@ -26,7 +29,7 @@
         width: 20%;
     }
     .card{
-        max-height: 60vh;
+        max-height: 80vh;
     }
 }
 
@@ -108,14 +111,15 @@
 
 /* Card Section Styling */
 .card {
-    background-color: #C1C7FF;
+    background-color: #E6E8FF;
     padding: 20px;
-    border-radius: 30px;
+    border-radius: 30px 0 0 30px;
     /* width: 100%; */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding-right: 0px;
     
 }
 
@@ -126,7 +130,7 @@
 
 @media (min-width: 768px) {
     .card {
-        width: 65%;
+        width: 70%;
     }
 }
 
@@ -138,7 +142,7 @@
 
 .cardHeader img {
     width: 100%;
-    max-width: 200px;
+    max-width: 300px;
     border-radius: 25px;
     border: 7px solid white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -161,12 +165,14 @@
 .cardTitle {
     font-size: 1.3rem;
     color: #18206F;
+    padding-right: 20px;
 }
 
 .cardDescription {
     color: #18206F;
     font-size: 0.9rem;
     margin: 10px 0;
+    padding-right: 20px;
 }
 
 .cardPrice {
@@ -228,14 +234,27 @@
 
 /* Bundle Section */
 .bundleSection {
-    margin-top: 50px;
+    margin-top: 0px;
     text-align: center;
     width: 100%;
     background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 25px;
+    border-radius: 30px 0 0 30px;
+}
+.bundleHeading{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-right: 20px;
+}
+.priceandcart{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-right: 20px;
 }
 
 .bundleSection div {
@@ -274,8 +293,10 @@
 }
 
 .bundleOption img {
-    width: 100%;
-    height: auto;
+    /* width: 100%;
+    height: auto; */
+    width: 130px;
+    height: 130px;
     margin-bottom: 10px;
 }
 
@@ -325,6 +346,7 @@
         padding: 10px;
         gap: 10px;
         margin: 0px 20px;
+        
     }
    
 

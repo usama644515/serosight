@@ -21,7 +21,6 @@
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     justify-items: center;
-    cursor: pointer;
   }
   
   .card {
@@ -34,7 +33,7 @@
     max-width: 300px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
   }
   
@@ -77,4 +76,11 @@
   .learnMore:hover {
     text-decoration: underline;
   }
+  .learnmore {
+    font-size: 1rem;
+    color: #98A2FF;
+    text-decoration: underline;
+    font-weight: 400;
+    cursor: pointer;
+}
   
