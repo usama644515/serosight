@@ -12,39 +12,51 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   padding: 40px 0px;
+  background-image: url("../../public/images/tree.svg");
+  background-repeat: no-repeat;
+  background-size: contain; /* Scale the image to fit */
+  background-position: center; /* Center the image */
+  padding-top: 5px;
+  padding-bottom: 0px;
+}
+/* Hide background image on mobile devices */
+@media (max-width: 1000px) {
+  .diagram {
+    background-image: none; /* Remove the background image */
+  }
 }
 .hightlight {
   position: absolute;
   left: 130px;
-  top: 110vh;
+  top: 115vh;
 }
 .hightlightImage {
-  width: 30px;
-  height: 30px;
+  width: 20px;
+  height: 20px;
 }
 .hightlight div {
   display: flex;
-  gap: 20px;
+  gap: 15px;
   align-items: center;
-  height: 40px;
+  height: 30px;
 }
 .hightlight div h4 {
   color: #18206f;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 500;
 }
 
 .mainCircle {
   background-color: #18206f;
   color: white;
-  width: 150px;
-  height: 150px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 20px;
-  margin-bottom: 20px;
+  font-size: 17px;
+  margin-bottom: 60px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -52,8 +64,13 @@
   display: flex;
   justify-content: space-around;
   flex-wrap: wrap;
-  width: 100%;
+  width: 90%;
   margin-top: 30px;
+}
+@media (max-width: 1250px) {
+  .subCircles {
+    width: 100%;
+  }
 }
 
 .branch {
@@ -66,13 +83,13 @@
 .subCircle {
   background-color: #002984;
   color: white;
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   font-size: 16px;
   cursor: pointer;
   transition: transform 0.3s;

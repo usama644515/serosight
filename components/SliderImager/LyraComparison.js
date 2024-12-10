@@ -3,13 +3,15 @@ import styles from "./LyraComparison.module.css";
 
 export default function LyraComparison() {
   return (
-    <section className={styles.container}>
-      <div className={styles.header}>
+    <>
+    <div className={styles.header}>
         <p>Competitor Comparison</p>
         <h1>
           How does <span className={styles.highlight}>LYRA</span> compare?
         </h1>
       </div>
+    <section className={styles.container}>
+      
       <div className={styles.comparison}>
         <div className={styles.competitor}>
           <img
@@ -34,6 +36,6 @@ export default function LyraComparison() {
         </div>
       </div>
       <p className={styles.footer}>Intensity Scale 0–15,000 counts</p>
-    </section>
+    </section></>
   );
 }

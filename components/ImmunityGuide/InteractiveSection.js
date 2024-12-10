@@ -151,18 +151,71 @@ const sections = [
       {
         name: "OB",
         details: [
-          { name: "Ultrasound", description: "Prenatal imaging services." },
           {
-            name: "Blood Tests",
-            description: "Pregnancy-related diagnostics.",
+            name: "RH Factor",
+            description:
+              "Rh factor is an inherited protein found on the surface of red blood cells. ",
+          },
+          {
+            name: "Grp B Strep",
+            description:
+              "A common bacterium often carried in the intestines or lower genital tract.",
+          },
+          {
+            name: "Toxoplasmosis",
+            description:
+              "A bacteria infection with a parasite called Toxoplasma gondii.",
           },
         ],
       },
       {
         name: "Allergy",
         details: [
-          { name: "Pollen", description: "Seasonal allergy detection." },
-          { name: "Food Allergies", description: "Identifying food triggers." },
+          {
+            name: "Peanut",
+            description:
+              "Peanut allergy is one of the most common causes of severe allergy attacks.",
+          },
+          {
+            name: "Almond",
+            description:
+              "An almond allergy is a set of symptoms caused by being in contact with almonds.",
+          },
+          {
+            name: "Cow Milk",
+            description:
+              "Cow's milk allergy is an allergic reaction to the protein found in cow’s milk.",
+          },
+          {
+            name: "Egg Whites",
+            description:
+              "Eggs are one of the most common allergy-causing foods for children.",
+          },
+          {
+            name: "Wheat",
+            description:
+              "Wheat allergy is an allergic reaction to foods containing wheat.",
+          },
+          {
+            name: "Egg Yolk",
+            description:
+              "Egg allergy  can occur minutes to hours after eating any food withe eggs.",
+          },
+          {
+            name: "Shrimp",
+            description:
+              "An atypical allergic reaction by the body's immune system to proteins in shrimp.",
+          },
+          {
+            name: "Soy",
+            description:
+              "A soy allergy is when your body reacts to soy protein.",
+          },
+          {
+            name: "Tuna",
+            description:
+              "Fish allergies are primarily caused by parvalbumins, a type of calcium-binding protein.",
+          },
         ],
       },
       {
@@ -179,10 +232,55 @@ const sections = [
         name: "RH",
         details: [
           {
-            name: "Fertility Tests",
-            description: "Reproductive health checkups.",
+            name: "HAV",
+            description:
+              "HAV is a contagious liver infection caused typically spread through contaminated food.",
           },
-          { name: "Hormonal Panel", description: "Hormonal balance testing." },
+          {
+            name: "Rotavirus",
+            description:
+              "Rotavirus is a very contagious virus that causes diarrhea.",
+          },
+          {
+            name: "Pertussis",
+            description:
+              "A viral whooping cough is a highly contagious respiratory tract infection.",
+          },
+          {
+            name: "Polio Virus",
+            description:
+              "An illness caused by a virus  affects nerves in the spinal cord or brain stem.",
+          },
+          {
+            name: "Tetanus",
+            description:
+              "A serious  disease of the nervous system caused by bacterium.",
+          },
+          {
+            name: "Meningococcal A",
+            description:
+              "A serious bacterial infection resulting in organ damage or death.",
+          },
+          {
+            name: "Meningococcal B",
+            description:
+              "A bacterial infection that causes meningitis and sepsis.",
+          },
+          {
+            name: "H Influenza B",
+            description:
+              "A bacterial infections from mild to severe causing various symptoms.",
+          },
+          {
+            name: "Pneumococcal",
+            description:
+              "A bacterial infection that can cause pneumonia, meningitis and sepsis,",
+          },
+          {
+            name: "Diphtheria",
+            description:
+              "A serious bacterial infection of mucous membranes within the nose and throat.",
+          },
         ],
       },
     ],
@@ -251,7 +349,7 @@ const InteractiveSection = () => {
               >
                 {section.title} <br /> {section.subTitle}
               </div>
-              <div className={styles.subLine}></div>
+              {/* <div className={styles.subLine}></div> */}
               <div className={styles.children}>
                 {section.children.map((child, i) => (
                   <div

@@ -7,18 +7,31 @@
     color: white;
     margin: 1rem;
     margin-bottom: 100px;
+    margin-left: 10%;
+    margin-right: 10%;
+    padding-bottom: 10px;
   }
-  
+  .header{
+    margin-bottom: 40px;
+  /* width: 100%;  */
+  height: auto; /* Set height as needed */
+  text-align: center; /* Optional: center-align text */
+  padding: 20px; /* Optional: add padding for better aesthetics */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bottom shadow */
+  }
   .header p {
     font-size: 1.2rem;
     font-weight: bold;
     margin: 0;
-    color: white;
+    color: #2B061E;
+    text-align: center;
   }
   
   .header h1 {
     font-size: 2rem;
     margin: 0.5rem 0;
+    color: #C4C4C4;
+    text-align: center;
   }
   
   .highlight {
@@ -39,33 +52,48 @@
   }
   
   .image {
-    max-width: 150px;
+    max-width: 300px;
     margin: 0 auto;
     border-radius: 8px;
   }
   
   .title {
-    font-size: 1rem;
+    font-size: 2rem;
     font-weight: bold;
     margin: 0.5rem 0 0.2rem;
+    margin-bottom: 5px;
   }
   
   .subtitle {
-    font-size: 0.9rem;
+    font-size: 1.2rem;
     color: #ccc;
+    margin: 0px;
   }
   
   .vs {
     margin: 0 2rem;
-    font-size: 1.5rem;
+    font-size: 2rem;
     font-weight: bold;
     color: #ffffff;
-  }
+    border: 5px solid #98A2FF;
+    border-radius: 50%;  /* Make the border fully circular */
+    padding: 20px;  /* Adjust the padding to ensure it's a square */
+    width: 50px;   /* Set width to make it a perfect circle */
+    height: 50px;  /* Set height to make it a perfect circle */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: #243b8b;
+}
+
+  
+
   
   .footer {
     margin-top: 1rem;
-    font-size: 0.9rem;
-    color: #ccc;
+    font-size: 1.2rem;
+    color: #98A2FF;
   }
   
   @media (max-width: 768px) {

@@ -4,6 +4,7 @@
   background-color: #fdfdfd;
   text-align: center;
   overflow-x: hidden; /* Prevent horizontal scrolling */
+  padding-left: 0px;
 }
 
 /* Heading */
@@ -12,7 +13,13 @@
   font-weight: bold;
   color: #b33c00;
   margin-bottom: 40px;
+  width: 100%; /* Full width */
+  height: auto; /* Set height as needed */
+  text-align: center; /* Optional: center-align text */
+  padding: 20px; /* Optional: add padding for better aesthetics */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bottom shadow */
 }
+
 
 /* Content Layout: Image + Features in a Row */
 .content {

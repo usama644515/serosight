@@ -13,25 +13,30 @@
 .headerContainer {
   background: white;
   width: 100%;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  /* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */
   padding: 1rem 0;
 }
 
 .header {
-  max-width: 700px;
+  /* max-width: 700px; */
   margin: 0 auto;
   text-align: center;
 }
 
 .header h1 {
-  font-size: 2.5rem;
-  color: #a52a2a; /* Dark red */
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #b33c00;
+  margin-bottom: 40px;
+  /* width: 100%;  */
+  height: auto; /* Set height as needed */
+  text-align: center; /* Optional: center-align text */
+  padding: 20px; /* Optional: add padding for better aesthetics */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Bottom shadow */
 }
 
 .header p {
-  font-size: 1.6rem;
+  font-size: 2rem;
   color: #182097;
   font-weight: 600;
 }

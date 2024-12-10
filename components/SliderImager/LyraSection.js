@@ -10,13 +10,13 @@ export default function LyraSection() {
   };
   return (
     <section className={styles.container}>
-      <div className={styles.header}>
+      {/* <div className={styles.header}>
         <h1>
           The <span className={styles.highlight}>LYRA</span> speed is unmatched
           at 10 seconds per scan.
         </h1>
         <p>10 to 100 times faster than competitor scanners</p>
-      </div>
+      </div> */}
       <div className={styles.features}>
         <div className={styles.feature}>
           <div className={styles.contents}>
@@ -27,14 +27,14 @@ export default function LyraSection() {
             </p>
           </div>
           <img
-            src="/images/lyra1.png" /* Replace with actual image path */
+            src="/images/lyra2.png" /* Replace with actual image path */
             alt="Sustainable"
             className={styles.image}
           />
         </div>
         <div className={styles.feature}>
           <img
-            src="/images/lyra2.png" /* Replace with actual image path */
+            src="/images/lyra1.png" /* Replace with actual image path */
             alt="Precision"
             className={styles.image}
           />
