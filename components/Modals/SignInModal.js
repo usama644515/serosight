@@ -35,6 +35,7 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
 
         // Store token in local storage
         localStorage.setItem("token", token);
+        localStorage.setItem("email", email); // Store email
 
         // Show success toast
         toast.success("Login successful!");

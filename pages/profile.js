@@ -4,7 +4,7 @@ import AccountSettings from '../components/Profile/AccountSettings';
 import ListTile from '../components/Profile/ProfileTile';
 import Bottomlines from '../components/Bottomlines';
 
-export default function About() {
+export default function Profile() {
   return (
     <Layout>
       <section>

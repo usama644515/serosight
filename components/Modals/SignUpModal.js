@@ -68,14 +68,14 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
             <h2 className={styles.modalTitle}>Create Account</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.inputGroup}>
-                <label htmlFor="fullName">Full Name</label>
+                <label htmlFor="fullName">Name</label>
                 <div className={styles.fieldsWrapper}>
                   <input
                     id="fullName"
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your full name"
+                    placeholder="Enter your name"
                     required
                     className={styles.inputField}
                   />
@@ -95,7 +95,7 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
                   />
                 </div>
               </div>
-              <div className={styles.inputGroup}>
+              {/* <div className={styles.inputGroup}>
                 <label htmlFor="phoneNumber">Phone Number</label>
                 <div className={styles.fieldsWrapper}>
                   <input
@@ -108,7 +108,7 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
                     className={styles.inputField}
                   />
                 </div>
-              </div>
+              </div> */}
               <div className={styles.inputGroup}>
                 <label htmlFor="password">Password</label>
                 <div className={styles.passwordWrapper}>
