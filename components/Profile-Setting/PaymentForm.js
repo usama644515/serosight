@@ -15,35 +15,48 @@ const PaymentForm = () => {
     cvv: "",
   });
 
-  const [userId, setUserId] = useState(null); // State to hold the userId
+  const [userId, setUserId] = useState(null);
+  const [storedBillingInfo, setStoredBillingInfo] = useState(null);
 
   const months = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
   ];
 
-  const years = Array.from(
-    { length: 20 },
-    (_, i) => new Date().getFullYear() + i
-  );
+  const years = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() + i);
 
-  // Get the userId from local storage when the component mounts
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
-    const storedUserId = localStorage.getItem("userId"); // Retrieve userId from local storage
-    if (storedUserId) {
-      setUserId(storedUserId); // Set the userId if it exists in local storage
+    setIsClient(true); // Set client-side flag
+  }, []);
+
+  // Fetch user ID from localStorage
+  useEffect(() => {
+    if (isClient) {
+      const storedUserId = localStorage.getItem("userId");
+      if (storedUserId) {
+        setUserId(storedUserId);
+      } else {
+        console.log("User ID not found.");
+      }
     }
-  }, []); // Empty dependency array to run only once when the component mounts
+  }, [isClient]);
+
+  // Fetch billing info when user ID is available
+  useEffect(() => {
+    if (userId) {
+      console.log("Fetching billing info for user ID:", userId);
+      fetch(`/api/billing?userId=${userId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.billingInfo) {
+            setStoredBillingInfo(data.billingInfo);
+            setPaymentInfo(data.billingInfo); // Pre-populate form
+          }
+        })
+        .catch((err) => console.error("Failed to fetch billing info", err));
+    }
+  }, [userId]); // Only trigger when userId is set
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -56,47 +69,77 @@ const PaymentForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if required fields are filled
     if (
-      !paymentInfo.address ||
-      !paymentInfo.city ||
-      !paymentInfo.state ||
-      !paymentInfo.zipCode ||
-      !paymentInfo.nameOnCard ||
-      !paymentInfo.cardNumber ||
-      !paymentInfo.expiryMonth ||
-      !paymentInfo.expiryYear ||
-      !paymentInfo.cvv
+      !paymentInfo.address || !paymentInfo.city || !paymentInfo.state ||
+      !paymentInfo.zipCode || !paymentInfo.nameOnCard || !paymentInfo.cardNumber ||
+      !paymentInfo.expiryMonth || !paymentInfo.expiryYear || !paymentInfo.cvv
     ) {
       alert("Please fill in all required fields.");
       return;
     }
 
-    // Ensure that userId is present
     if (!userId) {
       alert("User ID is missing.");
       return;
     }
 
-    // Send the data to the API
-    const response = await fetch("/api/billing", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId, // Send userId with the payment info
-        paymentInfo,
-      }),
-    });
+    try {
+      const response = await fetch("/api/addbilling", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, paymentInfo }),
+      });
 
-    const data = await response.json();
-    if (response.ok) {
-      alert("Billing details updated successfully!");
-    } else {
-      alert(`Error: ${data.error}`);
+      const data = await response.json();
+      if (response.ok) {
+        alert("Billing details updated successfully!");
+        setStoredBillingInfo(paymentInfo);
+      } else {
+        alert(`Error: ${data.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating billing details:", error);
+      alert("An unexpected error occurred. Please try again later.");
     }
   };
+
+  const handleDeleteBilling = async () => {
+    const confirmation = window.confirm("Are you sure you want to delete your billing details?");
+    if (confirmation) {
+      try {
+        const response = await fetch(`/api/billing?userId=${userId}`, {
+          method: "DELETE",
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          alert("Billing details deleted.");
+          setStoredBillingInfo(null);
+          setPaymentInfo({
+            country: "",
+            address: "",
+            city: "",
+            state: "",
+            zipCode: "",
+            nameOnCard: "",
+            cardNumber: "",
+            expiryMonth: "",
+            expiryYear: "",
+            cvv: "",
+          });
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      } catch (error) {
+        console.error("Error deleting billing details:", error);
+        alert("An unexpected error occurred. Please try again later.");
+      }
+    }
+  };
+
+  if (!isClient) {
+    return null; // Return nothing during SSR
+  }
 
   return (
     <div className={styles.container}>
@@ -106,7 +149,6 @@ const PaymentForm = () => {
 
       <div className={styles.formWrapper}>
         <div>
-          {/* Payment Methods Section */}
           <div className={styles.paymentMethods}>
             <h2>Payment Methods</h2>
             <div className={styles.methodIcons}>
@@ -117,14 +159,9 @@ const PaymentForm = () => {
             </div>
           </div>
 
-          {/* Billing Address Section */}
           <div className={styles.billingAddress}>
             <h2>Billing Address</h2>
-            <select
-              name="country"
-              value={paymentInfo.country}
-              onChange={handleChange}
-            >
+            <select name="country" value={paymentInfo.country} onChange={handleChange}>
               <option>Country</option>
               <option>United States</option>
               <option>Canada</option>
@@ -161,7 +198,6 @@ const PaymentForm = () => {
           </div>
         </div>
 
-        {/* Credit Card Details Section */}
         <div className={styles.cardDetails}>
           <h2>Credit Card Details</h2>
           <input
@@ -179,28 +215,16 @@ const PaymentForm = () => {
             placeholder="Card Number"
           />
           <div className={styles.expiryCvv}>
-            <select
-              name="expiryMonth"
-              value={paymentInfo.expiryMonth}
-              onChange={handleChange}
-            >
+            <select name="expiryMonth" value={paymentInfo.expiryMonth} onChange={handleChange}>
               <option>Month</option>
               {months.map((month, index) => (
-                <option key={index} value={month}>
-                  {month}
-                </option>
+                <option key={index} value={month}>{month}</option>
               ))}
             </select>
-            <select
-              name="expiryYear"
-              value={paymentInfo.expiryYear}
-              onChange={handleChange}
-            >
+            <select name="expiryYear" value={paymentInfo.expiryYear} onChange={handleChange}>
               <option>Year</option>
               {years.map((year, index) => (
-                <option key={index} value={year}>
-                  {year}
-                </option>
+                <option key={index} value={year}>{year}</option>
               ))}
             </select>
             <input
@@ -216,6 +240,19 @@ const PaymentForm = () => {
           </button>
         </div>
       </div>
+
+      {storedBillingInfo && (
+        <div className={styles.billingListContainer}>
+          <div className={styles.billingInfo}>
+            <h3>Saved Billing Info</h3>
+            <p>{`${storedBillingInfo.nameOnCard} - ${storedBillingInfo.cardNumber.slice(-4)}`}</p>
+            <button className={styles.deleteButton} onClick={handleDeleteBilling}>
+              <img src="/images/delete-icon.png" alt="Delete" />
+              Delete Billing Info
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
