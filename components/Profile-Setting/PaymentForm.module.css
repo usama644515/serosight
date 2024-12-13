@@ -44,7 +44,8 @@
   flex: 1;
   min-width: 300px;
   padding: 20px;
-  background: rgba(89, 105, 255, 0.2); /* Transparent background using rgba */
+  background: rgba(89, 105, 255, 0.2);
+  /* Transparent background using rgba */
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -52,7 +53,8 @@
 .paymentMethods {
   margin-bottom: 20px;
 }
-.cardDetails{
+
+.cardDetails {
   height: 400px;
 }
 
@@ -81,11 +83,13 @@
 .billingAddress select {
   width: 100%;
   margin-top: 10px;
-  padding: 12px; /* Increased padding for better alignment */
+  padding: 12px;
+  /* Increased padding for better alignment */
   font-size: 1rem;
   border: 1px solid #ddd;
   border-radius: 5px;
-  box-sizing: border-box; /* Ensure proper alignment with padding */
+  box-sizing: border-box;
+  /* Ensure proper alignment with padding */
 }
 
 .expiryCvv {
@@ -104,7 +108,8 @@
   background: #9EA1FA;
   color: var(--secondary-color);
   border: none;
-  padding: 15px; /* Increased padding for better appearance */
+  padding: 15px;
+  /* Increased padding for better appearance */
   font-size: 1.1rem;
   border-radius: 5px;
   cursor: pointer;
@@ -114,7 +119,8 @@
 
 .continueButton:hover {
   background: #101547;
-  transform: translateY(-2px); /* Subtle hover effect */
+  transform: translateY(-2px);
+  /* Subtle hover effect */
 }
 
 /* Responsive Design */
@@ -216,4 +222,69 @@
     padding: 8px;
     font-size: 0.8rem;
   }
+}
+
+
+
+.billingListContainer {
+  background-color: #9EA1FA;
+  /* Light gray background */
+  border-radius: 10px;
+  /* Rounded corners */
+  padding: 20px;
+  margin: 15px 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+
+}
+
+.billingInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.billingInfo h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  /* Dark text */
+}
+
+.billingInfo p {
+  margin: 0;
+  font-size: 1rem;
+  color: white;
+  /* Medium gray text */
+}
+
+.deleteButton {
+  background-color: #e74c3c;
+  /* Red background */
+  color: #fff;
+  /* White text */
+  border: none;
+  border-radius: 5px;
+  /* Rounded corners */
+  padding: 10px 15px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.deleteButton:hover {
+  background-color: #c0392b;
+  /* Darker red on hover */
+  transform: scale(1.05);
+  /* Slight zoom on hover */
+}
+
+.deleteButton:active {
+  transform: scale(1);
+  /* Reset zoom on click */
 }

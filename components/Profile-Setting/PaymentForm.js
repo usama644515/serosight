@@ -19,10 +19,24 @@ const PaymentForm = () => {
   const [storedBillingInfo, setStoredBillingInfo] = useState(null);
 
   const months = [
-    "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
 
-  const years = Array.from({ length: 20 }, (_, i) => new Date().getFullYear() + i);
+  const years = Array.from(
+    { length: 20 },
+    (_, i) => new Date().getFullYear() + i
+  );
 
   const [isClient, setIsClient] = useState(false);
 
@@ -70,9 +84,15 @@ const PaymentForm = () => {
     e.preventDefault();
 
     if (
-      !paymentInfo.address || !paymentInfo.city || !paymentInfo.state ||
-      !paymentInfo.zipCode || !paymentInfo.nameOnCard || !paymentInfo.cardNumber ||
-      !paymentInfo.expiryMonth || !paymentInfo.expiryYear || !paymentInfo.cvv
+      !paymentInfo.address ||
+      !paymentInfo.city ||
+      !paymentInfo.state ||
+      !paymentInfo.zipCode ||
+      !paymentInfo.nameOnCard ||
+      !paymentInfo.cardNumber ||
+      !paymentInfo.expiryMonth ||
+      !paymentInfo.expiryYear ||
+      !paymentInfo.cvv
     ) {
       alert("Please fill in all required fields.");
       return;
@@ -104,7 +124,9 @@ const PaymentForm = () => {
   };
 
   const handleDeleteBilling = async () => {
-    const confirmation = window.confirm("Are you sure you want to delete your billing details?");
+    const confirmation = window.confirm(
+      "Are you sure you want to delete your billing details?"
+    );
     if (confirmation) {
       try {
         const response = await fetch(`/api/billing?userId=${userId}`, {
@@ -161,7 +183,11 @@ const PaymentForm = () => {
 
           <div className={styles.billingAddress}>
             <h2>Billing Address</h2>
-            <select name="country" value={paymentInfo.country} onChange={handleChange}>
+            <select
+              name="country"
+              value={paymentInfo.country}
+              onChange={handleChange}
+            >
               <option>Country</option>
               <option>United States</option>
               <option>Canada</option>
@@ -215,16 +241,28 @@ const PaymentForm = () => {
             placeholder="Card Number"
           />
           <div className={styles.expiryCvv}>
-            <select name="expiryMonth" value={paymentInfo.expiryMonth} onChange={handleChange}>
+            <select
+              name="expiryMonth"
+              value={paymentInfo.expiryMonth}
+              onChange={handleChange}
+            >
               <option>Month</option>
               {months.map((month, index) => (
-                <option key={index} value={month}>{month}</option>
+                <option key={index} value={month}>
+                  {month}
+                </option>
               ))}
             </select>
-            <select name="expiryYear" value={paymentInfo.expiryYear} onChange={handleChange}>
+            <select
+              name="expiryYear"
+              value={paymentInfo.expiryYear}
+              onChange={handleChange}
+            >
               <option>Year</option>
               {years.map((year, index) => (
-                <option key={index} value={year}>{year}</option>
+                <option key={index} value={year}>
+                  {year}
+                </option>
               ))}
             </select>
             <input
@@ -245,9 +283,14 @@ const PaymentForm = () => {
         <div className={styles.billingListContainer}>
           <div className={styles.billingInfo}>
             <h3>Saved Billing Info</h3>
-            <p>{`${storedBillingInfo.nameOnCard} - ${storedBillingInfo.cardNumber.slice(-4)}`}</p>
-            <button className={styles.deleteButton} onClick={handleDeleteBilling}>
-              <img src="/images/delete-icon.png" alt="Delete" />
+            <p>{`${
+              storedBillingInfo.nameOnCard
+            } - ${storedBillingInfo.cardNumber.slice(-4)}`}</p>
+            <button
+              className={styles.deleteButton}
+              onClick={handleDeleteBilling}
+            >
+              {/* <img src="/images/delete-icon.png" alt="Delete" /> */}
               Delete Billing Info
             </button>
           </div>

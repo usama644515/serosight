@@ -79,7 +79,9 @@ const TestSelection = () => {
   return (
     <div className={styles.container}>
       {isLoading ? (
-        <div className={styles.loader}>Loading tests...</div>
+        <div className={styles.shimmerContainer}>
+          
+        </div>
       ) : (
         <>
           {/* Sidebar */}
@@ -147,36 +149,34 @@ const TestSelection = () => {
                 </div>
                 <div className={styles.bundleSection}>
                   <div className={styles.bundleOptions}>
-                    {[
-                      "Single Test",
-                      "Two Tests",
-                      "Subscription",
-                    ].map((bundle) => (
-                      <label
-                        key={bundle}
-                        className={`${styles.bundleOption} ${
-                          selectedBundle === bundle ? styles.selected : ""
-                        }`}
-                      >
-                        <img
-                          src={`/images/${bundle
-                            .toLowerCase()
-                            .replace(" ", "-")}.png`}
-                          alt={bundle}
-                          className={styles.bundleImage}
-                        />
-                        <div className={styles.bundleText}>
-                          <input
-                            type="checkbox"
-                            value={bundle}
-                            checked={selectedBundle === bundle}
-                            onChange={() => handleBundleChange(bundle)}
-                            className={styles.radio}
-                          />{" "}
-                          {bundle}
-                        </div>
-                      </label>
-                    ))}
+                    {["Single Test", "Two Tests", "Subscription"].map(
+                      (bundle) => (
+                        <label
+                          key={bundle}
+                          className={`${styles.bundleOption} ${
+                            selectedBundle === bundle ? styles.selected : ""
+                          }`}
+                        >
+                          <img
+                            src={`/images/${bundle
+                              .toLowerCase()
+                              .replace(" ", "-")}.png`}
+                            alt={bundle}
+                            className={styles.bundleImage}
+                          />
+                          <div className={styles.bundleText}>
+                            <input
+                              type="checkbox"
+                              value={bundle}
+                              checked={selectedBundle === bundle}
+                              onChange={() => handleBundleChange(bundle)}
+                              className={styles.radio}
+                            />{" "}
+                            {bundle}
+                          </div>
+                        </label>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -185,7 +185,10 @@ const TestSelection = () => {
             {/* Slider Navigation */}
             {selectedTests.length > 1 && (
               <div className={styles.sliderNavigation}>
-                <button onClick={goToPreviousTest} className={styles.navButton}>
+                <button
+                  onClick={goToPreviousTest}
+                  className={styles.navButton}
+                >
                   &#8592;
                 </button>
                 <div className={styles.dots}>

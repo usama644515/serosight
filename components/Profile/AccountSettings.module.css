@@ -165,3 +165,23 @@
     font-size: 0.9rem;
   }
 }
+
+
+.shimmerContainer {
+  height: 100vh;
+  width: 100%;
+  margin: 0 auto;
+  background: linear-gradient(135deg, #d2d6fa, #a7aff5,  #a1a9f2);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 30px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
