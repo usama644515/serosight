@@ -75,7 +75,7 @@ export default function AccountSettings() {
             </h2>
             <p className={styles.email}>{user.email}</p>
           </div>
-          <div className={styles.avatar}></div>
+          <div className={styles.avatar}><img src="/images/user-icon.png" alt="" /></div>
         </div>
         <div className={styles.info}>
           <div className={styles.infoItem}>

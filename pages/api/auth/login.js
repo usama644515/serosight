@@ -26,14 +26,14 @@ export default async function handler(req, res) {
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
-    
 
     // Update user login details
     user.lastLogin = new Date();
     user.numberOfLogins = (user.numberOfLogins || 0) + 1;
     await user.save();
 
-    res.status(200).json({ message: "Login successful", token });
+    // Return the userId along with the token
+    res.status(200).json({ message: "Login successful", token, userId: user._id });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }

@@ -6,12 +6,11 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const SignUpModal = ({ isOpen, onRequestClose }) => {
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const togglePassword = () => setShowPassword(!showPassword);
@@ -21,20 +20,24 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
     setLoading(true);
 
     try {
-      // const response = await axios.post("http://localhost:5001/api/signup", {
-      const response = await axios.post("/api/auth/signup", {
-        username: fullName,
+      const username = `${firstName.toLowerCase()}${lastName.toLowerCase()}`; // Convert first name and last name to lowercase and concatenate
+      const requestData = {
+        username,
         email,
         password,
-      });
+        firstName,
+        lastName,
+      };
+
+      const response = await axios.post("/api/auth/signup", requestData);
 
       if (response.status === 201) {
         toast.success("Account created successfully!");
-        setFullName("");
+        // Clear form fields
+        setFirstName("");
+        setLastName("");
         setEmail("");
-        setPhoneNumber("");
         setPassword("");
-        setKeepMeLoggedIn(false);
         onRequestClose(); // Close modal on successful sign-up
       }
     } catch (error) {
@@ -68,14 +71,28 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
             <h2 className={styles.modalTitle}>Create Account</h2>
             <form onSubmit={handleSubmit}>
               <div className={styles.inputGroup}>
-                <label htmlFor="fullName">Name</label>
+                <label htmlFor="firstName">First Name</label>
                 <div className={styles.fieldsWrapper}>
                   <input
-                    id="fullName"
+                    id="firstName"
                     type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="Enter your name"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="Enter your first name"
+                    required
+                    className={styles.inputField}
+                  />
+                </div>
+              </div>
+              <div className={styles.inputGroup}>
+                <label htmlFor="lastName">Last Name</label>
+                <div className={styles.fieldsWrapper}>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Enter your last name"
                     required
                     className={styles.inputField}
                   />
@@ -95,20 +112,6 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
                   />
                 </div>
               </div>
-              {/* <div className={styles.inputGroup}>
-                <label htmlFor="phoneNumber">Phone Number</label>
-                <div className={styles.fieldsWrapper}>
-                  <input
-                    id="phoneNumber"
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    placeholder="Enter your phone number"
-                    required
-                    className={styles.inputField}
-                  />
-                </div>
-              </div> */}
               <div className={styles.inputGroup}>
                 <label htmlFor="password">Password</label>
                 <div className={styles.passwordWrapper}>
@@ -130,15 +133,6 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
                   </button>
                 </div>
               </div>
-              {/* <div className={styles.checkboxGroup}>
-                <input
-                  id="keepMeLoggedIn"
-                  type="checkbox"
-                  checked={keepMeLoggedIn}
-                  onChange={() => setKeepMeLoggedIn(!keepMeLoggedIn)}
-                />
-                <label htmlFor="keepMeLoggedIn">Keep me logged in</label>
-              </div> */}
               <button type="submit" className={styles.loginBtn} disabled={loading}>
                 {loading ? (
                   <div className={styles.spinner}></div> // Circular progress loader

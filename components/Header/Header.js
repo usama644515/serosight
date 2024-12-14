@@ -4,10 +4,12 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import SignInModal from "../Modals/SignInModal";
 import LogoutModal from "../Modals/LogoutModal";
+import { useRouter } from "next/router";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import toast CSS
 
 const Header = () => {
+   const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("/");
   const [isModalOpen, setIsModalOpen] = useState(false); // Sign-In Modal state
@@ -42,6 +44,7 @@ const Header = () => {
       position: "top-right", // Use a string for the position
       autoClose: 3000,
     });
+    router.push("/");
   };
 
   const closeLogoutModal = () => {

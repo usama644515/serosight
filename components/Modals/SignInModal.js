@@ -24,18 +24,18 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
     setLoading(true);
 
     try {
-      // const response = await axios.post("http://localhost:5001/api/login", {
-      const response = await axios.post("api/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         email,
         password,
       });
 
       if (response.status === 200) {
-        const { token } = response.data;
+        const { token, userId } = response.data;
 
-        // Store token in local storage
+        // Store token and userId in local storage
         localStorage.setItem("token", token);
-        localStorage.setItem("email", email); // Store email
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("email", email); // Optionally store email
 
         // Show success toast
         toast.success("Login successful!");
@@ -66,7 +66,6 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
     setForgotPasswordLoading(true);
 
     try {
-      // const response = await axios.post("http://localhost:5001/api/forgot-password", {
       const response = await axios.post("/api/auth/forgot-password", {
         email: forgotPasswordEmail,
       });
