@@ -1,8 +1,9 @@
+/* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from "react";
 import styles from "./TestSelection.module.css";
 import axios from "axios";
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css'; // Import Toast styles
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css"; // Import Toast styles
 
 const TestSelection = () => {
   const scrollToBundleSection = () => {
@@ -29,16 +30,24 @@ const TestSelection = () => {
       setIsLoading(true);
       try {
         const response = await axios.get("/api/tests");
-        const tests = response.data.reduce((acc, test) => {
-          acc[test.name] = {
-            description: test.description,
-            price: `$${test.price}`,
-          };
-          return acc;
-        }, {});
-        setTestDetails(tests);
+        if (response?.data) {
+          const tests = response.data.reduce((acc, test) => {
+            acc[test.name] = {
+              description: test.description,
+              price: `${test.price}`,
+            };
+            return acc;
+          }, {});
+          setTestDetails(tests);
+        } else {
+          console.error("Unexpected response structure:", response);
+        }
       } catch (error) {
         console.error("Error fetching test details:", error);
+        toast.error("Failed to fetch test details. Please try again.", {
+          position: "bottom-right",
+          autoClose: 5000,
+        });
       } finally {
         setIsLoading(false);
       }
@@ -79,33 +88,47 @@ const TestSelection = () => {
 
   // Handle adding to cart
   const handleAddToCart = async () => {
-    // Check if user is logged in
-    const userId = localStorage.getItem("userId");
+    const userId = localStorage.getItem("userId"); // Ensure user is logged in
     if (!userId) {
-      toast.warning('Please log in first!', {
+      toast.warning("Please log in first!", {
         position: "bottom-right",
         autoClose: 5000,
       });
       return;
     }
 
-    if (currentTest) {
+    if (selectedTests.length > 0) {
       try {
+        // Prepare the tests array with required data
+        const testsToAdd = selectedTests.map((test) => ({
+          testName: test,
+          price: testDetails[test]?.price,
+        }));
+        console.log("Tests to Add:", testsToAdd);
         const response = await axios.post("/api/cart", {
-          userId: userId, // Get the user ID from localStorage
-          testName: currentTest,
-          price: testDetails[currentTest].price,
+          userId,
+          bundleName: selectedBundle, // Send the selected bundle name
+          items: testsToAdd, // Send the array of tests
         });
-        
-        if (response.status === 200) {
-          toast.success('Added to Cart!', {
+
+        if (
+          response.status === 200 &&
+          response.data.message === "Added to Cart"
+        ) {
+          toast.success("Added to Cart!", {
+            position: "bottom-right",
+            autoClose: 5000,
+          });
+        } else {
+          console.error("Unexpected response from cart API:", response);
+          toast.error("Failed to add to Cart. Please try again.", {
             position: "bottom-right",
             autoClose: 5000,
           });
         }
       } catch (error) {
-        console.error('Error adding to cart:', error);
-        toast.error('Failed to add to Cart', {
+        console.error("Error adding to cart:", error);
+        toast.error("Failed to add to Cart. Please try again.", {
           position: "bottom-right",
           autoClose: 5000,
         });
@@ -165,7 +188,7 @@ const TestSelection = () => {
                     </p>
                     <div className={styles.priceandcart}>
                       <p className={styles.cardPrice}>
-                        {testDetails[currentTest].price}
+                        ${testDetails[currentTest].price}
                       </p>
                       <button
                         className={styles.addToCart}
@@ -226,10 +249,7 @@ const TestSelection = () => {
             {/* Slider Navigation */}
             {selectedTests.length > 1 && (
               <div className={styles.sliderNavigation}>
-                <button
-                  onClick={goToPreviousTest}
-                  className={styles.navButton}
-                >
+                <button onClick={goToPreviousTest} className={styles.navButton}>
                   &#8592;
                 </button>
                 <div className={styles.dots}>
