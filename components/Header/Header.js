@@ -38,13 +38,15 @@ const Header = () => {
     setDropdownOpen(false);
     setIsLogoutModalOpen(false); // Close modal
     localStorage.removeItem("token"); // Clear token
+    localStorage.removeItem("userId"); // Clear userId
 
     // Show a success toast notification
+    router.push("/");
     toast.success("You have logged out successfully.", {
       position: "top-right", // Use a string for the position
       autoClose: 3000,
     });
-    router.push("/");
+    
   };
 
   const closeLogoutModal = () => {

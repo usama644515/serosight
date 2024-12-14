@@ -1,7 +1,8 @@
-/* eslint-disable @next/next/no-img-element */
 import React, { useState, useEffect } from "react";
 import styles from "./TestSelection.module.css";
 import axios from "axios";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; // Import Toast styles
 
 const TestSelection = () => {
   const scrollToBundleSection = () => {
@@ -76,12 +77,47 @@ const TestSelection = () => {
 
   const currentTest = selectedTests[currentIndex];
 
+  // Handle adding to cart
+  const handleAddToCart = async () => {
+    // Check if user is logged in
+    const userId = localStorage.getItem("userId");
+    if (!userId) {
+      toast.warning('Please log in first!', {
+        position: "bottom-right",
+        autoClose: 5000,
+      });
+      return;
+    }
+
+    if (currentTest) {
+      try {
+        const response = await axios.post("/api/cart", {
+          userId: userId, // Get the user ID from localStorage
+          testName: currentTest,
+          price: testDetails[currentTest].price,
+        });
+        
+        if (response.status === 200) {
+          toast.success('Added to Cart!', {
+            position: "bottom-right",
+            autoClose: 5000,
+          });
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        toast.error('Failed to add to Cart', {
+          position: "bottom-right",
+          autoClose: 5000,
+        });
+      }
+    }
+  };
+
   return (
     <div className={styles.container}>
+      <ToastContainer />
       {isLoading ? (
-        <div className={styles.shimmerContainer}>
-          
-        </div>
+        <div className={styles.shimmerContainer}></div>
       ) : (
         <>
           {/* Sidebar */}
@@ -131,7 +167,12 @@ const TestSelection = () => {
                       <p className={styles.cardPrice}>
                         {testDetails[currentTest].price}
                       </p>
-                      <button className={styles.addToCart}>Add to Cart</button>
+                      <button
+                        className={styles.addToCart}
+                        onClick={handleAddToCart}
+                      >
+                        Add to Cart
+                      </button>
                     </div>
                   </>
                 ) : (
