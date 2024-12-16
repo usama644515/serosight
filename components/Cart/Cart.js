@@ -204,7 +204,7 @@ export default function Cart() {
 
 async function getStripe() {
   if (!window.Stripe) {
-    const stripeJs = await import('https://js.stripe.com/v3/');
+    // const stripeJs = await import('https://js.stripe.com/v3/');
     return stripeJs.default(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
   }
   return window.Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
