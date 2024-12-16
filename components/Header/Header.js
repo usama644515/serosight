@@ -9,7 +9,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import toast CSS
 
 const Header = () => {
-   const router = useRouter();
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("/");
   const [isModalOpen, setIsModalOpen] = useState(false); // Sign-In Modal state
@@ -46,7 +46,6 @@ const Header = () => {
       position: "top-right", // Use a string for the position
       autoClose: 3000,
     });
-    
   };
 
   const closeLogoutModal = () => {
@@ -81,7 +80,11 @@ const Header = () => {
     if (token) {
       setIsLoggedIn(true);
       // Replace with actual data retrieval logic as needed
-      setUserProfile({ name: "John Doe", email: "john.doe@example.com", picture: "/images/user-icon.png" });
+      setUserProfile({
+        name: "John Doe",
+        email: "john.doe@example.com",
+        picture: "/images/user-icon.png",
+      });
     }
   }, []);
 
@@ -94,7 +97,11 @@ const Header = () => {
           </Link>
         </div>
         <nav>
-          <ul className={`${styles.navLinks} ${isMobileMenuOpen ? styles.active : ""}`}>
+          <ul
+            className={`${styles.navLinks} ${
+              isMobileMenuOpen ? styles.active : ""
+            }`}
+          >
             <li>
               <Link
                 href="/"
@@ -134,7 +141,9 @@ const Header = () => {
             <li>
               <Link
                 href="/immunity-guides"
-                className={activeLink === "/immunity-guides" ? styles.active : ""}
+                className={
+                  activeLink === "/immunity-guides" ? styles.active : ""
+                }
                 onClick={() => handleLinkClick("/immunity-guides")}
               >
                 Immunity Guide
@@ -195,16 +204,34 @@ const Header = () => {
             </button>
           )}
 
-          <Link href="" className={styles.cartLink}>
-            <img src="/images/cart.svg" alt="Cart" className={styles.cartIcon} />
-          </Link>
+          {isLoggedIn ? (
+            <Link href="/cart" className={styles.cartLink}>
+              <img
+                src="/images/cart.svg"
+                alt="Cart"
+                className={styles.cartIcon}
+              />
+            </Link>
+          ) : (
+            <Link onClick={openModal} href="" className={styles.cartLink}>
+              <img
+                src="/images/cart.svg"
+                alt="Cart"
+                className={styles.cartIcon}
+              />
+            </Link>
+          )}
         </div>
         <div className={styles.menuIcon} onClick={toggleMenu}>
           &#9776;
         </div>
 
         {/* Sign-In Modal */}
-        <SignInModal isOpen={isModalOpen} onRequestClose={closeModal} onLogin={handleLogin} />
+        <SignInModal
+          isOpen={isModalOpen}
+          onRequestClose={closeModal}
+          onLogin={handleLogin}
+        />
 
         {/* Logout Modal */}
         <LogoutModal

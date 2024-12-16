@@ -106,22 +106,13 @@ const TestSelection = () => {
         }));
         console.log("Tests to Add:", testsToAdd);
         const response = await axios.post("/api/cart", {
-          userId,
+          userId: userId,
           bundleName: selectedBundle, // Send the selected bundle name
           items: testsToAdd, // Send the array of tests
         });
 
-        if (
-          response.status === 200 &&
-          response.data.message === "Added to Cart"
-        ) {
+        if (response.status === 200) {
           toast.success("Added to Cart!", {
-            position: "bottom-right",
-            autoClose: 5000,
-          });
-        } else {
-          console.error("Unexpected response from cart API:", response);
-          toast.error("Failed to add to Cart. Please try again.", {
             position: "bottom-right",
             autoClose: 5000,
           });

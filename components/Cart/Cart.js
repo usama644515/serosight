@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { List, ListItem, ListItemText, ListItemAvatar, Avatar, IconButton, Button, Box, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import {
+  List,
+  ListItem,
+  ListItemText,
+  IconButton,
+  Typography,
+  Box,
+  Divider,
+  Button,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import styles from './Cart.module.css';
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
+  const [bundleName, setBundleName] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);  // For delete confirmation dialog
-  const [itemToDelete, setItemToDelete] = useState(null);  // Item to delete
+  const [totalPrice, setTotalPrice] = useState(0);
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -21,10 +31,22 @@ export default function Cart() {
     const fetchCartItems = async () => {
       try {
         const res = await fetch(`/api/cart?userId=${userId}`);
+        if (res.status === 404) {
+          // Cart is empty or does not exist
+          setCartItems([]);
+          setBundleName('');
+          setTotalPrice(0);
+          return;
+        }
         if (!res.ok) throw new Error('Failed to fetch cart');
+        console.log(res);
         const data = await res.json();
-        if (data && Array.isArray(data.items)) {
-          setCartItems(data.items);
+        if (data.cart && Array.isArray(data.cart.items)) {
+          setCartItems(data.cart.items);
+          setBundleName(data.cart.bundleName || 'Default Bundle');
+          setTotalPrice(
+            data.cart.items.reduce((sum, item) => sum + parseFloat(item.price || 0), 0)
+          );
         } else {
           throw new Error('Invalid data format');
         }
@@ -38,35 +60,24 @@ export default function Cart() {
     fetchCartItems();
   }, []);
 
-  const updateQuantity = async (id, newQuantity) => {
-    if (newQuantity < 1) return;
-
+  const removeFromCart = async (itemIndex) => {
     try {
-      const res = await fetch(`/api/cart/update`, {
-        method: 'PUT',
-        body: JSON.stringify({ id, quantity: newQuantity }),
+      const userId = localStorage.getItem('userId');
+      const updatedItems = cartItems.filter((_, index) => index !== itemIndex);
+
+      const res = await fetch(`/api/cart`, {
+        method: 'POST',
+        body: JSON.stringify({
+          userId,
+          bundleName,
+          items: updatedItems,
+        }),
         headers: { 'Content-Type': 'application/json' },
       });
-      if (res.ok) {
-        setCartItems(cartItems.map(item => item.id === id ? { ...item, quantity: newQuantity } : item));
-      } else {
-        throw new Error('Failed to update item quantity');
-      }
-    } catch (err) {
-      setError(err.message);
-    }
-  };
 
-  const removeFromCart = async (id) => {
-    try {
-      const res = await fetch(`/api/cart/remove`, {
-        method: 'DELETE',
-        body: JSON.stringify({ id }),
-        headers: { 'Content-Type': 'application/json' },
-      });
       if (res.ok) {
-        setCartItems(cartItems.filter(item => item.id !== id));
-        setDialogOpen(false);  // Close dialog after delete
+        setCartItems(updatedItems);
+        setTotalPrice(updatedItems.reduce((sum, item) => sum + parseFloat(item.price || 0), 0));
       } else {
         throw new Error('Failed to remove item');
       }
@@ -75,8 +86,24 @@ export default function Cart() {
     }
   };
 
-  const handleCheckout = () => {
-    // Checkout logic goes here
+  const deleteBundle = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      const res = await fetch(`/api/cart?userId=${userId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (res.ok) {
+        setCartItems([]);
+        setBundleName('');
+        setTotalPrice(0);
+      } else {
+        throw new Error('Failed to delete bundle');
+      }
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   if (loading) return <p className={styles.loading}>Loading cart...</p>;
@@ -84,78 +111,68 @@ export default function Cart() {
 
   return (
     <div className={styles.cartContainer}>
+      <Box className={styles.bundleHeader}>
+        <Typography variant="h4" className={styles.cartHeading}>
+          Cart
+        </Typography>
+        {cartItems.length > 0 && (
+          <IconButton
+            edge="end"
+            color="secondary"
+            onClick={deleteBundle}
+            className={styles.bundleDeleteButton}
+          >
+            <DeleteIcon />
+          </IconButton>
+        )}
+      </Box>
+
+      <Typography variant="h6" className={styles.bundleName}>
+        Bundle Name: {bundleName || 'No Bundle'}
+      </Typography>
+
       {cartItems.length === 0 ? (
         <p className={styles.emptyCart}>Your cart is empty</p>
       ) : (
-        <List className={styles.cartList}>
-          {cartItems.map((item) => (
-            <ListItem key={item.id} className={styles.cartItem}>
-              <ListItemAvatar>
-                <Avatar variant="square" alt={item.name} src={item.image} className={styles.cartImage} />
-              </ListItemAvatar>
-              <ListItemText
-                primary={item.name}
-                secondary={`Price: $${item.price} | Quantity: ${item.quantity}`}
-              />
-              <Box className={styles.actions}>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                >
-                  -
-                </Button>
-                <Button
-                  variant="outlined"
-                  size="small"
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                >
-                  +
-                </Button>
-                <IconButton
+        <>
+          <List className={styles.cartList}>
+            {cartItems.map((item, index) => (
+              <ListItem key={index} className={styles.cartItem}>
+                <ListItemText
+                  primary={<Typography className={styles.itemName}>{item.testName}</Typography>}
+                  className={styles.cartItemLeft}
+                />
+                <Typography className={styles.cartPrice}>
+                  ${parseFloat(item.price || 0).toFixed(2)}
+                </Typography>
+                {/* <IconButton
                   edge="end"
-                  color="primary"
-                  onClick={() => { setItemToDelete(item.id); setDialogOpen(true); }}
+                  color="error"
+                  onClick={() => removeFromCart(index)}
+                  className={styles.itemDeleteButton}
                 >
                   <DeleteIcon />
-                </IconButton>
-              </Box>
-            </ListItem>
-          ))}
-        </List>
-      )}
+                </IconButton> */}
+              </ListItem>
+            ))}
+          </List>
 
-      {cartItems.length > 0 && (
-        <Box className={styles.checkoutSection}>
-          <Button
-            variant="contained"
-            color="primary"
-            className={styles.checkoutButton}
-            onClick={handleCheckout}
-          >
-            Proceed to Checkout
-          </Button>
-        </Box>
-      )}
+          <Divider className={styles.divider} />
 
-      {/* Confirmation Dialog for Deleting Item */}
-      <Dialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-      >
-        <DialogTitle>Delete Item</DialogTitle>
-        <DialogContent>
-          Are you sure you want to remove this item from the cart?
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDialogOpen(false)} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={() => removeFromCart(itemToDelete)} color="secondary">
-            Confirm
-          </Button>
-        </DialogActions>
-      </Dialog>
+          <Box className={styles.totalSection}>
+            <Typography variant="h6" className={styles.totalText}>
+              Total: ${totalPrice.toFixed(2)}
+            </Typography>
+          </Box>
+
+          <Box className={styles.checkoutSection}>
+          <button className={styles.checkoutButton} >
+          Proceed to Checkout
+            </button>
+          </Box>
+          
+        </>
+      )}
     </div>
   );
 }
