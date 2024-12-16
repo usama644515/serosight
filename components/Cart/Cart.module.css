@@ -73,7 +73,26 @@
   transition: background-color 0.3s ease;
   cursor: pointer;
 }
+
 .checkoutButton:hover {
   background-color: #004aad;
   color: white;
+}
+
+.loading {
+  text-align: center;
+  font-size: 18px;
+  color: #004aad;
+}
+
+.error {
+  text-align: center;
+  font-size: 18px;
+  color: red;
+}
+
+.emptyCart {
+  text-align: center;
+  font-size: 18px;
+  color: #18206f;
 }

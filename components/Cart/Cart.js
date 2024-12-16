@@ -19,6 +19,7 @@ export default function Cart() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [paymentLoading, setPaymentLoading] = useState(false); // Payment loading state initialization
 
   useEffect(() => {
     const userId = localStorage.getItem('userId');
@@ -32,14 +33,12 @@ export default function Cart() {
       try {
         const res = await fetch(`/api/cart?userId=${userId}`);
         if (res.status === 404) {
-          // Cart is empty or does not exist
           setCartItems([]);
           setBundleName('');
           setTotalPrice(0);
           return;
         }
         if (!res.ok) throw new Error('Failed to fetch cart');
-        console.log(res);
         const data = await res.json();
         if (data.cart && Array.isArray(data.cart.items)) {
           setCartItems(data.cart.items);
@@ -106,6 +105,35 @@ export default function Cart() {
     }
   };
 
+  const handleCheckout = async () => {
+    setPaymentLoading(true); // Set loading state to true when checkout starts
+
+    try {
+      const userId = localStorage.getItem('userId');
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        body: JSON.stringify({
+          userId,
+          totalAmount: totalPrice,
+          cartItems: cartItems,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const { sessionId } = await res.json();
+
+      // Redirect to Stripe Checkout
+      const stripe = await getStripe(); // Assuming `getStripe` is your Stripe.js load function
+      stripe.redirectToCheckout({ sessionId });
+    } catch (err) {
+      setError('Failed to start payment process');
+    } finally {
+      setPaymentLoading(false); // Set loading state to false when the checkout process is complete
+    }
+  };
+
   if (loading) return <p className={styles.loading}>Loading cart...</p>;
   if (error) return <p className={styles.error}>{error}</p>;
 
@@ -145,14 +173,6 @@ export default function Cart() {
                 <Typography className={styles.cartPrice}>
                   ${parseFloat(item.price || 0).toFixed(2)}
                 </Typography>
-                {/* <IconButton
-                  edge="end"
-                  color="error"
-                  onClick={() => removeFromCart(index)}
-                  className={styles.itemDeleteButton}
-                >
-                  <DeleteIcon />
-                </IconButton> */}
               </ListItem>
             ))}
           </List>
@@ -166,13 +186,26 @@ export default function Cart() {
           </Box>
 
           <Box className={styles.checkoutSection}>
-          <button className={styles.checkoutButton} >
-          Proceed to Checkout
-            </button>
+            <Button
+              onClick={handleCheckout}
+              variant="contained"
+              color="primary"
+              className={styles.checkoutButton}
+              disabled={paymentLoading}
+            >
+              {paymentLoading ? 'Processing Payment...' : 'Proceed to Checkout'}
+            </Button>
           </Box>
-          
         </>
       )}
     </div>
   );
+}
+
+async function getStripe() {
+  if (!window.Stripe) {
+    const stripeJs = await import('https://js.stripe.com/v3/');
+    return stripeJs.default(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  }
+  return window.Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 }

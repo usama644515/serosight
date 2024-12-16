@@ -1,0 +1,249 @@
+/* Base Container */
+.container {
+    margin: 0 auto;
+  }
+  
+  .banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-image: url('../../public/images/order-banner.png');
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    padding: 30px 20px;
+    height: 50vh;
+  }
+  
+  .heading {
+    text-align: center;
+    font-size: 3.5rem;
+    color: #18206f;
+    margin-bottom: 10px;
+  }
+  
+  .backButton {
+    display: inline-block;
+    margin-bottom: 20px;
+    background: none;
+    border: none;
+    color: #004aad;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 20px 10%;
+  }
+  
+  /* New Code Starts Here */
+  .radioContainer {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 10%;
+  }
+  
+  .radioOption {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #18206f;
+  }
+  
+  .radioOption input {
+    margin-right: 10px;
+  }
+  
+  .formContainer {
+    display: flex;
+    flex-direction: column;
+    margin: 20px 10%;
+  }
+  
+  .row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .input {
+    flex: 1;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .inputFull {
+    /* width: 100%; */
+    padding: 10px;
+    margin-bottom: 15px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .buttonContainer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin: 20px 10%;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #004aad;
+    color: #fff;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .button:hover {
+    background-color: #003a8c;
+  }
+  
+  .buttonSecondary {
+    padding: 10px 20px;
+    border: 1px solid #004aad;
+    background-color: transparent;
+    color: #004aad;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .buttonSecondary:hover {
+    background-color: #004aad;
+    color: #fff;
+  }
+  
+  @media (max-width: 1024px) {
+    .banner {
+      padding: 20px 15px;
+      height: 25vh;
+    }
+  
+    .heading {
+      font-size: 2rem;
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .banner {
+      height: 20vh;
+    }
+  
+    .heading {
+      font-size: 1.8rem;
+    }
+  
+    .row {
+      flex-direction: column;
+      gap: 10px;
+    }
+  
+    .buttonContainer {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  
+    .button, .buttonSecondary {
+      width: 100%;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .heading {
+      font-size: 1.5rem;
+    }
+  }
+
+
+
+  .container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .banner {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .heading {
+    font-size: 2rem;
+    color: #004aad;
+  }
+  
+  .backButton {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #004aad;
+    cursor: pointer;
+    margin: 10px 0;
+  }
+  
+  .formContainer {
+    margin-top: 20px;
+  }
+  
+  .row {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .input,
+  .inputFull {
+    width: 100%;
+    padding: 12px;
+    margin: 5px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .inputFull {
+    width: 100%;
+  }
+  
+  .buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  
+  .button {
+    padding: 10px 20px;
+    background-color: #004aad;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .button:hover {
+    background-color: #003594;
+  }
+  
+  .savedInfo {
+    margin-top: 20px;
+    border-top: 2px solid #004aad;
+    padding-top: 20px;
+  }
+  
+  .savedInfo h2 {
+    color: #004aad;
+    font-size: 1.6rem;
+  }
+  
+  .savedDetails {
+    font-size: 1.2rem;
+    color: #333;
+  }
+  
+  

@@ -16,120 +16,119 @@
   padding: 30px 20px;
   height: 50vh;
 }
-  
-  .title {
-    text-align: center;
-    font-size: 1.8rem;
-    color: #004aad;
-    margin-bottom: 20px;
-  }
-  
-  .backButton {
-    display: inline-block;
-    margin-bottom: 20px;
-    background: none;
-    border: none;
-    color: #004aad;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
+
+.heading {
+  text-align: center;
+  font-size: 3.5rem;
+  color: #18206f;
+  margin-bottom: 10px;
+}
+
+.backButton {
+  display: inline-block;
+  margin-bottom: 20px;
+  background: none;
+  border: none;
+  color: #004aad;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.card {
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.status {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.delivered {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.ordered {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.details,
+.orderInfo {
+  font-size: 0.9rem;
+  margin: 4px 0;
+  color: #333;
+}
+
+.trackButton,
+.viewButton,
+.cancelButton {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.trackButton {
+  background-color: #004aad;
+  color: #fff;
+}
+
+.trackButton:hover {
+  background-color: #00378c;
+}
+
+.viewButton {
+  background-color: #004aad;
+  color: #fff;
+  margin-right: 10px;
+}
+
+.viewButton:hover {
+  background-color: #00378c;
+}
+
+.cancelButton {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+.cancelButton:hover {
+  background-color: #b02a37;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
   .card {
-    background: #f9f9f9;
-    border-radius: 8px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 15px;
   }
-  
-  .status {
-    font-size: 1rem;
-    margin-bottom: 8px;
+
+  .title {
+    font-size: 1.5rem;
   }
-  
-  .delivered {
-    color: #28a745;
-    font-weight: bold;
-  }
-  
-  .ordered {
-    color: #ffc107;
-    font-weight: bold;
-  }
-  
+
   .details,
   .orderInfo {
-    font-size: 0.9rem;
-    margin: 4px 0;
-    color: #333;
+    font-size: 0.8rem;
   }
-  
+
   .trackButton,
   .viewButton,
   .cancelButton {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: bold;
-    transition: background 0.3s;
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
-  
-  .trackButton {
-    background-color: #004aad;
-    color: #fff;
-  }
-  
-  .trackButton:hover {
-    background-color: #00378c;
-  }
-  
-  .viewButton {
-    background-color: #004aad;
-    color: #fff;
-    margin-right: 10px;
-  }
-  
-  .viewButton:hover {
-    background-color: #00378c;
-  }
-  
-  .cancelButton {
-    background-color: #dc3545;
-    color: #fff;
-  }
-  
-  .cancelButton:hover {
-    background-color: #b02a37;
-  }
-  
-  .actions {
-    display: flex;
-    justify-content: flex-start;
-  }
-  
-  /* Responsive Design */
-  @media (max-width: 600px) {
-    .card {
-      padding: 15px;
-    }
-  
-    .title {
-      font-size: 1.5rem;
-    }
-  
-    .details,
-    .orderInfo {
-      font-size: 0.8rem;
-    }
-  
-    .trackButton,
-    .viewButton,
-    .cancelButton {
-      font-size: 0.8rem;
-      padding: 6px 10px;
-    }
-  }
-  
+}

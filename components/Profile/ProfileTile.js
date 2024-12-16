@@ -39,7 +39,7 @@ export default function ProfileTile() {
         </div>
       </div>
 
-      <div className={styles.card}>
+      <div onClick={() => handleClick('/shipping-address')} className={styles.card}>
         <div className={styles.icon}>
           <img
             className={styles.iconImage}
@@ -62,8 +62,8 @@ export default function ProfileTile() {
           />
         </div>
         <div>
-          <h3 className={styles.title}>Activation Code</h3>
-          <p className={styles.subtitle}>Link a test kit to your account</p>
+          <h3 className={styles.title}>Subscriptions</h3>
+          <p className={styles.subtitle}>manage your subscriptions</p>
         </div>
       </div>
 
