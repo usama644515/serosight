@@ -13,6 +13,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import styles from "./Cart.module.css";
 import { toast } from "react-toastify";
+import { loadStripe } from "@stripe/stripe-js";
 
 export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
@@ -235,9 +236,5 @@ export default function Cart() {
 }
 
 async function getStripe() {
-  if (!window.Stripe) {
-    const stripeJs = await import("https://js.stripe.com/v3/");
-    return stripeJs.default(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
-  }
-  return window.Stripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+  return await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 }
