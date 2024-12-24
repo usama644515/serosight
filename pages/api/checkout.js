@@ -1,9 +1,7 @@
-// pages/api/checkout.js
 import Stripe from "stripe";
 import connectDb from "../../lib/dbConnect";
 import BillingDetails from "../../models/BillingDetails";
 import ShippingAddress from "../../models/ShippingAddress";
-import Order from "../../models/Order";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -13,7 +11,7 @@ export default async function handler(req, res) {
       await connectDb(); // Ensure DB connection
       console.log("Database connected");
 
-      const { userId, cartItems, paymentType } = req.body;
+      const { userId, cartItems } = req.body;
 
       if (!userId || !cartItems || cartItems.length === 0) {
         return res.status(400).json({ error: "Missing required fields" });
@@ -61,30 +59,6 @@ export default async function handler(req, res) {
       });
 
       console.log("Stripe session created successfully");
-
-      // Store the order in the database
-      const order = new Order({
-        userId,
-        orderStatus: "order placed",
-        paymentType: 'credit card',
-        paymentStatus: "pending",
-        orderKey: session.id, // Using Stripe session ID as a unique key
-        email: 'test@gamil.com',
-        cartItems: cartItems.map((item) => ({
-          testName: item.testName,
-          price: item.price,
-        })),
-        shippingDetails: {
-          addressLine1: shippingAddress.address,
-          city: shippingAddress.city,
-          postalCode: shippingAddress.zipCode,
-          country: shippingAddress.country,
-        },
-      });
-
-      await order.save();
-
-      console.log("Order stored in the database");
 
       return res.status(200).json({ sessionId: session.id });
     } catch (error) {

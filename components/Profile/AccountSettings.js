@@ -75,7 +75,9 @@ export default function AccountSettings() {
             </h2>
             <p className={styles.email}>{user.email}</p>
           </div>
-          <div className={styles.avatar}><img src="/images/user-icon.png" alt="" /></div>
+          <div className={styles.avatar}>
+            <img src="/images/user-icon.png" alt="" />
+          </div>
         </div>
         <div className={styles.info}>
           <div className={styles.infoItem}>
@@ -89,7 +91,7 @@ export default function AccountSettings() {
               <span>{new Date(user.dob).toLocaleDateString()}</span>
             </div>
           </div>
-          <div className={styles.infoItem}>
+          {/* <div className={styles.infoItem}>
             <img
               src="/images/weight.png"
               alt="Weight"
@@ -99,8 +101,8 @@ export default function AccountSettings() {
               <p>Weight</p>
               <span>{user.weight}</span>
             </div>
-          </div>
-          <div className={styles.infoItem}>
+          </div> */}
+          {/* <div className={styles.infoItem}>
             <img
               src="/images/height.png"
               alt="Height"
@@ -110,7 +112,7 @@ export default function AccountSettings() {
               <p>Height</p>
               <span>{user.height}</span>
             </div>
-          </div>
+          </div> */}
           <div className={styles.infoItem}>
             <img
               src="/images/gender.png"
@@ -141,6 +143,10 @@ export default function AccountSettings() {
             </div>
           </div>
         </div>
+        
+        <div className={styles.rightAligned}>
+        <button className={styles.button}>EDIT PROFILE</button>
+    </div>
       </div>
     </div>
   );

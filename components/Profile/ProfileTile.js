@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
-import styles from './ProfileTile.module.css';
-import { useRouter } from 'next/router';
+import styles from "./ProfileTile.module.css";
+import { useRouter } from "next/router";
 
 export default function ProfileTile() {
   const router = useRouter();
@@ -11,7 +11,24 @@ export default function ProfileTile() {
 
   return (
     <div className={styles.container}>
-      <div onClick={() => handleClick('/payment-method')} className={styles.card}>
+      <div onClick={() => handleClick("")} className={styles.card}>
+        <div className={styles.icon}>
+          <img
+            className={styles.iconImage}
+            src="/images/Immunization.png"
+            alt="Payment Icon"
+          />
+        </div>
+        <div>
+          <h3 className={styles.title}>Immunization History</h3>
+          <p className={styles.subtitle}>update your immunization records</p>
+        </div>
+      </div>
+
+      <div
+        onClick={() => handleClick("/payment-method")}
+        className={styles.card}
+      >
         <div className={styles.icon}>
           <img
             className={styles.iconImage}
@@ -25,7 +42,10 @@ export default function ProfileTile() {
         </div>
       </div>
 
-      <div onClick={() => handleClick('/order-history')} className={styles.card}>
+      <div
+        onClick={() => handleClick("/order-history")}
+        className={styles.card}
+      >
         <div className={styles.icon}>
           <img
             className={styles.iconImage}
@@ -39,7 +59,10 @@ export default function ProfileTile() {
         </div>
       </div>
 
-      <div onClick={() => handleClick('/shipping-address')} className={styles.card}>
+      <div
+        onClick={() => handleClick("/shipping-address")}
+        className={styles.card}
+      >
         <div className={styles.icon}>
           <img
             className={styles.iconImage}
@@ -68,20 +91,6 @@ export default function ProfileTile() {
       </div>
 
       <h1 className={styles.title2}>General Settings</h1>
-
-      <div className={styles.card}>
-        <div className={styles.icon}>
-          <img
-            className={styles.iconImage}
-            src="/images/settings.png"
-            alt="Settings Icon"
-          />
-        </div>
-        <div>
-          <h3 className={styles.title}>Profile Settings</h3>
-          <p className={styles.subtitle}>Update your profile information</p>
-        </div>
-      </div>
 
       <div className={styles.card}>
         <div className={styles.icon}>

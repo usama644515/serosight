@@ -108,6 +108,28 @@
   font-weight: bold;
 }
 
+
+.button {
+  background-color: transparent;
+  border: 1px solid #18206F; /* Blue border */
+  color: #18206F; /* Text color */
+  padding: 10px 20px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease; /* Smooth hover transition */
+  margin-top: 20px;
+}
+
+.button:hover {
+  background-color: #18206F; /* Blue background on hover */
+  color: #ffffff; /* White text on hover */
+}
+.rightAligned {
+  text-align: right; /* Align content to the right */
+}
+
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
   .container {

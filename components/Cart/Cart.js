@@ -120,6 +120,8 @@ export default function Cart() {
 
     try {
       const userId = localStorage.getItem("userId");
+      // Save cartItems in localStorage for later use
+    localStorage.setItem("cartItems", JSON.stringify(cartItems));
       const res = await fetch("/api/checkout", {
         method: "POST",
         body: JSON.stringify({
