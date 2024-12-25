@@ -8,7 +8,7 @@ import OrderHistory from '../components/Dashboard/OrderHistory';
 import AccountSettings from '../components/Dashboard/AccountSettings';
 import Bottomlines from '../components/Bottomlines';
 
-export default function About() {
+export default function Dashboard() {
   return (
     <Layout>
       <section>

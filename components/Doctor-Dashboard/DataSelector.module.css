@@ -1,0 +1,100 @@
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f6f8fe;
+    border-radius: 8px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1d267d;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+    color: #6c757d;
+    margin-bottom: 16px;
+  }
+  
+  .querySection {
+    margin-bottom: 16px;
+  }
+  
+  .searchInput {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .filterGroup {
+    margin-bottom: 16px;
+  }
+  
+  .filterLabel {
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .filterOptions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .filterButton {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    background-color: white;
+    color: #555;
+    cursor: pointer;
+  }
+  
+  .filterButton.active {
+    background-color: #004aad;
+    color: white;
+  }
+  
+  .saveSection {
+    margin-top: 16px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .saveButton {
+    background-color: #a60000;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .savedSection {
+    margin-top: 16px;
+  }
+  
+  .savedTitle {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 8px;
+  }
+  
+  .savedItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  
+  .deleteButton {
+    background: none;
+    border: none;
+    color: #d9534f;
+    cursor: pointer;
+  }
+  
