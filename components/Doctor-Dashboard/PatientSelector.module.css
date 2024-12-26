@@ -1,0 +1,191 @@
+.container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    /* background-color: #f5f7fb; */
+    height: 100vh;
+    box-sizing: border-box;
+    margin: 0px 100px;
+  }
+  
+  .title {
+    font-size: 1.5rem;
+    color: #7a85d6;
+    text-align: left;
+    margin-bottom: 20px;
+  }
+  
+  .dashboard {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media screen and (max-width: 600px) {
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr;
+      /* gap: 20px; */
+    }
+  }
+  
+  .patientSelection {
+    background: white;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 16px rgba(0, 0, 0, 0.15); /* Adding shadow */
+  }
+  .searchSection{
+    display: flex;
+    align-items: center;
+   
+  }
+  .searchSection h2 {
+    font-size: 1.1rem;
+    color: #18206F;
+    margin-right: 15px;
+    margin-top: 0px;
+    text-decoration: underline; /* Adds underline */
+  }
+  
+  
+  .input {
+    /* width: 100%; */
+    padding: 10px;
+    border: 1px solid #E9E9E9;
+    border-radius: 30px;
+    margin-bottom: 20px;
+    background-color: #E9E9E9;
+  }
+  
+  .section {
+    margin-bottom: 20px;
+  }
+  .divider{
+    border: 1px solid #D9D9D9;
+  }
+  .sectionTitle {
+    font-size: 1rem;
+    color: #18206F;
+    margin-bottom: 10px;
+  }
+  
+  .checkboxGroup {
+    display: grid;
+    row-gap: 10px;
+  }
+  
+  .checkboxContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .checkboxContainer2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 16px rgba(0, 0, 0, 0.15);
+    padding: 10px 15px;
+    border-radius: 30px;
+  }
+  
+  /* Hide the default checkbox */
+  .checkboxInput {
+    display: none;
+  }
+  
+  /* Style for the label (custom checkbox) */
+  .checkboxLabel {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    background-color: #dfdfdf;
+    border-radius: 5px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.3s, border 0.3s;
+  }
+  
+  /* Checkmark style when the checkbox is checked */
+  .checkboxInput:checked + .checkboxLabel::before {
+    content: '\2713'; /* Unicode checkmark character */
+    font-size: 16px;
+    color: #18206f; /* Set tick color */
+    position: absolute;
+    top: 2px;
+    left: 5px;
+  }
+  
+  /* Hover effect */
+  .checkboxLabel:hover {
+    background-color: #d0d0d0; /* Slight change in background color on hover */
+  }
+  
+  .checkboxText {
+    font-size: 0.9rem;
+    color: #18206F;
+  }
+  .checkboxText2 {
+    font-size: 1.1rem;
+    color: #9BA2FF;
+  }
+  
+  .pdf {
+    color: #7a85d6;
+    margin-left: 10px;
+  }
+  
+  .patientData {
+    background: white;
+    border-radius: 30px;
+    padding: 20px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 16px rgba(0, 0, 0, 0.15); /* Adding shadow */
+  }
+  
+  .list {
+    margin-bottom: 20px;
+  }
+  
+  .item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 16px rgba(0, 0, 0, 0.15);
+    padding: 10px 15px;
+    border-radius: 30px;
+  }
+  .item span{
+    color: #18206F;
+  }
+  
+  .button {
+    padding: 5px 10px;
+    border: none;
+    background-color: white;
+    color: #767575;
+    border-radius: 5px;
+    cursor: pointer;
+    font-style: italic;
+  }
+  
+
+
+  .graph {
+    position: relative;
+    /* width: 100%; */
+    max-width: 500px;
+    margin: auto;
+    background-color: #00205b;
+    border-radius: 15px;
+    padding: 20px;
+  }
+  
+  .verticalLine {
+    position: absolute;
+    top: 10%;
+    bottom: 10%;
+    left: 50%;
+    width: 2px;
+    background-color: red;
+  }
+  
