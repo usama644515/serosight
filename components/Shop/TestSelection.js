@@ -26,25 +26,34 @@ const TestSelection = () => {
   };
 
   useEffect(() => {
-    const fetchTestDetails = async () => {
+    const fetchTestAndSubscriptionDetails = async () => {
       setIsLoading(true);
       try {
-        const response = await axios.get("/api/tests");
-        if (response?.data) {
-          const tests = response.data.reduce((acc, test) => {
-            acc[test.name] = {
-              description: test.description,
-              price: `${test.price}`,
-            };
-            return acc;
-          }, {});
-          setTestDetails(tests);
-        } else {
-          console.error("Unexpected response structure:", response);
+        // Fetch test details and subscription data concurrently
+        const [testResponse, subscriptionResponse] = await Promise.all([ 
+          axios.get("/api/tests"), 
+          axios.get("/api/getSubscription?id=676d61aeff71f3d1213fe671") 
+        ]);
+
+        // Process test details
+        const tests = testResponse?.data.reduce((acc, test) => {
+          acc[test.name] = { description: test.description, price: [] };
+          return acc;
+        }, {});
+
+        // Process subscription data and update the tests with the subscription price
+        if (subscriptionResponse?.data) {
+          const subscriptionPrice = subscriptionResponse.data.price;
+          // Assuming the price is an array in the subscription document
+          Object.keys(tests).forEach((testName) => {
+            tests[testName].price = subscriptionPrice; // Use the subscription price
+          });
         }
+
+        setTestDetails(tests);
       } catch (error) {
-        console.error("Error fetching test details:", error);
-        toast.error("Failed to fetch test details. Please try again.", {
+        console.error("Error fetching test or subscription details:", error);
+        toast.error("Failed to fetch test or subscription details. Please try again.", {
           position: "bottom-right",
           autoClose: 5000,
         });
@@ -52,7 +61,8 @@ const TestSelection = () => {
         setIsLoading(false);
       }
     };
-    fetchTestDetails();
+
+    fetchTestAndSubscriptionDetails();
   }, []);
 
   const handleTestChange = (test) => {
@@ -66,7 +76,7 @@ const TestSelection = () => {
 
   const handleBundleChange = (bundle) => {
     setSelectedBundle(bundle);
-    setSelectedTests([]);
+    setSelectedTests([]); // Clear previously selected tests when bundle changes
     setCurrentIndex(0);
   };
 
@@ -78,22 +88,16 @@ const TestSelection = () => {
 
   const goToPreviousTest = () => {
     if (selectedTests.length > 1) {
-      setCurrentIndex(
-        (currentIndex - 1 + selectedTests.length) % selectedTests.length
-      );
+      setCurrentIndex((currentIndex - 1 + selectedTests.length) % selectedTests.length);
     }
   };
 
   const currentTest = selectedTests[currentIndex];
 
-  // Handle adding to cart
   const handleAddToCart = async () => {
     const userId = localStorage.getItem("userId"); // Ensure user is logged in
     if (!userId) {
-      toast.warning("Please log in first!", {
-        position: "bottom-right",
-        autoClose: 5000,
-      });
+      toast.warning("Please log in first!", { position: "bottom-right", autoClose: 5000 });
       return;
     }
 
@@ -104,11 +108,18 @@ const TestSelection = () => {
           testName: test,
           price: testDetails[test]?.price,
         }));
+
+        // Calculate the total price of the bundle (use the price of the selected bundle, not based on number of tests)
+        const bundlePrice = getPriceForCurrentBundle(selectedTests[0]);
+
         console.log("Tests to Add:", testsToAdd);
+        console.log("Bundle Price:", bundlePrice);
+
         const response = await axios.post("/api/cart", {
           userId: userId,
           bundleName: selectedBundle, // Send the selected bundle name
           items: testsToAdd, // Send the array of tests
+          bundlePrice: bundlePrice, // Send the bundle price
         });
 
         if (response.status === 200) {
@@ -127,6 +138,23 @@ const TestSelection = () => {
     }
   };
 
+  // Function to get price according to the selected bundle
+  const getPriceForCurrentBundle = (testName) => {
+    const priceArray = testDetails[testName]?.price;
+    if (!priceArray) return "N/A";
+
+    switch (selectedBundle) {
+      case "Single Test":
+        return priceArray[0] || "N/A";
+      case "Two Tests":
+        return priceArray[1] || "N/A";
+      case "Subscription":
+        return priceArray[2] || "N/A"; // Always use subscription price
+      default:
+        return "N/A";
+    }
+  };
+
   return (
     <div className={styles.container}>
       <ToastContainer />
@@ -138,16 +166,13 @@ const TestSelection = () => {
           <div className={styles.sidebar}>
             <h2 className={styles.title}>Choose your test</h2>
             <p className={styles.description}>
-              Click on a test to learn more and choose a bundle to select
-              multiple tests.
+              Click on a test to learn more and choose a bundle to select multiple tests.
             </p>
             <ul className={styles.testList}>
               {Object.keys(testDetails).map((test) => (
                 <li key={test} className={styles.testItem}>
                   <label
-                    className={`${styles.testLabel} ${
-                      selectedTests.includes(test) ? styles.selected : ""
-                    }`}
+                    className={`${styles.testLabel} ${selectedTests.includes(test) ? styles.selected : ""}`}
                   >
                     <input
                       type="checkbox"
@@ -179,7 +204,7 @@ const TestSelection = () => {
                     </p>
                     <div className={styles.priceandcart}>
                       <p className={styles.cardPrice}>
-                        ${testDetails[currentTest].price}
+                        ${getPriceForCurrentBundle(currentTest)}
                       </p>
                       <button
                         className={styles.addToCart}
@@ -204,34 +229,28 @@ const TestSelection = () => {
                 </div>
                 <div className={styles.bundleSection}>
                   <div className={styles.bundleOptions}>
-                    {["Single Test", "Two Tests", "Subscription"].map(
-                      (bundle) => (
-                        <label
-                          key={bundle}
-                          className={`${styles.bundleOption} ${
-                            selectedBundle === bundle ? styles.selected : ""
-                          }`}
-                        >
-                          <img
-                            src={`/images/${bundle
-                              .toLowerCase()
-                              .replace(" ", "-")}.png`}
-                            alt={bundle}
-                            className={styles.bundleImage}
-                          />
-                          <div className={styles.bundleText}>
-                            <input
-                              type="checkbox"
-                              value={bundle}
-                              checked={selectedBundle === bundle}
-                              onChange={() => handleBundleChange(bundle)}
-                              className={styles.radio}
-                            />{" "}
-                            {bundle}
-                          </div>
-                        </label>
-                      )
-                    )}
+                    {["Single Test", "Two Tests", "Subscription"].map((bundle) => (
+                      <label
+                        key={bundle}
+                        className={`${styles.bundleOption} ${selectedBundle === bundle ? styles.selected : ""}`}
+                      >
+                        <img
+                          src={`/images/${bundle.toLowerCase().replace(" ", "-")}.png`}
+                          alt={bundle}
+                          className={styles.bundleImage}
+                        />
+                        <div className={styles.bundleText}>
+                          <input
+                            type="checkbox"
+                            value={bundle}
+                            checked={selectedBundle === bundle}
+                            onChange={() => handleBundleChange(bundle)}
+                            className={styles.radio}
+                          />{" "}
+                          {bundle}
+                        </div>
+                      </label>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -247,9 +266,7 @@ const TestSelection = () => {
                   {selectedTests.map((_, index) => (
                     <span
                       key={index}
-                      className={`${styles.dot} ${
-                        index === currentIndex ? styles.activeDot : ""
-                      }`}
+                      className={`${styles.dot} ${index === currentIndex ? styles.activeDot : ""}`}
                       onClick={() => setCurrentIndex(index)}
                     ></span>
                   ))}

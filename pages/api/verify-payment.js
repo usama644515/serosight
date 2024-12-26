@@ -17,7 +17,7 @@ export default async function handler(req, res) {
 
       const { sessionId, userId, cartItems } = req.body;
 
-      // Check for missing required fields
+      // Validate request data
       if (!sessionId || !userId || !cartItems || cartItems.length === 0) {
         console.error('Missing required fields:', { sessionId, userId, cartItems });
         return res.status(400).json({ error: 'Missing required fields' });
@@ -42,17 +42,16 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'Missing billing or shipping details' });
       }
 
-      // Prepare order data
+      // Prepare order data without the price field
       const orderData = {
         userId,
         orderStatus: 'order placed',
         paymentType: 'credit card',
-        paymentStatus: 'completed', // Payment is successful
-        orderKey: session.id, // Unique order key from Stripe session
-        email: 'test@gmail.com',
+        paymentStatus: 'completed',
+        orderKey: session.id,
+        email: 'test@test.com',
         cartItems: cartItems.map((item) => ({
           testName: item.testName,
-          price: item.price,
         })),
         shippingDetails: {
           addressLine1: shippingAddress.address,

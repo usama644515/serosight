@@ -10,7 +10,6 @@ import {
   Button,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import ShoppingCartCheckoutIcon from "@mui/icons-material/ShoppingCartCheckout";
 import styles from "./Cart.module.css";
 import { toast } from "react-toastify";
 import { loadStripe } from "@stripe/stripe-js";
@@ -45,12 +44,7 @@ export default function Cart() {
         if (data.cart && Array.isArray(data.cart.items)) {
           setCartItems(data.cart.items);
           setBundleName(data.cart.bundleName || "Default Bundle");
-          setTotalPrice(
-            data.cart.items.reduce(
-              (sum, item) => sum + parseFloat(item.price || 0),
-              0
-            )
-          );
+          setTotalPrice(parseFloat(data.cart.bundlePrice)); // Directly using the bundle price
         } else {
           throw new Error("Invalid data format");
         }
@@ -81,12 +75,8 @@ export default function Cart() {
 
       if (res.ok) {
         setCartItems(updatedItems);
-        setTotalPrice(
-          updatedItems.reduce(
-            (sum, item) => sum + parseFloat(item.price || 0),
-            0
-          )
-        );
+        // Recalculate totalPrice based on updated cartItems if needed
+        // You can also handle total price logic here based on your requirement.
       } else {
         throw new Error("Failed to remove item");
       }
@@ -121,12 +111,13 @@ export default function Cart() {
     try {
       const userId = localStorage.getItem("userId");
       // Save cartItems in localStorage for later use
-    localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      localStorage.setItem("cartItems", JSON.stringify(cartItems));
+      
       const res = await fetch("/api/checkout", {
         method: "POST",
         body: JSON.stringify({
           userId,
-          totalAmount: totalPrice,
+          totalAmount: totalPrice, // Send totalPrice directly
           cartItems: cartItems,
         }),
         headers: {
@@ -198,16 +189,9 @@ export default function Cart() {
             {cartItems.map((item, index) => (
               <ListItem key={index} className={styles.cartItem}>
                 <ListItemText
-                  primary={
-                    <Typography className={styles.itemName}>
-                      {item.testName}
-                    </Typography>
-                  }
+                  primary={<Typography className={styles.itemName}>{item.testName}</Typography>}
                   className={styles.cartItemLeft}
                 />
-                <Typography className={styles.cartPrice}>
-                  ${parseFloat(item.price || 0).toFixed(2)}
-                </Typography>
               </ListItem>
             ))}
           </List>

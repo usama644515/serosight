@@ -7,11 +7,21 @@ connectDb();
 export default async function handler(req, res) {
   if (req.method === "POST") {
     try {
-      const { userId, bundleName, items } = req.body;
+      const { userId, bundleName, items, bundlePrice } = req.body;
 
-      if (!userId || !bundleName || !items || items.length === 0) {
+      if (
+        !userId ||
+        !bundleName ||
+        !items ||
+        items.length === 0 ||
+        !bundlePrice
+      ) {
         return res.status(400).json({ message: "Missing required fields" });
       }
+
+      // Ensure bundlePrice is a string
+      const priceString = String(bundlePrice); // Make sure the price is a string
+      console.log("Bundle Price as String:", priceString);  // Log for debugging
 
       // Check if the cart already exists for the user
       const existingCart = await Cart.findOne({ userId });
@@ -20,12 +30,14 @@ export default async function handler(req, res) {
         // Overwrite the existing cart with the new bundle and items
         existingCart.bundleName = bundleName;
         existingCart.items = items;
+        existingCart.bundlePrice = priceString; // Use the string price
         await existingCart.save();
       } else {
         // Create a new cart if none exists
         const newCart = new Cart({
           userId,
           bundleName,
+          bundlePrice: priceString, // Use the string price here
           items,
         });
         await newCart.save();
@@ -56,7 +68,7 @@ export default async function handler(req, res) {
     }
   } else if (req.method === "DELETE") {
     try {
-      const { userId } = req.query; // Use `req.query` for URL query parameters
+      const { userId } = req.query;
 
       if (!userId) {
         return res.status(400).json({ message: "User ID is required" });

@@ -11,9 +11,9 @@ export default async function handler(req, res) {
       await connectDb(); // Ensure DB connection
       console.log("Database connected");
 
-      const { userId, cartItems } = req.body;
+      const { userId, cartItems, totalAmount } = req.body;
 
-      if (!userId || !cartItems || cartItems.length === 0) {
+      if (!userId || !cartItems || cartItems.length === 0 || !totalAmount) {
         return res.status(400).json({ error: "Missing required fields" });
       }
 
@@ -29,16 +29,20 @@ export default async function handler(req, res) {
 
       console.log("Billing and Shipping address retrieved");
 
+      // Generate line items based on cartItems, using the totalAmount as the total cost
       const lineItems = cartItems.map((item) => {
-        if (!item.testName || !item.price) {
+        if (!item.testName) {
           throw new Error("Cart item is missing necessary information");
         }
+
+        // Stripe needs prices in cents, so you can calculate it as a fraction of the totalAmount
+        const itemAmount = Math.round((totalAmount / cartItems.length) * 100); // Assuming equal division of total amount
 
         return {
           price_data: {
             currency: "usd",
             product_data: { name: item.testName },
-            unit_amount: Math.round(item.price * 100),
+            unit_amount: itemAmount, // Set each item to its proportional share of the totalAmount
           },
           quantity: item.quantity || 1,
         };
@@ -46,6 +50,7 @@ export default async function handler(req, res) {
 
       console.log("Line items successfully mapped");
 
+      // Create Stripe session
       const session = await stripe.checkout.sessions.create({
         payment_method_types: ["card"],
         mode: "payment",
