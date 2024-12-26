@@ -1,100 +1,197 @@
+
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f6f8fe;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-  }
-  
-  .title {
-    font-size: 24px;
-    font-weight: bold;
-    color: #1d267d;
-  }
-  
-  .subtitle {
-    font-size: 16px;
-    color: #6c757d;
-    margin-bottom: 16px;
-  }
-  
-  .querySection {
-    margin-bottom: 16px;
-  }
-  
-  .searchInput {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .filterGroup {
-    margin-bottom: 16px;
-  }
-  
-  .filterLabel {
-    font-weight: bold;
-    margin-bottom: 8px;
-  }
-  
+  /* max-width: 900px; */
+  margin: 0 auto;
+  padding: 20px;
+  background-color:white;
+  border-radius: 30px;
+  font-family: Arial, sans-serif;
+  margin: 0px 100px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 16px rgba(0, 0, 0, 0.15); /* Adding shadow */
+}
+
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1d267d;
+  margin-left: 100px;
+
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #9BA2FF;
+  margin-bottom: 16px;
+  font-weight: bold;
+  margin-left: 100px;
+}
+
+.querySection {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.querySection img{
+  width: 40px;
+  height: 40px;
+}
+.querySection p{
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1d267d;
+  margin-left: 15px;
+}
+.divider{
+  border: 1px solid #D9D9D9;
+}
+.divider2{
+  border: 1px solid #9BA2FF;
+}
+
+.filterGroup {
+  margin-bottom: 16px;
+  display: flex;
+}
+
+.filterLabel {
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #18206F;
+  margin-right: 100px;
+}
+
+.filterOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  justify-content: center;
+  align-items: center;
+}
+.filterOptions p{
+  color: #9BA2FF;
+  font-weight: bold;
+}
+.filterButton {
+  padding: 5px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  background-color: white;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  height: 35px;
+}
+
+.filterButton.active {
+  background-color: #18206F;
+  color: white;
+}
+
+.saveSection {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.saveButton {
+  background-color: #A72608;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+}
+
+.savedSection {
+  margin-top: 16px;
+}
+
+.savedTitle {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #1d267d;
+  /* margin-left: 15px; */
+}
+
+.savedItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  justify-content: space-between;
+  border-bottom: 2px solid #D9D9D9; /* Adds a border only at the bottom */
+}
+
+.savedItem div {
+  display: flex;
+  /* border: 2px solid black; */
+  border-radius: 30px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1), 0px 4px 16px rgba(0, 0, 0, 0.15); /* Adding shadow */
+  padding: 0px 15px;
+  align-items: center;
+  gap: 20px;
+}
+.savedItem div h2{
+  color: #18206F;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.savedItem div p{
+  color: #767575;
+  font-style: italic;
+}
+
+
+.deleteButton {
+  background: none;
+  border: none;
+  color: #767575;
+  cursor: pointer;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .filterOptions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    flex-direction: column;
   }
-  
-  .filterButton {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    background-color: white;
-    color: #555;
-    cursor: pointer;
-  }
-  
-  .filterButton.active {
-    background-color: #004aad;
-    color: white;
-  }
-  
-  .saveSection {
-    margin-top: 16px;
-    display: flex;
-    justify-content: flex-end;
-  }
-  
-  .saveButton {
-    background-color: #a60000;
-    color: white;
-    padding: 10px 16px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .savedSection {
-    margin-top: 16px;
-  }
-  
-  .savedTitle {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-  }
-  
-  .savedItem {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  
-  .deleteButton {
-    background: none;
-    border: none;
-    color: #d9534f;
-    cursor: pointer;
-  }
-  
+}
+
+
+
+
+/* Hide the default checkbox */
+.checkboxInput {
+  display: none;
+}
+
+/* Style for the label (custom checkbox) */
+.checkboxLabel {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: #DFDFDF; /* Set background color */
+  border-radius: 5px; /* Border radius for rounded corners */
+  position: relative;
+  cursor: pointer;
+  transition: background-color 0.3s, border 0.3s;
+}
+
+/* Checkmark style when the checkbox is checked */
+.checkboxInput:checked + .checkboxLabel::before {
+  content: '\2713'; /* Unicode checkmark character */
+  font-size: 16px;
+  color: #18206F; /* Set tick color */
+  position: absolute;
+  top: 2px;
+  left: 5px;
+}
+
+/* Hover effect */
+.checkboxLabel:hover {
+  background-color: #D0D0D0; /* Slight change in background color on hover */
+}
+
+
