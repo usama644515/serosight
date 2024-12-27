@@ -23,7 +23,7 @@ export default async function handler(req, res) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.SECRET_KEY, {
+    const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
 
@@ -32,8 +32,13 @@ export default async function handler(req, res) {
     user.numberOfLogins = (user.numberOfLogins || 0) + 1;
     await user.save();
 
-    // Return the userId along with the token
-    res.status(200).json({ message: "Login successful", token, userId: user._id });
+    // Return the user's role along with other details
+    res.status(200).json({ 
+      message: "Login successful", 
+      token, 
+      userId: user._id, 
+      role: user.role 
+    });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });
   }

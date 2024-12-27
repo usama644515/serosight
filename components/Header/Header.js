@@ -88,6 +88,20 @@ const Header = () => {
     }
   }, []);
 
+  const handleNavigation = (e) => {
+    e.preventDefault(); // Prevent default link behavior
+    // Get the role from local storage
+    const role = localStorage.getItem("role");
+
+    if (role === "user") {
+      router.push("/dashboard"); // Redirect to the user dashboard
+    } else if (role === "doctor") {
+      router.push("/doctor-dashboard"); // Redirect to the doctor dashboard
+    } else {
+      alert("Invalid role or no role found!");
+    }
+  };
+
   return (
     <>
       <header className={styles.header}>
@@ -182,7 +196,11 @@ const Header = () => {
 
               {dropdownOpen && (
                 <div className={styles.dropdownMenu}>
-                  <Link href="/dashboard" className={styles.dropdownItem}>
+                  <Link
+                    href="#"
+                    onClick={handleNavigation}
+                    className={styles.dropdownItem}
+                  >
                     Dashboard
                   </Link>
                   <Link href="/profile" className={styles.dropdownItem}>

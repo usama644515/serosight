@@ -14,8 +14,9 @@ const userSchema = new mongoose.Schema(
     paymentInfo: { type: String, default: null },
     lastLogin: { type: Date, default: null },
     numberOfLogins: { type: Number, default: 0 },
-    resetPasswordToken: { type: String, default: null }, // Field for password reset token
-    resetPasswordExpires: { type: Date, default: null }, // Field for token expiration time
+    resetPasswordToken: { type: String, default: null },
+    resetPasswordExpires: { type: Date, default: null },
+    role: { type: String, default: "user" }, // Default role field
   },
   { collection: "Customer data table" }
 );

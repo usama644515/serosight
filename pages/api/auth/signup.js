@@ -29,6 +29,7 @@ export default async function handler(req, res) {
       password: hashedPassword,
       firstName,
       lastName,
+      role: "user", // Default role assigned
     });
 
     // Save the user to the database
@@ -39,12 +40,13 @@ export default async function handler(req, res) {
     if (error.code === 11000) {
       // Handle duplicate key errors (e.g., username or email already exists)
       return res.status(409).json({
-        message:
-          error.keyValue.username
-            ? "Username already exists"
-            : "Email already exists",
+        message: error.keyValue.username
+          ? "Username already exists"
+          : "Email already exists",
       });
     }
-    res.status(500).json({ message: "Error creating user", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error creating user", error: error.message });
   }
 }

@@ -74,10 +74,20 @@ const PaymentForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setPaymentInfo((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
+    if (name === "cardNumber") {
+      // Allow only numeric input and limit to 16 digits
+      if (/^\d{0,16}$/.test(value)) {
+        setPaymentInfo((prevState) => ({
+          ...prevState,
+          [name]: value,
+        }));
+      }
+    } else {
+      setPaymentInfo((prevState) => ({
+        ...prevState,
+        [name]: value,
+      }));
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -177,7 +187,10 @@ const PaymentForm = () => {
               <img src="/images/visa.png" alt="Visa" />
               <img src="/images/mastercard.png" alt="MasterCard" />
               <img src="/images/discover.png" alt="Discover" />
-              <img src="/images/american-express.png" alt="American Express" />
+              <img
+                src="/images/american-express.png"
+                alt="American Express"
+              />
             </div>
           </div>
 
@@ -239,6 +252,7 @@ const PaymentForm = () => {
             value={paymentInfo.cardNumber}
             onChange={handleChange}
             placeholder="Card Number"
+            maxLength={16}
           />
           <div className={styles.expiryCvv}>
             <select
@@ -283,14 +297,11 @@ const PaymentForm = () => {
         <div className={styles.billingListContainer}>
           <div className={styles.billingInfo}>
             <h3>Saved Billing Info</h3>
-            <p>{`${
-              storedBillingInfo.nameOnCard
-            } - ${storedBillingInfo.cardNumber.slice(-4)}`}</p>
+            <p>{`${storedBillingInfo.nameOnCard} - ${storedBillingInfo.cardNumber.slice(-4)}`}</p>
             <button
               className={styles.deleteButton}
               onClick={handleDeleteBilling}
             >
-              {/* <img src="/images/delete-icon.png" alt="Delete" /> */}
               Delete Billing Info
             </button>
           </div>
