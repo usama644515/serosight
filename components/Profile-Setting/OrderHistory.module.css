@@ -15,6 +15,7 @@
   overflow: hidden;
   padding: 30px 20px;
   height: 50vh;
+  margin-bottom: 100px;
 }
 
 .heading {
@@ -22,29 +23,33 @@
   font-size: 3.5rem;
   color: #18206f;
   margin-bottom: 10px;
+
 }
 
-.backButton {
-  display: inline-block;
-  margin-bottom: 20px;
-  background: none;
-  border: none;
-  color: #004aad;
-  font-size: 1rem;
-  cursor: pointer;
-}
 
 .card {
-  background: #f9f9f9;
+  background: #efeffa;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-left: 20%;
+  margin-right: 20%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .status {
-  font-size: 1rem;
+  font-size: 1.5rem;
   margin-bottom: 8px;
+  color: #98A2FF;
+  font-weight: 600;
+}
+
+.status span {
+  color: #18206F;
+  font-size: 3rem;
 }
 
 .delivered {
@@ -64,6 +69,17 @@
   color: #333;
 }
 
+.details {
+  color: #707DFF;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.orderInfo {
+  color: #18206F;
+}
+
 .trackButton,
 .viewButton,
 .cancelButton {
@@ -78,36 +94,47 @@
 }
 
 .trackButton {
-  background-color: #004aad;
-  color: #fff;
+  background-color: white;
+  color: #18206F;
+  border: 1px solid #18206F;
+  padding: 10px 30px;
+  border-radius: 5px;
 }
 
 .trackButton:hover {
-  background-color: #00378c;
+  border: 2px solid #18206F;
 }
 
 .viewButton {
-  background-color: #004aad;
-  color: #fff;
-  margin-right: 10px;
+  background-color: white;
+  color: #18206F;
+  border: 1px solid #18206F;
+  /* padding: 10px 30px; */
+  border-radius: 5px;
+  width: 150px;
 }
 
 .viewButton:hover {
-  background-color: #00378c;
+  border: 2px solid #18206F;
 }
 
 .cancelButton {
-  background-color: #dc3545;
-  color: #fff;
+  background-color: white;
+  color: #18206F;
+  border: 1px solid #18206F;
+  /* padding: 10px 30px; */
+  border-radius: 5px;
+  width: 150px;
 }
 
 .cancelButton:hover {
-  background-color: #b02a37;
+  border: 2px solid #18206F;
 }
 
 .actions {
   display: flex;
-  justify-content: flex-start;
+  /* justify-content: flex-start; */
+  flex-direction: column;
 }
 
 /* Responsive Design */
