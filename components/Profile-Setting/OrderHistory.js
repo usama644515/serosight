@@ -36,17 +36,39 @@ export default function OrderHistory() {
     fetchOrders();
   }, []);
 
+  const formatOrderKey = (orderKey) => {
+    // Mock encryption logic to convert to 10-15 character ID
+    const hash = btoa(orderKey).slice(0, 15); // Base64 encoding
+    return hash;
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { day: "numeric", month: "long", year: "numeric" };
+    return date.toLocaleDateString("en-US", options);
+  };
+
   if (!hydrated) {
     // Prevent rendering on server-side
     return null;
   }
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className={styles.shimmerContainer}>
+        <div className={styles.shimmerCard}></div>
+        <div className={styles.shimmerCard}></div>
+        <div className={styles.shimmerCard}></div>
+      </div>
+    );
   }
 
   if (!orders.length) {
-    return <div>No orders found.</div>;
+    return (
+      <div className={styles.noOrdersContainer}>
+        <h2 className={styles.noOrdersMessage}>No orders found</h2>
+      </div>
+    );
   }
 
   return (
@@ -60,15 +82,17 @@ export default function OrderHistory() {
             <p className={styles.status}>
               Order Status: <br />
               <span className={styles[order.orderStatus.toLowerCase().replace(" ", "")]}>
-                {order.orderStatus}
+                {order.orderStatus === "order placed" ? "Pending" : order.orderStatus}
               </span>
             </p>
             <p className={styles.details}>
-              Delivery: {new Date(order.orderDate).toLocaleDateString()}
+              Delivery: {formatDate(order.orderDate)}
             </p>
-            <p className={styles.orderInfo}>Order #: <strong>{order.orderKey}</strong></p>
             <p className={styles.orderInfo}>
-              Order Date: {new Date(order.orderDate).toLocaleDateString()}
+              Order #: <strong>{formatOrderKey(order.orderKey)}</strong>
+            </p>
+            <p className={styles.orderInfo}>
+              Order Date: {formatDate(order.orderDate)}
             </p>
           </div>
           <button className={styles.trackButton}>Track Parcel</button>
