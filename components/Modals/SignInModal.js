@@ -1,3 +1,4 @@
+
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import axios from "axios";
@@ -5,6 +6,7 @@ import { toast } from "react-toastify"; // Importing toast
 import "react-toastify/dist/ReactToastify.css"; // Importing toast CSS
 import styles from "./SignInModal.module.css";
 import SignUpModal from "../Modals/SignUpModal";
+import { useRouter } from "next/router";
 
 const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -12,56 +14,70 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
   const [password, setPassword] = useState("");
   const [keepMeLoggedIn, setKeepMeLoggedIn] = useState(false);
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] = useState(false);
+  const [isForgotPasswordModalOpen, setIsForgotPasswordModalOpen] =
+    useState(false);
   const [loading, setLoading] = useState(false);
   const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
   const [forgotPasswordLoading, setForgotPasswordLoading] = useState(false);
+  const router = useRouter();
 
   const togglePassword = () => setShowPassword(!showPassword);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // import { useRouter } from "next/router";
 
-    try {
-      const response = await axios.post("/api/auth/login", {
-        email,
-        password,
-      });
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
 
-      if (response.status === 200) {
-        const { token, userId, role } = response.data;
+  
 
-        // Store token and userId in local storage
-        localStorage.setItem("token", token);
-        localStorage.setItem("userId", userId);
-        localStorage.setItem("email", email); // Optionally store email
-        localStorage.setItem("role", role);
-        
+  try {
+    const response = await axios.post("/api/auth/login", {
+      email,
+      password,
+    });
 
-        // Show success toast
-        toast.success("Login successful!");
+    if (response.status === 200) {
+      const { token, userId, role } = response.data;
 
-        // Notify parent component of successful login
-        onLogin();
+      // Store token and userId in local storage
+      localStorage.setItem("token", token);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("email", email); // Optionally store email
+      localStorage.setItem("role", role);
 
-        // Clear form and close modal
-        setEmail("");
-        setPassword("");
-        setKeepMeLoggedIn(false);
-        onRequestClose();
+      // Show success toast
+      toast.success("Login successful!");
+
+      // Notify parent component of successful login
+      onLogin();
+
+      // Clear form and close modal
+      setEmail("");
+      setPassword("");
+      setKeepMeLoggedIn(false);
+      onRequestClose();
+
+      // Redirect based on role
+      if (role === "doctor") {
+        router.replace("/doctor-dashboard"); // Replace ensures no back navigation
       }
-    } catch (error) {
-      // Show error toast
-      if (error.response && error.response.data) {
-        toast.error(error.response.data.message || "Invalid credentials");
-      } else {
-        toast.error("Network error, please try again later.");
-      }
-    } finally {
-      setLoading(false);
+      //  else {
+      //   router.replace("/user-dashboard"); // Default redirection for other roles
+      // }
     }
-  };
+  } catch (error) {
+    // Show error toast
+    if (error.response && error.response.data) {
+      toast.error(error.response.data.message || "Invalid credentials");
+    } else {
+      toast.error("Network error, please try again later.");
+    }
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
@@ -156,11 +172,7 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
                   <label>Keep me logged in</label>
                 </div>
                 <button type="submit" className={styles.loginBtn}>
-                  {loading ? (
-                    <span className={styles.spinner}></span>
-                  ) : (
-                    "Login"
-                  )}
+                  {loading ? <span className={styles.spinner}></span> : "Login"}
                 </button>
               </form>
               <div className={styles.forgotPassword}>
@@ -176,7 +188,10 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
           </div>
         </div>
       </div>
-      <SignUpModal isOpen={isSignUpModalOpen} onRequestClose={closeSignUpModal} />
+      <SignUpModal
+        isOpen={isSignUpModalOpen}
+        onRequestClose={closeSignUpModal}
+      />
 
       {/* Forgot Password Modal */}
       {isForgotPasswordModalOpen && (
@@ -185,10 +200,14 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
             className={styles.modalContainer}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={`${styles.modalInner} ${styles.forgotPasswordModal}`}>
+            <div
+              className={`${styles.modalInner} ${styles.forgotPasswordModal}`}
+            >
               <h2 className={styles.modalTitle}>Forgot Password</h2>
               <form onSubmit={handleForgotPassword}>
-                <div className={`${styles.inputGroup} ${styles.forgotPasswordInput}`}>
+                <div
+                  className={`${styles.inputGroup} ${styles.forgotPasswordInput}`}
+                >
                   <label>Email</label>
                   <input
                     type="email"

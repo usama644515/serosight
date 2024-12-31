@@ -17,6 +17,7 @@ const Header = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // Logout Modal state
   const [userProfile, setUserProfile] = useState(null); // User profile data
+  const [role, setRole] = useState(null); // User role
 
   const toggleDropdown = () => {
     setDropdownOpen(!dropdownOpen);
@@ -39,6 +40,7 @@ const Header = () => {
     setIsLogoutModalOpen(false); // Close modal
     localStorage.removeItem("token"); // Clear token
     localStorage.removeItem("userId"); // Clear userId
+    localStorage.removeItem("role");
 
     // Show a success toast notification
     router.push("/");
@@ -77,8 +79,11 @@ const Header = () => {
 
     // Check if user is already logged in when the component mounts
     const token = localStorage.getItem("token");
+    const userRole = localStorage.getItem("role");
+
     if (token) {
       setIsLoggedIn(true);
+      setRole(userRole); // Set user role
       // Replace with actual data retrieval logic as needed
       setUserProfile({
         name: "John Doe",
@@ -110,70 +115,77 @@ const Header = () => {
             <img src="/images/logo.jpg" alt="Logo" className={styles.logoImg} />
           </Link>
         </div>
-        <nav>
-          <ul
-            className={`${styles.navLinks} ${
-              isMobileMenuOpen ? styles.active : ""
-            }`}
-          >
-            <li>
-              <Link
-                href="/"
-                className={activeLink === "/" ? styles.active : ""}
-                onClick={() => handleLinkClick("/")}
-              >
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/shop"
-                className={activeLink === "/shop" ? styles.active : ""}
-                onClick={() => handleLinkClick("/shop")}
-              >
-                Shop
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/about-us"
-                className={activeLink === "/about-us" ? styles.active : ""}
-                onClick={() => handleLinkClick("/about-us")}
-              >
-                About Us
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/how-it-works"
-                className={activeLink === "/how-it-works" ? styles.active : ""}
-                onClick={() => handleLinkClick("/how-it-works")}
-              >
-                How It Works
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/immunity-guides"
-                className={
-                  activeLink === "/immunity-guides" ? styles.active : ""
-                }
-                onClick={() => handleLinkClick("/immunity-guides")}
-              >
-                Immunity Guide
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/slider-imager"
-                className={activeLink === "/slider-imager" ? styles.active : ""}
-                onClick={() => handleLinkClick("/slider-imager")}
-              >
-                Slider Imager
-              </Link>
-            </li>
-          </ul>
-        </nav>
+        {role !== "doctor" && ( // Hide menus if the role is doctor
+          <nav>
+            <ul
+              className={`${styles.navLinks} ${
+                isMobileMenuOpen ? styles.active : ""
+              }`}
+            >
+              <li>
+                <Link
+                  href="/"
+                  className={activeLink === "/" ? styles.active : ""}
+                  onClick={() => handleLinkClick("/")}
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/shop"
+                  className={activeLink === "/shop" ? styles.active : ""}
+                  onClick={() => handleLinkClick("/shop")}
+                >
+                  Shop
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  href="/about-us"
+                  className={activeLink === "/about-us" ? styles.active : ""}
+                  onClick={() => handleLinkClick("/about-us")}
+                >
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/how-it-works"
+                  className={
+                    activeLink === "/how-it-works" ? styles.active : ""
+                  }
+                  onClick={() => handleLinkClick("/how-it-works")}
+                >
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/immunity-guides"
+                  className={
+                    activeLink === "/immunity-guides" ? styles.active : ""
+                  }
+                  onClick={() => handleLinkClick("/immunity-guides")}
+                >
+                  Immunity Guide
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/slider-imager"
+                  className={
+                    activeLink === "/slider-imager" ? styles.active : ""
+                  }
+                  onClick={() => handleLinkClick("/slider-imager")}
+                >
+                  Slider Imager
+                </Link>
+              </li>
+            </ul>
+          </nav>
+        )}
         <div className={styles.rightSection}>
           {isLoggedIn ? (
             <div className={styles.profileContainer}>
@@ -203,9 +215,12 @@ const Header = () => {
                   >
                     Dashboard
                   </Link>
-                  <Link href="/profile" className={styles.dropdownItem}>
-                    Profile
-                  </Link>
+                  {role === "user" && (
+                    <Link href="/profile" className={styles.dropdownItem}>
+                      Profile
+                    </Link>
+                  )}
+
                   <Link
                     href=""
                     className={styles.dropdownItem}
@@ -222,23 +237,24 @@ const Header = () => {
             </button>
           )}
 
-          {isLoggedIn ? (
-            <Link href="/cart" className={styles.cartLink}>
-              <img
-                src="/images/cart.svg"
-                alt="Cart"
-                className={styles.cartIcon}
-              />
-            </Link>
-          ) : (
-            <Link onClick={openModal} href="" className={styles.cartLink}>
-              <img
-                src="/images/cart.svg"
-                alt="Cart"
-                className={styles.cartIcon}
-              />
-            </Link>
-          )}
+          {role !== "doctor" &&
+            (isLoggedIn ? (
+              <Link href="/cart" className={styles.cartLink}>
+                <img
+                  src="/images/cart.svg"
+                  alt="Cart"
+                  className={styles.cartIcon}
+                />
+              </Link>
+            ) : (
+              <Link onClick={openModal} href="#" className={styles.cartLink}>
+                <img
+                  src="/images/cart.svg"
+                  alt="Cart"
+                  className={styles.cartIcon}
+                />
+              </Link>
+            ))}
         </div>
         <div className={styles.menuIcon} onClick={toggleMenu}>
           &#9776;
