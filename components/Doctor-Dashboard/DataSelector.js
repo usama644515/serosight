@@ -1,6 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./DataSelector.module.css";
+import axios from "axios";
 
 const DataSelector = () => {
   const [selected, setSelected] = useState({
@@ -9,6 +9,20 @@ const DataSelector = () => {
     vaccineNo: [],
     smoking: "All",
   });
+
+  const [savedDataSets, setSavedDataSets] = useState([]);
+  const [renamingId, setRenamingId] = useState(null);
+  const [renamingName, setRenamingName] = useState("");
+
+  useEffect(() => {
+    // Fetch saved datasets from the database
+    axios
+      .get("/api/datasets")
+      .then((response) => {
+        setSavedDataSets(response.data);
+      })
+      .catch((error) => console.error("Error fetching datasets:", error));
+  }, []);
 
   const handleSelect = (category, value) => {
     setSelected((prev) => {
@@ -35,42 +49,77 @@ const DataSelector = () => {
     selected[category] === "All" ||
     (Array.isArray(selected[category]) && selected[category].includes(value));
 
+  const saveDataSet = () => {
+    const newDataSet = {
+      name: "New Data Set",
+      criteria: { ...selected },
+    };
+
+    // Log the dataset before sending to ensure the criteria is an object
+    console.log("New Data Set to save:", newDataSet);
+
+    // Save dataset to the database
+    axios
+      .post("/api/datasets", newDataSet)
+      .then((response) => {
+        setSavedDataSets((prev) => [...prev, response.data]);
+      })
+      .catch((error) => {
+        console.error("Error saving dataset:", error);
+        alert("There was an error saving the dataset.");
+      });
+  };
+
+  const renameDataSet = (id, newName) => {
+    axios
+      .put(`/api/datasets/${id}`, { name: newName })  // Only passing the name to update
+      .then(() => {
+        setSavedDataSets((prev) =>
+          prev.map((dataSet) =>
+            dataSet._id === id ? { ...dataSet, name: newName } : dataSet
+          )
+        );
+        setRenamingId(null);
+      })
+      .catch((error) => console.error("Error renaming dataset:", error));
+  };
+
+  const deleteDataSet = (id) => {
+    if (window.confirm("Are you sure you want to delete this dataset?")) {
+      axios
+        .delete(`/api/datasets/${id}`)
+        .then(() => {
+          setSavedDataSets((prev) => prev.filter((dataSet) => dataSet._id !== id));
+        })
+        .catch((error) => console.error("Error deleting dataset:", error));
+    }
+  };
+
   return (
     <>
       <h1 className={styles.title}>Create comparison data.</h1>
       <p className={styles.subtitle}>Select Data Sets</p>
       <div className={styles.container}>
-        {/* Find Saved Query */}
-        <div className={styles.querySection}>
-          <img src="images/search icon.png" alt="" />
-          <p>Find Saved Query</p>
-        </div>
-        <hr className={styles.divider} />
         {/* Immunity Data */}
         <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Immunity Data</p>
           <div className={styles.filterOptions}>
-            {[
-              "All",
-              "Mono",
-              "Respiratory",
-              "Hepatitis",
-              "MMR",
-              "West Nile",
-            ].map((item) => (
-              <button
-                key={item}
-                className={`${styles.filterButton} ${
-                  isSelected("immunity", item) ? styles.active : ""
-                }`}
-                onClick={() => handleSelect("immunity", item)}
-              >
-                {item}
-              </button>
-            ))}
+            {["All", "Mono", "Respiratory", "Hepatitis", "MMR", "West Nile"].map(
+              (item) => (
+                <button
+                  key={item}
+                  className={`${styles.filterButton} ${
+                    isSelected("immunity", item) ? styles.active : ""
+                  }`}
+                  onClick={() => handleSelect("immunity", item)}
+                >
+                  {item}
+                </button>
+              )
+            )}
           </div>
         </div>
-        <hr className={styles.divider} />
+
         {/* Vaccine Status */}
         <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Vaccine Status</p>
@@ -110,7 +159,7 @@ const DataSelector = () => {
             </div>
           </div>
         </div>
-        <hr className={styles.divider} />
+
         {/* Smoking Status */}
         <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Smoking Status</p>
@@ -131,28 +180,43 @@ const DataSelector = () => {
 
         {/* Save Data Set */}
         <div className={styles.saveSection}>
-          <button className={styles.saveButton}>Save Data Set</button>
+          <button className={styles.saveButton} onClick={saveDataSet}>
+            Save Data Set
+          </button>
         </div>
-        <hr className={styles.divider2} />
+
         {/* Saved Data Sets */}
         <div className={styles.savedSection}>
           <h3 className={styles.savedTitle}>Saved Data Sets</h3>
-          {[1, 2, 3].map((_, idx) => (
-            <div key={idx} className={styles.savedItem}>
+          {savedDataSets.map((dataSet) => (
+            <div key={dataSet._id} className={styles.savedItem}>
               <div>
-                <input
-                  type="checkbox"
-                  id={`customCheckbox-${idx}`}
-                  className={styles.checkboxInput}
-                />
-                <label
-                  htmlFor={`customCheckbox-${idx}`}
-                  className={styles.checkboxLabel}
-                ></label>
-                <h2>Data Set Name</h2>
+                {renamingId === dataSet._id ? (
+                  <input
+                    className={styles.dataSetNameInput}
+                    value={renamingName}
+                    onChange={(e) => setRenamingName(e.target.value)}
+                    onBlur={() => renameDataSet(dataSet._id, renamingName)}
+                  />
+                ) : (
+                  <h2
+                    onDoubleClick={() => {
+                      setRenamingId(dataSet._id);
+                      setRenamingName(dataSet.name);
+                    }}
+                  >
+                    {dataSet.name}
+                  </h2>
+                 
+                )}
                 <p>Saved Active Data</p>
               </div>
-              <button className={styles.deleteButton}>delete</button>
+              <button
+                className={styles.deleteButton}
+                onClick={() => deleteDataSet(dataSet._id)}
+              >
+                delete
+              </button>
             </div>
           ))}
         </div>

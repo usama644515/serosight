@@ -133,7 +133,13 @@ const SignUpModal = ({ isOpen, onRequestClose }) => {
                   </button>
                 </div>
               </div>
-              <button type="submit" className={styles.loginBtn} disabled={loading}>
+              <button
+                type="submit"
+                className={`${styles.loginBtn} ${
+                  loading ? styles.loading : ""
+                }`}
+                disabled={loading}
+              >
                 {loading ? (
                   <div className={styles.spinner}></div> // Circular progress loader
                 ) : (

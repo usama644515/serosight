@@ -1,4 +1,3 @@
-
 /* eslint-disable @next/next/no-img-element */
 import { useState } from "react";
 import axios from "axios";
@@ -25,59 +24,56 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
 
   // import { useRouter } from "next/router";
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  
+    try {
+      const response = await axios.post("/api/auth/login", {
+        email,
+        password,
+      });
 
-  try {
-    const response = await axios.post("/api/auth/login", {
-      email,
-      password,
-    });
+      if (response.status === 200) {
+        const { token, userId, role } = response.data;
 
-    if (response.status === 200) {
-      const { token, userId, role } = response.data;
+        // Store token and userId in local storage
+        localStorage.setItem("token", token);
+        localStorage.setItem("userId", userId);
+        localStorage.setItem("email", email); // Optionally store email
+        localStorage.setItem("role", role);
 
-      // Store token and userId in local storage
-      localStorage.setItem("token", token);
-      localStorage.setItem("userId", userId);
-      localStorage.setItem("email", email); // Optionally store email
-      localStorage.setItem("role", role);
+        // Show success toast
+        toast.success("Login successful!");
 
-      // Show success toast
-      toast.success("Login successful!");
+        // Notify parent component of successful login
+        onLogin();
 
-      // Notify parent component of successful login
-      onLogin();
+        // Clear form and close modal
+        setEmail("");
+        setPassword("");
+        setKeepMeLoggedIn(false);
+        onRequestClose();
 
-      // Clear form and close modal
-      setEmail("");
-      setPassword("");
-      setKeepMeLoggedIn(false);
-      onRequestClose();
-
-      // Redirect based on role
-      if (role === "doctor") {
-        router.replace("/doctor-dashboard"); // Replace ensures no back navigation
+        // Redirect based on role
+        if (role === "doctor") {
+          router.replace("/doctor-dashboard"); // Replace ensures no back navigation
+        }
+        //  else {
+        //   router.replace("/user-dashboard"); // Default redirection for other roles
+        // }
       }
-      //  else {
-      //   router.replace("/user-dashboard"); // Default redirection for other roles
-      // }
+    } catch (error) {
+      // Show error toast
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message || "Invalid credentials");
+      } else {
+        toast.error("Network error, please try again later.");
+      }
+    } finally {
+      setLoading(false);
     }
-  } catch (error) {
-    // Show error toast
-    if (error.response && error.response.data) {
-      toast.error(error.response.data.message || "Invalid credentials");
-    } else {
-      toast.error("Network error, please try again later.");
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-
+  };
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
@@ -171,8 +167,13 @@ const handleSubmit = async (e) => {
                   />
                   <label>Keep me logged in</label>
                 </div>
-                <button type="submit" className={styles.loginBtn}>
-                  {loading ? <span className={styles.spinner}></span> : "Login"}
+                <button
+                  type="submit"
+                  className={`${styles.loginBtn} ${
+                    loading ? styles.loading : ""
+                  }`}
+                >
+                  {loading ? <div className={styles.spinner}></div> : "Login"}
                 </button>
               </form>
               <div className={styles.forgotPassword}>

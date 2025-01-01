@@ -11,14 +11,16 @@ export default function OrderSuccess() {
     const { session_id } = router.query;
     const cartItems = JSON.parse(localStorage.getItem("cartItems"));
     const userId = localStorage.getItem("userId");
+    const userEmail = localStorage.getItem("email"); // Get the email from localStorage
 
-    if (!session_id || !cartItems || !userId) {
-      // toast.error("Missing session or cart details");
+    if (!session_id || !cartItems || !userId || !userEmail) {
+      toast.error("Missing session or cart details");
       return;
     }
+
+    // Function to delete the cart items
     const deleteBundle = async () => {
       try {
-        const userId = localStorage.getItem("userId");
         const res = await fetch(`/api/cart?userId=${userId}`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -33,18 +35,20 @@ export default function OrderSuccess() {
         console.error(err.message);
       }
     };
+
+    // Function to verify the payment with the backend
     const verifyPayment = async () => {
       try {
         const res = await fetch(`/api/verify-payment`, {
           method: "POST",
-          body: JSON.stringify({ sessionId: session_id, userId, cartItems }),
+          body: JSON.stringify({ sessionId: session_id, userId, cartItems, email: userEmail }),
           headers: { "Content-Type": "application/json" },
         });
 
         const data = await res.json();
 
         if (res.ok && data.paymentStatus === "completed") {
-          // toast.success("Order successfully placed!");
+          toast.success("Order successfully placed!");
           deleteBundle();
           localStorage.removeItem("cartItems"); // Clear cart on success
         } else {

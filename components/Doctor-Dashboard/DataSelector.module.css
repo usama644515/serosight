@@ -135,12 +135,16 @@
 }
 .savedItem div h2{
   color: #18206F;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: bold;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .savedItem div p{
   color: #767575;
   font-style: italic;
+  font-size: 0.85rem;
+  margin-left: 50px;
 }
 
 

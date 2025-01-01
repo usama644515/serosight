@@ -246,22 +246,55 @@
   }
 
 
-  .spinner {
-    border: 3px solid white;
-    border-left-color: white;
-    border-radius: 50%;
-    width: 16px;
-    height: 16px;
-    animation: spin 0.6s linear infinite;
+  /* styles.module.css */
+
+/* The button style */
+.loginBtn {
+  width: 50%;
+  padding: 12px;
+  background-color: #A72608;
+  color: white;
+  border: none;
+  border-radius: 57px;
+  cursor: pointer;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative; /* Makes the button the reference for the spinner */
+  height: 48px; /* Set a fixed height to maintain consistency */
+}
+
+/* Spinner style */
+.spinner {
+  border: 4px solid transparent;
+  border-top: 4px solid white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: spin 1s linear infinite;
+  position: absolute;
+  visibility: hidden; /* Initially hide the spinner */
+}
+
+/* Show spinner when loading */
+.loginBtn.loading .spinner {
+  visibility: visible; /* Show the spinner when the button has the 'loading' class */
+}
+
+/* Hide the text when loading */
+.loginBtn.loading span {
+  visibility: hidden; /* Hide text when loading */
+}
+
+/* Spinner animation (rotate) */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
   }
-  
-  @keyframes spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
+  100% {
+    transform: rotate(360deg);
   }
-  
+}
+
   
