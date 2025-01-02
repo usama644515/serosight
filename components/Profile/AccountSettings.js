@@ -1,10 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useState } from "react";
 import styles from "./AccountSettings.module.css";
+import EditProfileModal from "../Modals/EditProfileModal";
 
 export default function AccountSettings() {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
 
   useEffect(() => {
     const email = localStorage.getItem("email"); // Get email from local storage
@@ -37,7 +39,8 @@ export default function AccountSettings() {
       setError("No email found in local storage");
     }
   }, []); // Only run once on mount
-
+  const openEditProfileModal = () => setIsEditProfileModalOpen(true);
+  const closeEditProfileModal = () => setIsEditProfileModalOpen(false);
   // Calculate age from birthdate
   const calculateAge = (dob) => {
     const birthDate = new Date(dob);
@@ -143,10 +146,16 @@ export default function AccountSettings() {
             </div>
           </div>
         </div>
-        
+
         <div className={styles.rightAligned}>
-        <button className={styles.button}>EDIT PROFILE</button>
-    </div>
+          <button onClick={openEditProfileModal} className={styles.button}>
+            EDIT PROFILE
+          </button>
+          <EditProfileModal
+            isOpen={isEditProfileModalOpen}
+            onRequestClose={closeEditProfileModal}
+          />
+        </div>
       </div>
     </div>
   );

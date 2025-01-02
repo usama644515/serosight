@@ -14,7 +14,7 @@ export default function OrderSuccess() {
     const userEmail = localStorage.getItem("email"); // Get the email from localStorage
 
     if (!session_id || !cartItems || !userId || !userEmail) {
-      toast.error("Missing session or cart details");
+      // toast.error("Missing session or cart details");
       return;
     }
 
