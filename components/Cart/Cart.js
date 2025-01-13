@@ -106,13 +106,14 @@ export default function Cart() {
   };
 
   const handleCheckout = async () => {
+    localStorage.setItem("bundleName", bundleName);
     setPaymentLoading(true); // Set loading state to true when checkout starts
 
     try {
       const userId = localStorage.getItem("userId");
       // Save cartItems in localStorage for later use
       localStorage.setItem("cartItems", JSON.stringify(cartItems));
-      
+
       const res = await fetch("/api/checkout", {
         method: "POST",
         body: JSON.stringify({
@@ -189,7 +190,11 @@ export default function Cart() {
             {cartItems.map((item, index) => (
               <ListItem key={index} className={styles.cartItem}>
                 <ListItemText
-                  primary={<Typography className={styles.itemName}>{item.testName}</Typography>}
+                  primary={
+                    <Typography className={styles.itemName}>
+                      {item.testName}
+                    </Typography>
+                  }
                   className={styles.cartItemLeft}
                 />
               </ListItem>

@@ -1,0 +1,282 @@
+.card {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+  font-family: Arial, sans-serif;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 300px;
+}
+
+.chart {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin-right: 20px;
+}
+
+.donut svg {
+  transform: rotate(-90deg);
+}
+
+.circularChart {
+  width: 150px;
+  height: 150px;
+}
+
+.circleBg {
+  fill: none;
+  stroke: #f4f4f4;
+  stroke-width: 4;
+}
+
+.circle {
+  fill: none;
+  stroke: #b52920;
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.text {
+  text-align: center;
+  color: #18206F;
+}
+
+.bigText {
+  font-size: 30px;
+  font-weight: bold;
+  color: #18206F;
+}
+
+.text p {
+  margin: 0;
+  font-size: 16px;
+  color: #18206F;
+}
+
+.right {
+  text-align: center;
+  flex: 1;
+  min-width: 300px;
+}
+
+.imageContainer {
+  margin-bottom: 15px;
+}
+
+.image {
+  /* width: 100px;
+  height: 100px; */
+  /* border-radius: 50%; */
+  object-fit: cover;
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); */
+}
+
+.kits {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.box {
+  width: 40px;
+  height: 30px;
+  background: #eaeaea;
+  border-radius: 4px;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.button {
+  background: #b52920;
+  color: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button:hover {
+  background: #8e2119;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .left,
+  .right {
+    text-align: center;
+    min-width: 100%;
+  }
+
+  .chart {
+    margin: 0 auto 20px;
+  }
+}
+
+
+/* No subscription state */
+.noSubscriptionCard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: white;
+}
+
+.noSubscriptionText {
+  color: #18206F;
+}
+
+.noSubscriptionText p {
+  font-size: 20px;
+  font-weight: bold;
+  color: #b52920;
+}
+
+.noSubscriptionImage {
+  width: 150px;
+  height: 150px;
+  margin: 20px 0;
+}
+
+.noSubscriptionCard .button {
+  background: #b52920;
+  color: white;
+  padding: 10px 15px;
+  font-size: 14px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.noSubscriptionCard .button:hover {
+  background: #8e2119;
+}
+
+
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 800px;
+  margin: 20px auto;
+}
+
+.left {
+  flex: 1;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.image2 {
+  width: 100px;
+  display: block;
+}
+
+.right {
+  flex: 1;
+  padding: 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.subscriptionType {
+  font-size: 14px;
+  color: #18206F;
+  text-transform: uppercase;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.description {
+  font-size: 16px;
+  color: #18206F;
+  margin-bottom: 20px;
+}
+
+.description strong {
+  color: #18206F;
+}
+
+.placeholder {
+  width: 50px;
+  height: 50px;
+  margin: 20px auto;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+}
+
+.button {
+  background-color: #b52920;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #8e2119;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .card {
+    flex-direction: column;
+  }
+
+  .left {
+    width: 100%;
+  }
+
+  .right {
+    padding: 15px;
+  }
+
+  .image {
+    width: 100%;
+    height: auto;
+  }
+}

@@ -11,14 +11,41 @@ export default function OrderSuccess() {
     const { session_id } = router.query;
     const cartItems = JSON.parse(localStorage.getItem("cartItems"));
     const userId = localStorage.getItem("userId");
-    const userEmail = localStorage.getItem("email"); // Get the email from localStorage
+    const userEmail = localStorage.getItem("email");
+    const bundleName = localStorage.getItem("bundleName");
 
-    if (!session_id || !cartItems || !userId || !userEmail) {
-      // toast.error("Missing session or cart details");
+    if (!session_id || !cartItems || !userId || !userEmail || !bundleName) {
       return;
     }
 
-    // Function to delete the cart items
+    const createSubscription = async () => {
+      try {
+        const currentDate = new Date();
+        const endDate = new Date();
+        endDate.setFullYear(currentDate.getFullYear() + 1);
+
+        const res = await fetch(`/api/subscription`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId,
+            startDate: currentDate.toISOString(),
+            endDate: endDate.toISOString(),
+            numberOfTests: cartItems.length,
+          }),
+        });
+
+        if (res.ok) {
+          console.log("Subscription created successfully");
+        } else {
+          const errorData = await res.json();
+          throw new Error(errorData.message || "Failed to create subscription");
+        }
+      } catch (err) {
+        console.error("Error creating subscription:", err.message);
+      }
+    };
+
     const deleteBundle = async () => {
       try {
         const res = await fetch(`/api/cart?userId=${userId}`, {
@@ -36,21 +63,31 @@ export default function OrderSuccess() {
       }
     };
 
-    // Function to verify the payment with the backend
     const verifyPayment = async () => {
       try {
         const res = await fetch(`/api/verify-payment`, {
           method: "POST",
-          body: JSON.stringify({ sessionId: session_id, userId, cartItems, email: userEmail }),
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId: session_id,
+            userId,
+            cartItems,
+            email: userEmail,
+          }),
         });
 
         const data = await res.json();
 
         if (res.ok && data.paymentStatus === "completed") {
           toast.success("Order successfully placed!");
+
+          if (bundleName === "Subscription") {
+            await createSubscription();
+          }
+
           deleteBundle();
-          localStorage.removeItem("cartItems"); // Clear cart on success
+          localStorage.removeItem("cartItems");
+          localStorage.removeItem("bundleName");
         } else {
           throw new Error("Payment not successful");
         }

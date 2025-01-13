@@ -30,9 +30,9 @@ const TestSelection = () => {
       setIsLoading(true);
       try {
         // Fetch test details and subscription data concurrently
-        const [testResponse, subscriptionResponse] = await Promise.all([ 
-          axios.get("/api/tests"), 
-          axios.get("/api/getSubscription?id=676d61aeff71f3d1213fe671") 
+        const [testResponse, subscriptionResponse] = await Promise.all([
+          axios.get("/api/tests"),
+          axios.get("/api/getSubscription?id=676d61aeff71f3d1213fe671")
         ]);
 
         // Process test details
@@ -98,6 +98,14 @@ const TestSelection = () => {
     const userId = localStorage.getItem("userId"); // Ensure user is logged in
     if (!userId) {
       toast.warning("Please log in first!", { position: "bottom-right", autoClose: 5000 });
+      return;
+    }
+
+    if (selectedBundle === "Two Tests" && selectedTests.length !== 2) {
+      toast.error("Please select exactly two tests for the 'Two Tests' bundle.", {
+        position: "bottom-right",
+        autoClose: 5000,
+      });
       return;
     }
 
@@ -240,6 +248,7 @@ const TestSelection = () => {
                           className={styles.bundleImage}
                         />
                         <div className={styles.bundleText}>
+
                           <input
                             type="checkbox"
                             value={bundle}

@@ -7,6 +7,7 @@ import Overview2 from "../components/Dashboard/Overview2";
 import OrderProgress from "../components/Dashboard/OrderProgress";
 import OrderProgress2 from "../components/Dashboard/OrderProgress2";
 import OrderHistory from "../components/Dashboard/OrderHistory";
+import SubscriptionCard from "../components/Dashboard/SubscriptionCard";
 import AccountSettings from "../components/Dashboard/AccountSettings";
 import Bottomlines from "../components/Bottomlines";
 import axios from "axios";
@@ -62,6 +63,7 @@ export default function Dashboard() {
         {/* Conditionally render components based on order status */}
         {orderStatus === "incomplete" ? <OrderProgress /> : <OrderProgress2 />}
         <OrderHistory />
+        <SubscriptionCard />
         <AccountSettings />
         <Bottomlines />
       </section>
