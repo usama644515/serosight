@@ -18,13 +18,19 @@
   align-items: center;
   flex: 1;
   min-width: 300px;
+  background-color: rgba(177, 177, 229, 0.2); /* Background with 50% opacity */
+  border-radius: 15px;
+  height: 220px;
+
 }
+
 
 .chart {
   position: relative;
   width: 150px;
   height: 150px;
   margin-right: 20px;
+  margin-left: 20px;
 }
 
 .donut svg {
@@ -38,7 +44,7 @@
 
 .circleBg {
   fill: none;
-  stroke: #f4f4f4;
+  stroke: #cf8f83;
   stroke-width: 4;
 }
 
@@ -250,7 +256,7 @@
   background-color: #b52920;
   color: #fff;
   border: none;
-  border-radius: 5px;
+  border-radius: 30px;
   padding: 10px 20px;
   font-size: 14px;
   cursor: pointer;
