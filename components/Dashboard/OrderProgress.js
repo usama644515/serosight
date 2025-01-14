@@ -38,14 +38,15 @@ const OrderProgress = () => {
     { id: 5, status: "delivered", label: "Delivered" },
   ];
   const stepStatuses2 = [
-    { id: 1, status: "order placed", label: "Sent to return address" },
-    { id: 2, status: "kit sent", label: "Received at lab" },
-    { id: 3, status: "kit received", label: "Testing in progress" },
-    { id: 4, status: "test completed", label: "Results Ready" },
+    { id: 6, status: "sent return", label: "Sent to return address" },
+    { id: 7, status: "received lab", label: "Received at lab" },
+    { id: 8, status: "test progress", label: "Testing in progress" },
+    { id: 9, status: "result ready", label: "Results Ready" },
   ];
 
   // Get the index of the current status
   const currentStepIndex = stepStatuses.findIndex(step => step.status === orderStatus);
+  const currentStepIndex2 = stepStatuses2.findIndex(step => step.status === orderStatus);
 
   return (
     <div className={styles.container}>
@@ -73,12 +74,12 @@ const OrderProgress = () => {
         <div className={styles.timeline}>
           {stepStatuses2.map((step, index) => (
             <div key={step.id} className={styles.stepWrapper}>
-              <div className={`${styles.step} ${index <= currentStepIndex ? styles.active : ""}`}>
+              <div className={`${styles.step} ${index <= currentStepIndex2 ? styles.active : ""}`}>
                 <div className={styles.circle}></div>
                 <p>{step.label}</p>
               </div>
               {index < stepStatuses2.length - 1 && (
-                <div className={`${styles.line} ${index < currentStepIndex ? styles.activeLine : ""}`}></div>
+                <div className={`${styles.line} ${index < currentStepIndex2 ? styles.activeLine : ""}`}></div>
               )}
             </div>
           ))}

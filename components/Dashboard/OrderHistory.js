@@ -23,7 +23,7 @@ const OrderHistory = () => {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>Order History</h1>
+        <h1 className={styles.title}>Report History</h1>
         <div className={styles.searchSection} onClick={openModal}>
           <img
             src="/images/search icon.png"
