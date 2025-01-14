@@ -3,14 +3,18 @@
 import { useEffect, useState } from "react";
 import styles from "./SubscriptionCard.module.css";
 import { useRouter } from "next/router";
+import RemainingKitModal from "../Modals/RemainingKitModal";
 
 export default function SubscriptionCard() {
   const [subscription, setSubscription] = useState(null);
   const router = useRouter();
+  const [isRemainingKitModalOpen, setIsRemainingKitModalOpen] = useState(false);
 
   const handleClick = () => {
     router.push("/shop");
   };
+  const openRemainingKitModal = () => setIsRemainingKitModalOpen(true);
+  const closeRemainingKitModal = () => setIsRemainingKitModalOpen(false);
 
   useEffect(() => {
     // Fetch the subscription data from the API
@@ -31,6 +35,13 @@ export default function SubscriptionCard() {
 
     fetchSubscription();
   }, []); // Empty array ensures this runs once when component mounts
+
+  // Format the subscription end date
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    const options = { year: 'numeric', month: 'long', day: '2-digit' };
+    return date.toLocaleDateString('en-GB', options); // Format as "02 January 2025"
+  };
 
   // Return loading if data isn't available yet
   if (!subscription) {
@@ -62,6 +73,9 @@ export default function SubscriptionCard() {
     );
   }
 
+  const remainingKits = 4 - subscription.numberOfTests;
+  const subscriptionEndDateFormatted = formatDate(subscription.endDate); // Assuming `endDate` exists
+
   return (
     <div className={styles.card}>
       <div className={styles.left}>
@@ -91,6 +105,8 @@ export default function SubscriptionCard() {
           <span>of</span>
           <span className={styles.bigText}>4</span>
           <p>kits remaining this year</p>
+          <br />
+          <p>Renew: {subscriptionEndDateFormatted}</p> {/* Display formatted date */}
         </div>
       </div>
       <div className={styles.right}>
@@ -101,7 +117,14 @@ export default function SubscriptionCard() {
             className={styles.image}
           />
         </div>
-        <button className={styles.button}>Order Remaining Kits</button>
+        <button onClick={openRemainingKitModal} className={styles.button}>
+          Order Remaining Kits
+        </button>
+        <RemainingKitModal
+          isOpen={isRemainingKitModalOpen}
+          onRequestClose={closeRemainingKitModal}
+          maxTests={remainingKits}
+        />
       </div>
     </div>
   );

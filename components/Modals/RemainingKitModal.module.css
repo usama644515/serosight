@@ -1,0 +1,159 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.modalContainer {
+    width: 30%;
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: start;
+}
+
+.modalContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar {
+    padding: 20px;
+    border-radius: 10px;
+}
+/* 
+@media (min-width: 768px) {
+    .sidebar {
+        width: 20%;
+    }
+
+    .card {
+        max-height: 80vh;
+    }
+} */
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #18206F;
+}
+
+.description {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+    color: #18206F;
+}
+
+.testList {
+    list-style: none;
+    padding: 0;
+}
+
+.testItem {
+    margin-bottom: 10px;
+}
+
+.testLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #d2d6fa, #98A2FF, #98A2FF);
+    /* Three-color gradient */
+    padding: 10px;
+    border: 2px solid transparent;
+    border-radius: 15px;
+    cursor: pointer;
+    color: #18206F;
+    transition: all 0.3s ease;
+    width: 200px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.testLabel:hover {
+    background: linear-gradient(135deg, #98A2FF, #A3B3FF, #98A2FF);
+    /* Slightly brighter gradient on hover */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+    /* More prominent shadow on hover */
+    border-color: #18206F;
+    /* Optional hover effect for border */
+}
+
+/* Hide the default square checkbox */
+.checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #004aad;
+    border-radius: 50%;
+    outline: none;
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: all 0.3s ease;
+    background-color: white;
+}
+
+/* Style when the checkbox is checked */
+.checkbox:checked {
+    background-color: #004aad;
+    border-color: #004aad;
+}
+
+.checkbox:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+.footer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .submitButton {
+    padding: 10px 20px;
+    background-color: #004aad;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+  }
+  
+  .submitButton:disabled {
+    background-color: #7d7d7d;
+    cursor: not-allowed;
+  }
+  
+  .submitButton:hover:not(:disabled) {
+    background-color: #003a80;
+  }
+  
