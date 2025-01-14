@@ -1,4 +1,3 @@
-// components/OrderProgress.js
 import { useEffect, useState } from "react";
 import styles from './OrderProgress.module.css';
 
@@ -30,6 +29,24 @@ const OrderProgress = () => {
 
   const { orderStatus, cartItems } = order;
 
+  // Define the step statuses in order
+  const stepStatuses = [
+    { id: 1, status: "order placed", label: "Order Confirmed" },
+    { id: 2, status: "kit sent", label: "Ready to be Shipped" },
+    { id: 3, status: "kit received", label: "Received at Warehouse" },
+    { id: 4, status: "test completed", label: "On the Way" },
+    { id: 5, status: "delivered", label: "Delivered" },
+  ];
+  const stepStatuses2 = [
+    { id: 1, status: "order placed", label: "Sent to return address" },
+    { id: 2, status: "kit sent", label: "Received at lab" },
+    { id: 3, status: "kit received", label: "Testing in progress" },
+    { id: 4, status: "test completed", label: "Results Ready" },
+  ];
+
+  // Get the index of the current status
+  const currentStepIndex = stepStatuses.findIndex(step => step.status === orderStatus);
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Orders In Progress</h1>
@@ -39,30 +56,32 @@ const OrderProgress = () => {
           <p className={styles.description}>This test kit will arrive in 1-2 weeks.</p>
         </div>
         <div className={styles.timeline}>
-          <div className={`${styles.step} ${orderStatus === "order placed" ? styles.active : ""}`}>
-            <div className={styles.circle}></div>
-            <p>Order Confirmed</p>
-          </div>
-          <div className={styles.line}></div>
-          <div className={`${styles.step} ${orderStatus === "kit sent" ? styles.active : ""}`}>
-            <div className={styles.circle}></div>
-            <p>Ready to be Shipped</p>
-          </div>
-          <div className={styles.line}></div>
-          <div className={`${styles.step} ${orderStatus === "kit received" ? styles.active : ""}`}>
-            <div className={styles.circle}></div>
-            <p>Received at Warehouse</p>
-          </div>
-          <div className={styles.line}></div>
-          <div className={`${styles.step} ${orderStatus === "test completed" ? styles.active : ""}`}>
-            <div className={styles.circle}></div>
-            <p>On the Way</p>
-          </div>
-          <div className={styles.line}></div>
-          <div className={`${styles.step} ${orderStatus === "test completed" ? styles.active : ""}`}>
-            <div className={styles.circle}></div>
-            <p>Delivered</p>
-          </div>
+          {stepStatuses.map((step, index) => (
+            <div key={step.id} className={styles.stepWrapper}>
+              <div className={`${styles.step} ${index <= currentStepIndex ? styles.active : ""}`}>
+                <div className={styles.circle}></div>
+                <p>{step.label}</p>
+              </div>
+              {index < stepStatuses.length - 1 && (
+                <div className={`${styles.line} ${index < currentStepIndex ? styles.activeLine : ""}`}></div>
+              )}
+            </div>
+          ))}
+        </div>
+        <br />
+        <br />
+        <div className={styles.timeline}>
+          {stepStatuses2.map((step, index) => (
+            <div key={step.id} className={styles.stepWrapper}>
+              <div className={`${styles.step} ${index <= currentStepIndex ? styles.active : ""}`}>
+                <div className={styles.circle}></div>
+                <p>{step.label}</p>
+              </div>
+              {index < stepStatuses2.length - 1 && (
+                <div className={`${styles.line} ${index < currentStepIndex ? styles.activeLine : ""}`}></div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>
