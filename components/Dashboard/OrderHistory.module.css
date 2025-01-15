@@ -129,8 +129,15 @@
   
   .bundleTitle {
     font-size: 1.2rem;
+    color: #98A2FF;
+    font-weight: 600;
+    margin-top: 0px;
+  }
+  .bundledate {
+    font-size: 0.9rem;
     color: #18206f;
     font-weight: 600;
+    margin-bottom: 0px;
   }
   
   .status {

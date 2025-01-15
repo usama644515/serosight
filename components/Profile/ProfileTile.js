@@ -76,7 +76,7 @@ export default function ProfileTile() {
         </div>
       </div>
 
-      <div className={styles.card}>
+      <div className={styles.card} onClick={() => handleClick("/subscription")}>
         <div className={styles.icon}>
           <img
             className={styles.iconImage}

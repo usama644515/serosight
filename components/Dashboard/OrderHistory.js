@@ -35,29 +35,32 @@ const OrderHistory = () => {
       </div>
       <div className={styles.timeline}>
         <div className={styles.orders}>
-          {/* Flu Bundle */}
+          {/* Respiratory Kit */}
           <div className={`${styles.card}`}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.bundleTitle}>Flu Bundle</h2>
+              <div>
+              <h2 className={styles.bundledate}>Purchased 10/29/2024</h2>
+              <h2 className={styles.bundleTitle}>Respiratory Kit</h2>
+              </div>
               <p className={styles.status}>Report in Progress...</p>
             </div>
-            <p className={styles.details}>Delivered 10/28/2024</p>
-            <p className={styles.details}>Activated 10/29/2024</p>
-            <p className={styles.details}>Tested PENDING</p>
+            <p className={styles.details}>Results PENDING</p>
           </div>
-
-          {/* STI Bundle */}
-          <div className={styles.card}>
+          {/* MMR Kit */}
+          <div className={`${styles.card}`}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.bundleTitle}>STI Bundle</h2>
+              <div>
+              <h2 className={styles.bundledate}>Purchased 10/29/2024</h2>
+              <h2 className={styles.bundleTitle}>MMR Kitt</h2>
+              </div>
               <button onClick={handleClick} className={styles.reportButton}>
                 Array Report
               </button>
             </div>
-            <p className={styles.details}>Delivered 10/28/2024</p>
-            <p className={styles.details}>Activated 10/29/2024</p>
-            <p className={styles.details}>Tested 11/12/2024</p>
+            <p className={styles.details}>Results 11/12/2024</p>
           </div>
+
+         
         </div>
       </div>
       {/* Modal for Sign In */}
