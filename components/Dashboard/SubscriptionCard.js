@@ -17,14 +17,18 @@ export default function SubscriptionCard() {
   const closeRemainingKitModal = () => setIsRemainingKitModalOpen(false);
 
   useEffect(() => {
-    // Fetch the subscription data from the API
     const fetchSubscription = async () => {
       try {
-        const response = await fetch("/api/subscription");
+        const userId = localStorage.getItem("userId"); // Retrieve userId from localStorage
+        if (!userId) {
+          console.error("No userId found in localStorage");
+          return;
+        }
+  
+        const response = await fetch(`/api/subscription?userId=${userId}`);
         if (response.ok) {
           const data = await response.json();
-          // Assuming you're fetching a single subscription, adapt if fetching multiple
-          setSubscription(data[0]); // Set the first subscription for now
+          setSubscription(data); // Set the subscription data
         } else {
           console.error("Failed to fetch subscription data");
         }
@@ -32,9 +36,10 @@ export default function SubscriptionCard() {
         console.error("Error fetching subscription:", error);
       }
     };
-
+  
     fetchSubscription();
-  }, []); // Empty array ensures this runs once when component mounts
+  }, []);
+  
 
   // Format the subscription end date
   const formatDate = (dateStr) => {
@@ -75,6 +80,8 @@ export default function SubscriptionCard() {
 
   const remainingKits = 4 - subscription.numberOfTests;
   const subscriptionEndDateFormatted = formatDate(subscription.endDate); // Assuming `endDate` exists
+  // Store in local storage
+  localStorage.setItem("subscriptionEndDateFormatted", subscriptionEndDateFormatted);
 
   return (
     <div className={styles.card}>

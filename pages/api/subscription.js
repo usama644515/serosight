@@ -8,12 +8,12 @@ export default async function handler(req, res) {
   if (req.method === "GET") {
     try {
       const { userId } = req.query;
-
+  
       // Fetch subscription for a specific user if `userId` is provided
       if (userId) {
         const subscription = await Subscription.findOne({ userId });
         if (subscription) {
-          res.status(200).json(subscription);
+          res.status(200).json(subscription); // Send the subscription data
         } else {
           res.status(404).json({ message: "Subscription not found" });
         }
@@ -25,7 +25,8 @@ export default async function handler(req, res) {
       console.error("Error fetching subscription data:", error);
       res.status(500).json({ message: "Internal server error" });
     }
-  } 
+  }
+  
   // Handle POST requests to create a new subscription
   else if (req.method === "POST") {
     const { userId, startDate, endDate, numberOfTests } = req.body;

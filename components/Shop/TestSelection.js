@@ -32,7 +32,7 @@ const TestSelection = () => {
         // Fetch test details and subscription data concurrently
         const [testResponse, subscriptionResponse] = await Promise.all([
           axios.get("/api/tests"),
-          axios.get("/api/getSubscription?id=676d61aeff71f3d1213fe671")
+          axios.get("/api/getSubscription?id=676d61aeff71f3d1213fe671"),
         ]);
 
         // Process test details
@@ -53,10 +53,13 @@ const TestSelection = () => {
         setTestDetails(tests);
       } catch (error) {
         console.error("Error fetching test or subscription details:", error);
-        toast.error("Failed to fetch test or subscription details. Please try again.", {
-          position: "bottom-right",
-          autoClose: 5000,
-        });
+        toast.error(
+          "Failed to fetch test or subscription details. Please try again.",
+          {
+            position: "bottom-right",
+            autoClose: 5000,
+          }
+        );
       } finally {
         setIsLoading(false);
       }
@@ -88,7 +91,9 @@ const TestSelection = () => {
 
   const goToPreviousTest = () => {
     if (selectedTests.length > 1) {
-      setCurrentIndex((currentIndex - 1 + selectedTests.length) % selectedTests.length);
+      setCurrentIndex(
+        (currentIndex - 1 + selectedTests.length) % selectedTests.length
+      );
     }
   };
 
@@ -97,18 +102,54 @@ const TestSelection = () => {
   const handleAddToCart = async () => {
     const userId = localStorage.getItem("userId"); // Ensure user is logged in
     if (!userId) {
-      toast.warning("Please log in first!", { position: "bottom-right", autoClose: 5000 });
-      return;
-    }
-
-    if (selectedBundle === "Two Tests" && selectedTests.length !== 2) {
-      toast.error("Please select exactly two tests for the 'Two Tests' bundle.", {
+      toast.warning("Please log in first!", {
         position: "bottom-right",
         autoClose: 5000,
       });
       return;
     }
-
+  
+    // Check for subscription if the selected bundle is "Subscription"
+    if (selectedBundle === "Subscription") {
+      try {
+        const subscriptionResponse = await axios.get(
+          `/api/subscription?userId=${userId}`
+        );
+  
+        if (subscriptionResponse.status === 200 && subscriptionResponse.data) {
+          toast.info("You already have an active subscription.", {
+            position: "bottom-right",
+            autoClose: 5000,
+          });
+          return; // Exit the function
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          console.log("No active subscription found. Proceeding to add to cart.");
+        } else {
+          console.error("Error checking subscription:", error);
+          toast.error("Failed to check subscription. Please try again.", {
+            position: "bottom-right",
+            autoClose: 5000,
+          });
+          return;
+        }
+      }
+    }
+  
+    // Check for Two Tests bundle condition
+    if (selectedBundle === "Two Tests" && selectedTests.length !== 2) {
+      toast.error(
+        "Please select exactly two tests for the 'Two Tests' bundle.",
+        {
+          position: "bottom-right",
+          autoClose: 5000,
+        }
+      );
+      return;
+    }
+  
+    // Proceed to add to cart if selected tests are valid
     if (selectedTests.length > 0) {
       try {
         // Prepare the tests array with required data
@@ -116,20 +157,20 @@ const TestSelection = () => {
           testName: test,
           price: testDetails[test]?.price,
         }));
-
+  
         // Calculate the total price of the bundle (use the price of the selected bundle, not based on number of tests)
         const bundlePrice = getPriceForCurrentBundle(selectedTests[0]);
-
+  
         console.log("Tests to Add:", testsToAdd);
         console.log("Bundle Price:", bundlePrice);
-
+  
         const response = await axios.post("/api/cart", {
           userId: userId,
           bundleName: selectedBundle, // Send the selected bundle name
           items: testsToAdd, // Send the array of tests
           bundlePrice: bundlePrice, // Send the bundle price
         });
-
+  
         if (response.status === 200) {
           toast.success("Added to Cart!", {
             position: "bottom-right",
@@ -145,6 +186,7 @@ const TestSelection = () => {
       }
     }
   };
+  
 
   // Function to get price according to the selected bundle
   const getPriceForCurrentBundle = (testName) => {
@@ -174,13 +216,16 @@ const TestSelection = () => {
           <div className={styles.sidebar}>
             <h2 className={styles.title}>Choose your test</h2>
             <p className={styles.description}>
-              Click on a test to learn more and choose a bundle to select multiple tests.
+              Click on a test to learn more and choose a bundle to select
+              multiple tests.
             </p>
             <ul className={styles.testList}>
               {Object.keys(testDetails).map((test) => (
                 <li key={test} className={styles.testItem}>
                   <label
-                    className={`${styles.testLabel} ${selectedTests.includes(test) ? styles.selected : ""}`}
+                    className={`${styles.testLabel} ${
+                      selectedTests.includes(test) ? styles.selected : ""
+                    }`}
                   >
                     <input
                       type="checkbox"
@@ -237,29 +282,34 @@ const TestSelection = () => {
                 </div>
                 <div className={styles.bundleSection}>
                   <div className={styles.bundleOptions}>
-                    {["Single Test", "Two Tests", "Subscription"].map((bundle) => (
-                      <label
-                        key={bundle}
-                        className={`${styles.bundleOption} ${selectedBundle === bundle ? styles.selected : ""}`}
-                      >
-                        <img
-                          src={`/images/${bundle.toLowerCase().replace(" ", "-")}.png`}
-                          alt={bundle}
-                          className={styles.bundleImage}
-                        />
-                        <div className={styles.bundleText}>
-
-                          <input
-                            type="checkbox"
-                            value={bundle}
-                            checked={selectedBundle === bundle}
-                            onChange={() => handleBundleChange(bundle)}
-                            className={styles.radio}
-                          />{" "}
-                          {bundle}
-                        </div>
-                      </label>
-                    ))}
+                    {["Single Test", "Two Tests", "Subscription"].map(
+                      (bundle) => (
+                        <label
+                          key={bundle}
+                          className={`${styles.bundleOption} ${
+                            selectedBundle === bundle ? styles.selected : ""
+                          }`}
+                        >
+                          <img
+                            src={`/images/${bundle
+                              .toLowerCase()
+                              .replace(" ", "-")}.png`}
+                            alt={bundle}
+                            className={styles.bundleImage}
+                          />
+                          <div className={styles.bundleText}>
+                            <input
+                              type="checkbox"
+                              value={bundle}
+                              checked={selectedBundle === bundle}
+                              onChange={() => handleBundleChange(bundle)}
+                              className={styles.radio}
+                            />{" "}
+                            {bundle}
+                          </div>
+                        </label>
+                      )
+                    )}
                   </div>
                 </div>
               </div>
@@ -275,7 +325,9 @@ const TestSelection = () => {
                   {selectedTests.map((_, index) => (
                     <span
                       key={index}
-                      className={`${styles.dot} ${index === currentIndex ? styles.activeDot : ""}`}
+                      className={`${styles.dot} ${
+                        index === currentIndex ? styles.activeDot : ""
+                      }`}
                       onClick={() => setCurrentIndex(index)}
                     ></span>
                   ))}
