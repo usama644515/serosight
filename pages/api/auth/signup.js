@@ -18,12 +18,32 @@ export default async function handler(req, res) {
   // Generate a username
   const username = `${firstName}${lastName}`.toLowerCase().replace(/\s+/g, "");
 
+  // Function to generate a unique 5-digit user ID
+  const generateUniqueUserId = async () => {
+    let userId;
+    let isUnique = false;
+
+    while (!isUnique) {
+      userId = Math.floor(10000 + Math.random() * 90000).toString(); // Generate a 5-digit number
+      const existingUser = await User.findOne({ userId });
+      if (!existingUser) {
+        isUnique = true;
+      }
+    }
+
+    return userId;
+  };
+
   try {
+    // Generate a unique user ID
+    const userId = await generateUniqueUserId();
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Create a new user instance
     const user = new User({
+      userId, // Store the unique user ID
       username,
       email,
       password: hashedPassword,
@@ -33,16 +53,21 @@ export default async function handler(req, res) {
     });
 
     // Save the user to the database
-    await user.save();
+    const savedUser = await user.save();
 
-    res.status(201).json({ message: "User created successfully!" });
+    res.status(201).json({
+      message: "User created successfully!",
+      userId: savedUser.userId, // Return the generated userId
+    });
   } catch (error) {
     if (error.code === 11000) {
-      // Handle duplicate key errors (e.g., username or email already exists)
+      // Handle duplicate key errors (e.g., username, email, or userId already exists)
       return res.status(409).json({
         message: error.keyValue.username
           ? "Username already exists"
-          : "Email already exists",
+          : error.keyValue.email
+          ? "Email already exists"
+          : "User ID already exists",
       });
     }
     res

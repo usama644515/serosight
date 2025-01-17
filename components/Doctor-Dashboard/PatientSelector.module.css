@@ -46,6 +46,9 @@
     margin-top: 0px;
     text-decoration: underline; /* Adds underline */
   }
+  .selectedUser p{
+    color: #18206F;
+  }
   
   
   .input {
@@ -187,5 +190,27 @@
     left: 50%;
     width: 2px;
     background-color: red;
+  }
+  
+
+  .dropdown {
+    margin-top: 8px;
+    background-color: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    max-height: 150px;
+    overflow-y: auto;
+    position: absolute;
+    /* width: 100%; */
+    z-index: 1000;
+  }
+  
+  .dropdownItem {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .dropdownItem:hover {
+    background-color: #f0f0f0;
   }
   

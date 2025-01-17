@@ -1,10 +1,12 @@
+import React, { useState, useEffect } from "react";
 import styles from "./PatientSelector.module.css";
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale, // Register this for the x-axis
-  LinearScale,   // For the y-axis
-  PointElement,  // For line points
-  LineElement,   // For the line itself
+  LinearScale, // For the y-axis
+  PointElement, // For line points
+  LineElement, // For the line itself
   Title,
   Tooltip,
   Legend,
@@ -78,6 +80,50 @@ export default function PatientSelector() {
     },
   };
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  // Use useEffect to load data from localStorage only on the client-side
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedUser = localStorage.getItem("selectedUser");
+      if (storedUser) {
+        setSelectedUser(JSON.parse(storedUser));
+      }
+    }
+  }, []);
+
+  const handleSearch = async (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.trim()) {
+      try {
+        const response = await axios.get(`/api/searchUsers?query=${value}`);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
+  const handleUserClick = (user) => {
+    // Store selected user in state and localStorage
+    const selected = {
+      name: `${user.firstName} ${user.lastName}`,
+      userId: user.userId,
+    };
+    setSelectedUser(selected);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("selectedUser", JSON.stringify(selected));
+    }
+    setSearchResults([]); // Clear the dropdown
+    setSearchTerm(""); // Optional: Clear the search input
+  };
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Select Patient</h1>
@@ -86,8 +132,38 @@ export default function PatientSelector() {
         <div className={styles.patientSelection}>
           <div className={styles.searchSection}>
             <h2>Patient Selection</h2>
-            <input className={styles.input} placeholder="Input patient code" />
+            <input
+              className={styles.input}
+              placeholder="Input patient code or name"
+              value={searchTerm}
+              onChange={handleSearch}
+            />
+            {searchResults.length > 0 && (
+              <ul className={styles.dropdown}>
+                {searchResults.map((user) => (
+                  <li
+                    key={user._id}
+                    className={styles.dropdownItem}
+                    onClick={() => handleUserClick(user)} // Handle user click
+                  >
+                    {user.firstName} {user.lastName}
+                  </li>
+                ))}
+              </ul>
+            )}
+            
           </div>
+          {selectedUser && (
+              <div className={styles.selectedUser}>
+                {/* <p>Selected Patient:</p> */}
+                <p>
+                  ID: <strong>{selectedUser.userId}</strong>
+                </p>
+                <p>
+                  Name: <strong>{selectedUser.name}</strong>
+                </p>
+              </div>
+            )}
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Disease Selection</h3>
             <hr className={styles.divider} />
