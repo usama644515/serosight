@@ -58,12 +58,13 @@ export default function Dashboard() {
           <title>Dashboard - ImmunoMap</title>
         </Head>
         <Hero />
+        <OrderHistory />
         <Overview />
-        <Overview2 />
+        {/* <Overview2 /> */}
         {/* Conditionally render components based on order status */}
         {orderStatus === "incomplete" ? <OrderProgress /> : <OrderProgress2 />}
-        <OrderHistory />
-        <SubscriptionCard />
+        
+        {/* <SubscriptionCard /> */}
         <AccountSettings />
         <Bottomlines />
       </section>
