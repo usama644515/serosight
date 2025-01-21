@@ -53,6 +53,7 @@ export default async function handler(req, res) {
         paymentStatus: "completed", // Update the status as required
         orderKey: `ORDER-${Date.now()}`, // Generate a unique order key
         email: email,
+        test: false,
         cartItems: cartItems.map((item) => ({
           testName: item.testName,
         })),

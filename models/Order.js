@@ -26,6 +26,7 @@ const orderSchema = new mongoose.Schema(
     },
     orderKey: { type: String, unique: true, required: true },
     email: { type: String, required: true },
+    test: { type: Boolean, default: false },
     cartItems: [
       {
         testName: { type: String, required: true },

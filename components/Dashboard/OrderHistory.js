@@ -1,11 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
-import styles from "./OrderHistory.module.css";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import styles from "./OrderHistory.module.css";
 import SearchModal from "../Modals/SearchModal";
 
 const OrderHistory = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
+  const [testData, setTestData] = useState([]); // State for storing test data
   const router = useRouter();
 
   const openModal = () => {
@@ -19,6 +20,36 @@ const OrderHistory = () => {
   const handleClick = () => {
     router.push("/array-report");
   };
+
+  // Function to format the date to "12 January 2025"
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-GB', options); // 'en-GB' ensures the format is DD Month YYYY
+  };
+
+  useEffect(() => {
+    const fetchTests = async () => {
+      const userId = localStorage.getItem("userId"); // Get userId from localStorage
+      console.log(userId);
+      if (!userId) return;
+
+      try {
+        const response = await fetch(`/api/test/${userId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setTestData(data);
+          console.log(data);
+        } else {
+          console.error("Failed to fetch test data");
+        }
+      } catch (error) {
+        console.error("Error fetching test data:", error);
+      }
+    };
+
+    fetchTests();
+  }, []);
 
   return (
     <div className={styles.container}>
@@ -35,37 +66,42 @@ const OrderHistory = () => {
       </div>
       <div className={styles.timeline}>
         <div className={styles.orders}>
-          {/* Respiratory Kit */}
-          <div className={`${styles.card}`}>
-            <div className={styles.cardHeader}>
-              <div>
-              <h2 className={styles.bundledate}>Purchased 10/29/2024</h2>
-              <h2 className={styles.bundleTitle}>Respiratory Kit</h2>
-              </div>
-              <p className={styles.status}>Report in Progress...</p>
+          {testData.length === 0 ? (
+            <div className={styles.noTests}>
+              <p>No tests found. Please try again later.</p>
             </div>
-            <p className={styles.details}>Results PENDING</p>
-          </div>
-          {/* MMR Kit */}
-          <div className={`${styles.card}`}>
-            <div className={styles.cardHeader}>
-              <div>
-              <h2 className={styles.bundledate}>Purchased 10/29/2024</h2>
-              <h2 className={styles.bundleTitle}>MMR Kitt</h2>
+          ) : (
+            testData.map((test) => (
+              <div key={test.testId} className={`${styles.card}`}>
+                <div className={styles.cardHeader}>
+                  <div>
+                    <h2 className={styles.bundledate}>
+                      Purchased {formatDate(test.purchaseDate)} {/* Format the date here */}
+                    </h2>
+                    <h2 className={styles.bundleTitle}>{test.itemName}</h2>
+                  </div>
+                  {test.reportStatus === "In Progress" ? (
+                    <p className={styles.status}>Report in Progress...</p>
+                  ) : (
+                    <button
+                      onClick={handleClick}
+                      className={styles.reportButton}
+                    >
+                      Array Report
+                    </button>
+                  )}
+                </div>
+                <p className={styles.details}>
+                  {test.results === "Pending"
+                    ? "Results PENDING"
+                    : `Results ${test.results}`}
+                </p>
               </div>
-              <button onClick={handleClick} className={styles.reportButton}>
-                Array Report
-              </button>
-            </div>
-            <p className={styles.details}>Results 11/12/2024</p>
-          </div>
-
-         
+            ))
+          )}
         </div>
       </div>
-      {/* Modal for Sign In */}
-      <SearchModal isOpen={isModalOpen} onRequestClose={closeModal} />{" "}
-      {/* Modal gets the state and close function */}
+      <SearchModal isOpen={isModalOpen} onRequestClose={closeModal} />
     </div>
   );
 };
