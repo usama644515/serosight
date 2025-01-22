@@ -1,38 +1,36 @@
 import { useEffect, useState } from "react";
-import styles from "./OrderProgress.module.css";
+import styles from "./OrderTracking.module.css";
 
-const OrderProgress = () => {
+const OrderTracking = ({ orderId }) => {
   const [order, setOrder] = useState(null);
 
   useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        // Retrieve userId from local storage
-        const userId = localStorage.getItem("userId");
-        if (!userId) {
-          console.error("No userId found in local storage");
-          return;
+    // Only fetch order data if orderId is available
+    if (orderId) {
+      const fetchOrder = async () => {
+        try {
+          const response = await fetch(`/api/orders/latest?orderId=${orderId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setOrder(data); // Set the fetched order data
+          } else {
+            console.error("Failed to fetch order data");
+          }
+        } catch (error) {
+          console.error("Error fetching order data:", error);
         }
+      };
 
-        // Pass userId as a query parameter to the API
-        const response = await fetch(`/api/orders/latest?userId=${userId}`);
-        if (response.ok) {
-          const data = await response.json();
-          setOrder(data); // Set the fetched order data
-        } else {
-          console.error("Failed to fetch order data");
-        }
-      } catch (error) {
-        console.error("Error fetching order data:", error);
-      }
-    };
+      fetchOrder();
+    }
+  }, [orderId]); // Re-run when orderId changes
 
-    fetchOrder();
-  }, []);
-
-  // If order data is not yet fetched, show loading
   if (!order) {
-    return <div>Loading...</div>;
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.spinner}></div>
+      </div>
+    );
   }
 
   const { orderStatus, cartItems } = order;
@@ -45,6 +43,7 @@ const OrderProgress = () => {
     { id: 4, status: "test completed", label: "Reply received in testing" },
     { id: 5, status: "delivered", label: "Testing completed" },
   ];
+
   // Get the index of the current status
   const currentStepIndex = stepStatuses.findIndex(
     (step) => step.status === orderStatus
@@ -52,10 +51,10 @@ const OrderProgress = () => {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>Orders In Progress</h1>
+      <h1 className={styles.title}>Order Tracking</h1>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.bundleTitle}>{cartItems[0].testName}</h2>
+          <h2 className={styles.bundleTitle}>{cartItems[0]?.testName || "Test Kit"}</h2>
           <p className={styles.description}>
             This test kit will arrive in 1-2 weeks.
           </p>
@@ -64,18 +63,14 @@ const OrderProgress = () => {
           {stepStatuses.map((step, index) => (
             <div key={step.id} className={styles.stepWrapper}>
               <div
-                className={`${styles.step} ${
-                  index <= currentStepIndex ? styles.active : ""
-                }`}
+                className={`${styles.step} ${index <= currentStepIndex ? styles.active : ""}`}
               >
                 <div className={styles.circle}></div>
                 <p>{step.label}</p>
               </div>
               {index < stepStatuses.length - 1 && (
                 <div
-                  className={`${styles.line} ${
-                    index < currentStepIndex ? styles.activeLine : ""
-                  }`}
+                  className={`${styles.line} ${index < currentStepIndex ? styles.activeLine : ""}`}
                 ></div>
               )}
             </div>
@@ -86,4 +81,4 @@ const OrderProgress = () => {
   );
 };
 
-export default OrderProgress;
+export default OrderTracking;

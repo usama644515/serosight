@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
 import styles from "./OrderHistory.module.css";
 
 export default function OrderHistory() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hydrated, setHydrated] = useState(false); // Track hydration
+  const router = useRouter();
 
   useEffect(() => {
     setHydrated(true); // Mark component as hydrated
@@ -35,6 +37,11 @@ export default function OrderHistory() {
 
     fetchOrders();
   }, []);
+
+  const handleTrackParcel = (orderId) => {
+    // Navigate to order-tracking screen with order ID as query parameter
+    router.push(`/order-tracking?orderId=${orderId}`);
+  };
 
   const formatOrderKey = (orderKey) => {
     // Mock encryption logic to convert to 10-15 character ID
@@ -95,7 +102,12 @@ export default function OrderHistory() {
               Order Date: {formatDate(order.orderDate)}
             </p>
           </div>
-          <button className={styles.trackButton}>Track Parcel</button>
+          <button
+            className={styles.trackButton}
+            onClick={() => handleTrackParcel(order._id)}
+          >
+            Track Parcel
+          </button>
         </div>
       ))}
     </div>

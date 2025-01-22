@@ -37,7 +37,9 @@ export default async function handler(req, res) {
       message: "Login successful", 
       token, 
       userId: user._id, 
-      role: user.role 
+      role: user.role,
+      fname: user.firstName,
+      lname: user.lastName, 
     });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error: error.message });

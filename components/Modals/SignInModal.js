@@ -35,13 +35,15 @@ const SignInModal = ({ isOpen, onRequestClose, onLogin }) => {
       });
 
       if (response.status === 200) {
-        const { token, userId, role } = response.data;
+        const { token, userId, role, fname, lname } = response.data;
 
         // Store token and userId in local storage
         localStorage.setItem("token", token);
         localStorage.setItem("userId", userId);
         localStorage.setItem("email", email); // Optionally store email
         localStorage.setItem("role", role);
+        // localStorage.setItem("name", 'test');
+        localStorage.setItem("name", `${fname.trim()} ${lname.trim()}`);
 
         // Show success toast
         toast.success("Login successful!");
