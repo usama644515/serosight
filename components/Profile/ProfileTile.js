@@ -11,7 +11,7 @@ export default function ProfileTile() {
 
   return (
     <div className={styles.container}>
-      <div onClick={() => handleClick("")} className={styles.card}>
+      <div onClick={() => handleClick("/immunization-history")} className={styles.card}>
         <div className={styles.icon}>
           <img
             className={styles.iconImage}
