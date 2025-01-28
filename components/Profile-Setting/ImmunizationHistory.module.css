@@ -1,109 +1,195 @@
 /* CSS (ImmunizationHistory.module.css) */
 .container {
-    margin: 0 auto;
-    /* max-width: 1200px; */
-    /* padding: 20px; */
-    font-family: Arial, sans-serif;
+  margin: 0 auto;
+  /* max-width: 1200px; */
+  /* padding: 20px; */
+  font-family: Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .banner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    background-image: url('../../public/images/order-banner.png');
-    background-size: cover;
-    background-position: center;
-    padding: 30px 20px;
-    height: 50vh;
-    margin-bottom: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-image: url('../../public/images/order-banner.png');
+  background-size: cover;
+  background-position: center;
+  padding: 30px 20px;
+  height: 50vh;
+  margin-bottom: 50px;
+  width: 100%;
 }
 
 .heading {
-    text-align: center;
-    font-size: 3.5rem;
-    color: #18206f;
-    margin-bottom: 10px;
+  text-align: center;
+  font-size: 3.5rem;
+  color: #18206f;
+  margin-bottom: 10px;
 }
 
 .innerContainer {
-    max-width: 1000px;
-    margin: 0 auto;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .title {
-    font-size: 1.5rem;
-    margin: 20px 0;
-    color: #18206F;
+  font-size: 1.5rem;
+  margin: 20px 0;
+  color: #18206F;
 }
 
 .table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
 }
 
 .table th,
 .table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
 }
 
 .table th {
-    background-color: #f4f4f4;
-    color: #18206F;
+  background-color: #f4f4f4;
+  color: #18206F;
 }
 
 .radioGroup {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 .radioGroup label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
 }
 
 .dateInput {
-    width: 80%;
-    padding: 5px;
+  width: 80%;
+  padding: 5px;
 }
 
 .smokingHistory {
-    background-color: #f0f4ff;
-    padding: 15px;
-    border: 1px solid #ddd;
-    margin-bottom: 20px;
-    border-radius: 8px;
+  background-color: #f0f4ff;
+  padding: 15px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+  border-radius: 8px;
 }
 
 .smokingHistory p {
-    margin: 10px 0;
-    font-weight: bold;
+  margin: 10px 0;
+  font-weight: bold;
 }
 
 @media screen and (max-width: 768px) {
 
-    .table th,
-    .table td {
-        font-size: 0.9rem;
-    }
+  .table th,
+  .table td {
+    font-size: 0.9rem;
+  }
 
-    .title {
-        font-size: 1.2rem;
-    }
+  .title {
+    font-size: 1.2rem;
+  }
 
-    .radioGroup {
-        flex-direction: column;
-        align-items: flex-start;
-    }
+  .radioGroup {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 .radioGroup {
-    accent-color: #18206F;
-    /* Default dot color */
+  accent-color: #18206F;
+  /* Default dot color */
+}
+
+
+/* ImmunizationHistory.module.css */
+
+.container {
+  padding: 20px;
+}
+
+.banner {
+  background-color: #004AAD;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.innerContainer {
+  margin: 20px;
+}
+
+.title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th, .table td {
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.inputText, .dateInput {
+  padding: 8px;
+  margin: 5px 0;
+}
+
+.radioGroup label {
+  margin-right: 10px;
+}
+
+.smokingHistory {
+  margin-bottom: 15px;
+}
+
+.saveButton {
+  background-color: #004AAD;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.saveButton:hover {
+  background-color: #00348F;
+}
+
+.saveButtonContainer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.saveButton {
+  padding: 10px 20px;
+  background-color: #00348F;
+  ;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.saveButton:hover {
+  background-color: #03122c;
+  ;
 }
