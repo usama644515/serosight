@@ -38,8 +38,8 @@ export default function PatientSelector() {
 
   const reports = [
     { date: "1/20/2024", pdf: true },
-    { date: "3/12/2024", pdf: false },
-    { date: "9/04/2024", pdf: false },
+    { date: "3/12/2024", pdf: true },
+    { date: "9/04/2024", pdf: true },
     { date: "12/29/2024", pdf: false },
   ];
 
@@ -49,6 +49,7 @@ export default function PatientSelector() {
   const [selectedDiseases, setSelectedDiseases] = useState([]);
   const [selectedReports, setSelectedReports] = useState([]);
   const [graphData, setGraphData] = useState([]);
+  const [patientData, setPatientData] = useState([]);
   const [verticalLines, setVerticalLines] = useState([]);
 
   useEffect(() => {
@@ -103,44 +104,53 @@ export default function PatientSelector() {
   };
 
   useEffect(() => {
-    const updatedGraphData = diseases.map((disease) => ({
-      label: disease.name,
-      data: disease.data,
-      borderColor: `hsl(${Math.random() * 360}, 70%, 50%)`,
-      borderWidth: 2,
-      tension: 0.4,
-    }));
+    const updatedGraphData = diseases
+      .filter((disease) => selectedDiseases.some((d) => d.name === disease.name))
+      .map((disease) => ({
+        label: disease.name,
+        data: disease.data,
+        borderColor: `hsl(${Math.random() * 360}, 70%, 50%)`,
+        borderWidth: 2,
+        tension: 0.4,
+      }));
 
     setGraphData(updatedGraphData);
 
+    // Set vertical lines based on selected diseases
     const updatedVerticalLines = selectedDiseases.map((disease) =>
       disease.data.map((_, idx) => idx)
     );
     setVerticalLines(updatedVerticalLines);
   }, [selectedDiseases]);
 
-  const handleReportChange = (report) => {
+  const handleReportChange = (reportDate) => {
     setSelectedReports((prev) =>
-      prev.includes(report)
-        ? prev.filter((item) => item !== report)
-        : [...prev, report]
+      prev.includes(reportDate)
+        ? prev.filter((item) => item !== reportDate)
+        : [...prev, reportDate]
     );
   };
 
   const handleDownload = (item) => {
-    console.log(`Downloading data for: ${item}`);
-    // Placeholder for actual download functionality
+    console.log(`Downloading data for: ${item}`); // Placeholder for actual download functionality
   };
 
-  const annotations = selectedDiseases.map((disease, idx) => ({
+  useEffect(() => {
+    const updatedPatientData = reports.filter((report) =>
+      selectedReports.includes(report.date)
+    );
+    setPatientData(updatedPatientData);
+  }, [selectedReports]);
+
+  const annotations = selectedReports.map((report) => ({
     type: "line",
     mode: "vertical",
     scaleID: "x",
-    value: idx,
+    value: reports.findIndex((r) => r.date === report),
     borderColor: "red",
     borderWidth: 2,
     label: {
-      content: disease.name,
+      content: report.date,
       enabled: true,
       position: "top",
       backgroundColor: "red",
@@ -149,8 +159,9 @@ export default function PatientSelector() {
   }));
 
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: graphData,
+    // Replace the labels with immunity level numbers
+    labels: [0, 50, 100, 150, 200, 250],  // Example numerical representation of immunity levels
+    datasets: graphData,  // Retain your existing graph data
   };
 
   const options = {
@@ -259,14 +270,14 @@ export default function PatientSelector() {
         <div className={styles.patientData}>
           <h3 className={styles.sectionTitle}>Patient Data</h3>
           <div className={styles.list}>
-            {selectedDiseases.map((disease, idx) => (
+            {patientData.map((report, idx) => (
               <div key={idx} className={styles.item}>
-                <span>{disease.name}</span>
+                <span>{report.date}</span>
                 <button
                   className={styles.button}
-                  onClick={() => handleDownload(disease.name)}
+                  onClick={() => handleDownload(report.date)}
                 >
-                  Download PDF
+                  {report.pdf ? "Download PDF" : "No PDF Available"}
                 </button>
               </div>
             ))}
