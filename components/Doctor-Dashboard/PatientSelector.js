@@ -105,7 +105,9 @@ export default function PatientSelector() {
 
   useEffect(() => {
     const updatedGraphData = diseases
-      .filter((disease) => selectedDiseases.some((d) => d.name === disease.name))
+      .filter((disease) =>
+        selectedDiseases.some((d) => d.name === disease.name)
+      )
       .map((disease) => ({
         label: disease.name,
         data: disease.data,
@@ -160,8 +162,8 @@ export default function PatientSelector() {
 
   const data = {
     // Replace the labels with immunity level numbers
-    labels: [0, 50, 100, 150, 200, 250],  // Example numerical representation of immunity levels
-    datasets: graphData,  // Retain your existing graph data
+    labels: [0, 50, 100, 150, 200, 250], // Example numerical representation of immunity levels
+    datasets: graphData, // Retain your existing graph data
   };
 
   const options = {
