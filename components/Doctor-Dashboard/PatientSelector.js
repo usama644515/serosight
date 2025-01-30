@@ -36,13 +36,6 @@ export default function PatientSelector() {
     { name: "Hepatitis", data: [15, 25, 35, 25, 15, 5] },
   ];
 
-  const reports = [
-    { date: "1/20/2024", pdf: true },
-    { date: "3/12/2024", pdf: true },
-    { date: "9/04/2024", pdf: true },
-    { date: "12/29/2024", pdf: false },
-  ];
-
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -60,6 +53,27 @@ export default function PatientSelector() {
       }
     }
   }, []);
+
+  // Fetch reports based on patient ID
+  useEffect(() => {
+    if (selectedUser) {
+      const fetchReports = async () => {
+        try {
+          const response = await axios.get(
+            `/api/report?patientId=${selectedUser.userId}`
+          );
+          if (response.data.length === 0) {
+            setPatientData([]); // Set patientData to empty if no reports are found
+          } else {
+            setPatientData(response.data);
+          }
+        } catch (error) {
+          console.error("Error fetching reports:", error);
+        }
+      };
+      fetchReports();
+    }
+  }, [selectedUser]);
 
   const handleSearch = async (e) => {
     const value = e.target.value;
@@ -105,7 +119,9 @@ export default function PatientSelector() {
 
   useEffect(() => {
     const updatedGraphData = diseases
-      .filter((disease) => selectedDiseases.some((d) => d.name === disease.name))
+      .filter((disease) =>
+        selectedDiseases.some((d) => d.name === disease.name)
+      )
       .map((disease) => ({
         label: disease.name,
         data: disease.data,
@@ -135,22 +151,15 @@ export default function PatientSelector() {
     console.log(`Downloading data for: ${item}`); // Placeholder for actual download functionality
   };
 
-  useEffect(() => {
-    const updatedPatientData = reports.filter((report) =>
-      selectedReports.includes(report.date)
-    );
-    setPatientData(updatedPatientData);
-  }, [selectedReports]);
-
   const annotations = selectedReports.map((report) => ({
     type: "line",
     mode: "vertical",
     scaleID: "x",
-    value: reports.findIndex((r) => r.date === report),
+    value: patientData.findIndex((r) => r.reportDate === report),
     borderColor: "red",
     borderWidth: 2,
     label: {
-      content: report.date,
+      content: report,
       enabled: true,
       position: "top",
       backgroundColor: "red",
@@ -159,9 +168,8 @@ export default function PatientSelector() {
   }));
 
   const data = {
-    // Replace the labels with immunity level numbers
-    labels: [0, 50, 100, 150, 200, 250],  // Example numerical representation of immunity levels
-    datasets: graphData,  // Retain your existing graph data
+    labels: [0, 50, 100, 150, 200, 250], // Example numerical representation of immunity levels
+    datasets: graphData, // Retain your existing graph data
   };
 
   const options = {
@@ -247,40 +255,55 @@ export default function PatientSelector() {
           </div>
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
-            <div className={styles.checkboxGroup}>
-              {reports.map((report, idx) => (
-                <div key={idx} className={styles.checkboxContainer2}>
-                  <input
-                    type="checkbox"
-                    id={`report-${idx}`}
-                    className={styles.checkboxInput}
-                    onChange={() => handleReportChange(report.date)}
-                  />
-                  <label
-                    htmlFor={`report-${idx}`}
-                    className={styles.checkboxLabel}
-                  ></label>
-                  <span className={styles.checkboxText2}>{report.date}</span>
-                </div>
-              ))}
-            </div>
+            {patientData.length === 0 ? (
+              <p className={styles.noReport}>No Report Found</p>
+            ) : (
+              <div className={styles.checkboxGroup}>
+                {patientData.map((report, idx) => {
+                  // Format the date into '12 December 2025'
+                  const formattedDate = new Intl.DateTimeFormat("en-US", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }).format(new Date(report.reportDate));
+
+                  return (
+                    <div key={idx} className={styles.checkboxContainer2}>
+                      <input
+                        type="checkbox"
+                        id={`report-${idx}`}
+                        className={styles.checkboxInput}
+                        onChange={() => handleReportChange(report.reportDate)}
+                      />
+                      <label
+                        htmlFor={`report-${idx}`}
+                        className={styles.checkboxLabel}
+                      ></label>
+                      <span className={styles.checkboxText2}>
+                        {formattedDate}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
 
         <div className={styles.patientData}>
           <h3 className={styles.sectionTitle}>Patient Data</h3>
           <div className={styles.list}>
-            {patientData.map((report, idx) => (
-              <div key={idx} className={styles.item}>
-                <span>{report.date}</span>
-                <button
-                  className={styles.button}
-                  onClick={() => handleDownload(report.date)}
-                >
-                  {report.pdf ? "Download PDF" : "No PDF Available"}
-                </button>
-              </div>
-            ))}
+            {selectedReports.map((reportDate, idx) => {
+              const report = patientData.find((r) => r.reportDate === reportDate);
+              return (
+                <div key={idx} className={styles.item}>
+                  <span>{report?.diseaseName}</span>
+                  <button className={styles.button}>
+                    {report?.pdf ? "Download PDF" : "No PDF Available"}
+                  </button>
+                </div>
+              );
+            })}
           </div>
           <div className={styles.graph}>
             <Line data={data} options={options} />
