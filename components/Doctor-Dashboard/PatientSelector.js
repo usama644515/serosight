@@ -461,7 +461,7 @@ export default function PatientSelector() {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} id = "patient-data-selector">
       <h1 className={styles.title}>Select Patient</h1>
       <div className={styles.dashboard}>
         <div className={styles.patientSelection}>

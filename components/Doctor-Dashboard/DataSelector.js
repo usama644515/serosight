@@ -72,7 +72,7 @@ const DataSelector = () => {
 
   const renameDataSet = (id, newName) => {
     axios
-      .put(`/api/datasets/${id}`, { name: newName })  // Only passing the name to update
+      .put(`/api/datasets/${id}`, { name: newName }) // Only passing the name to update
       .then(() => {
         setSavedDataSets((prev) =>
           prev.map((dataSet) =>
@@ -89,14 +89,16 @@ const DataSelector = () => {
       axios
         .delete(`/api/datasets/${id}`)
         .then(() => {
-          setSavedDataSets((prev) => prev.filter((dataSet) => dataSet._id !== id));
+          setSavedDataSets((prev) =>
+            prev.filter((dataSet) => dataSet._id !== id)
+          );
         })
         .catch((error) => console.error("Error deleting dataset:", error));
     }
   };
 
   return (
-    <>
+    <div id="comparison-data-selector">
       <h1 className={styles.title}>Create comparison data.</h1>
       <p className={styles.subtitle}>Select Data Sets</p>
       <div className={styles.container}>
@@ -104,19 +106,24 @@ const DataSelector = () => {
         <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Immunity Data</p>
           <div className={styles.filterOptions}>
-            {["All", "Mono", "Respiratory", "Hepatitis", "MMR", "West Nile"].map(
-              (item) => (
-                <button
-                  key={item}
-                  className={`${styles.filterButton} ${
-                    isSelected("immunity", item) ? styles.active : ""
-                  }`}
-                  onClick={() => handleSelect("immunity", item)}
-                >
-                  {item}
-                </button>
-              )
-            )}
+            {[
+              "All",
+              "Mono",
+              "Respiratory",
+              "Hepatitis",
+              "MMR",
+              "West Nile",
+            ].map((item) => (
+              <button
+                key={item}
+                className={`${styles.filterButton} ${
+                  isSelected("immunity", item) ? styles.active : ""
+                }`}
+                onClick={() => handleSelect("immunity", item)}
+              >
+                {item}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -207,7 +214,6 @@ const DataSelector = () => {
                   >
                     {dataSet.name}
                   </h2>
-                 
                 )}
                 <p>Saved Active Data</p>
               </div>
@@ -221,7 +227,7 @@ const DataSelector = () => {
           ))}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
