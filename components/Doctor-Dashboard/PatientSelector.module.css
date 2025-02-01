@@ -2,7 +2,7 @@
     font-family: Arial, sans-serif;
     padding: 20px;
     /* background-color: #f5f7fb; */
-    height: 100vh;
+    /* height: 100vh; */
     box-sizing: border-box;
     margin: 0px 100px;
   }
@@ -204,6 +204,12 @@
     position: absolute;
     /* width: 100%; */
     z-index: 1000;
+    cursor: pointer;
+    padding-left: 25px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+
   }
   
   .dropdownIcon {
@@ -217,3 +223,27 @@
     width: 100%;
   }
   
+
+  .refreshButton {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #00205b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .refreshButton:hover {
+    background-color: #071839;
+  }
+  .largeIcon {
+    font-size: 24px; /* Adjust size as needed */
+  }

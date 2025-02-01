@@ -17,7 +17,7 @@ import ChartAnnotation from "chartjs-plugin-annotation";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
+import { faChevronDown, faChevronUp, faSync } from "@fortawesome/free-solid-svg-icons"; // Added faSync for refresh icon
 
 // Register required Chart.js components and the annotation plugin
 ChartJS.register(
@@ -33,19 +33,96 @@ ChartJS.register(
 );
 
 export default function PatientSelector() {
-  const diseases = [
-    { name: "Influenza", data: [10, 30, 50, 40, 20, 60] },
-    { name: "Respiratory", data: [20, 40, 30, 50, 70, 60] },
-    { name: "MMR", data: [5, 15, 25, 35, 45, 55] },
-    { name: "Hepatitis", data: [15, 25, 35, 25, 15, 5] },
-  ];
-
   // Static global data for testing
   const globalData = {
-    Influenza: [10, 30, 50, 40, 20, 60, 70, 80, 90, 100], // Static population data
-    Respiratory: [20, 40, 30, 50, 70, 60, 80, 90, 100, 110],
-    MMR: [5, 15, 25, 35, 45, 55, 65, 75, 85, 95],
-    Hepatitis: [15, 25, 35, 25, 15, 5, 10, 20, 30, 40],
+    Influenza: [
+      { level: 5, patients: 10 },
+      { level: 15, patients: 20 },
+      { level: 25, patients: 30 },
+      { level: 35, patients: 40 },
+      { level: 45, patients: 50 },
+      { level: 55, patients: 60 },
+      { level: 65, patients: 70 },
+      { level: 75, patients: 80 },
+      { level: 85, patients: 90 },
+      { level: 95, patients: 100 },
+      { level: 105, patients: 110 },
+      { level: 115, patients: 120 },
+      { level: 125, patients: 130 },
+      { level: 135, patients: 140 },
+      { level: 145, patients: 150 },
+      { level: 155, patients: 160 },
+      { level: 165, patients: 170 },
+      { level: 175, patients: 180 },
+      { level: 185, patients: 190 },
+      { level: 195, patients: 200 },
+    ],
+    Respiratory: [
+      { level: 10, patients: 15 },
+      { level: 20, patients: 25 },
+      { level: 30, patients: 35 },
+      { level: 40, patients: 45 },
+      { level: 50, patients: 55 },
+      { level: 60, patients: 65 },
+      { level: 70, patients: 75 },
+      { level: 80, patients: 85 },
+      { level: 90, patients: 95 },
+      { level: 100, patients: 105 },
+      { level: 110, patients: 115 },
+      { level: 120, patients: 125 },
+      { level: 130, patients: 135 },
+      { level: 140, patients: 145 },
+      { level: 150, patients: 155 },
+      { level: 160, patients: 165 },
+      { level: 170, patients: 175 },
+      { level: 180, patients: 185 },
+      { level: 190, patients: 195 },
+      { level: 200, patients: 205 },
+    ],
+    MMR: [
+      { level: 5, patients: 5 },
+      { level: 15, patients: 15 },
+      { level: 25, patients: 25 },
+      { level: 35, patients: 35 },
+      { level: 45, patients: 45 },
+      { level: 55, patients: 55 },
+      { level: 65, patients: 65 },
+      { level: 75, patients: 75 },
+      { level: 85, patients: 85 },
+      { level: 95, patients: 95 },
+      { level: 105, patients: 105 },
+      { level: 115, patients: 115 },
+      { level: 125, patients: 125 },
+      { level: 135, patients: 135 },
+      { level: 145, patients: 145 },
+      { level: 155, patients: 155 },
+      { level: 165, patients: 165 },
+      { level: 175, patients: 175 },
+      { level: 185, patients: 185 },
+      { level: 195, patients: 195 },
+    ],
+    Hepatitis: [
+      { level: 10, patients: 10 },
+      { level: 20, patients: 20 },
+      { level: 30, patients: 30 },
+      { level: 40, patients: 40 },
+      { level: 50, patients: 50 },
+      { level: 60, patients: 60 },
+      { level: 70, patients: 70 },
+      { level: 80, patients: 80 },
+      { level: 90, patients: 90 },
+      { level: 100, patients: 100 },
+      { level: 110, patients: 110 },
+      { level: 120, patients: 120 },
+      { level: 130, patients: 130 },
+      { level: 140, patients: 140 },
+      { level: 150, patients: 150 },
+      { level: 160, patients: 160 },
+      { level: 170, patients: 170 },
+      { level: 180, patients: 180 },
+      { level: 190, patients: 190 },
+      { level: 200, patients: 200 },
+    ],
   };
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -56,6 +133,7 @@ export default function PatientSelector() {
   const [graphData, setGraphData] = useState([]);
   const [patientData, setPatientData] = useState([]);
   const [expandedReports, setExpandedReports] = useState({}); // Track which reports are expanded
+  const [diseases, setDiseases] = useState([]); // Diseases will be dynamically populated based on reports
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -78,6 +156,16 @@ export default function PatientSelector() {
             setPatientData([]); // Set patientData to empty if no reports are found
           } else {
             setPatientData(response.data);
+            // Extract unique diseases from reports
+            const uniqueDiseases = [
+              ...new Set(response.data.map((report) => report.diseaseName)),
+            ];
+            setDiseases(
+              uniqueDiseases.map((disease) => ({
+                name: disease,
+                data: globalData[disease] || [], // Use static global data for the chart
+              }))
+            );
           }
         } catch (error) {
           console.error("Error fetching reports:", error);
@@ -136,7 +224,7 @@ export default function PatientSelector() {
       )
       .map((disease) => ({
         label: disease.name,
-        data: globalData[disease.name] || [], // Use static global data for the chart
+        data: disease.data.map((item) => item.patients), // Use patient counts for the chart
         borderColor: `hsl(${disease.name.length * 50}, 70%, 50%)`, // Static color based on disease name
         borderWidth: 2,
         tension: 0.4,
@@ -144,7 +232,7 @@ export default function PatientSelector() {
       }));
 
     setGraphData(updatedGraphData);
-  }, [selectedDiseases]);
+  }, [selectedDiseases, diseases]);
 
   const handleReportChange = (reportDate) => {
     setSelectedReports((prev) =>
@@ -209,19 +297,82 @@ export default function PatientSelector() {
     const report = patientData.find((r) => r.reportDate === reportDate);
     if (!report) return [];
 
-    const immunityLevel = report.immunityLevel; // Get immunityLevel from the report
-    const index = globalData[report.diseaseName]?.findIndex(
-      (value) => value === immunityLevel
+    // Ensure immunityLevel is a number
+    const immunityLevel = Number(report.immunityLevel);
+    if (isNaN(immunityLevel)) return []; // Return empty array if immunityLevel is not a number
+
+    // Get the global data for the disease
+    const diseaseData = globalData[report.diseaseName];
+    if (!diseaseData) return [];
+
+    // Check if immunityLevel matches exactly with any value in globalData
+    const exactMatchIndex = diseaseData.findIndex(
+      (item) => item.level === immunityLevel
     );
 
-    if (index === -1 || index === undefined) return [];
+    if (exactMatchIndex !== -1) {
+      // If exact match is found, place the annotation line at that index
+      return [
+        {
+          type: "line",
+          mode: "vertical",
+          scaleID: "x",
+          value: exactMatchIndex,
+          borderColor: "red",
+          borderWidth: 2,
+          label: {
+            content: `Immunity: ${immunityLevel}`,
+            enabled: true,
+            position: "top",
+            backgroundColor: "red",
+            color: "white",
+          },
+        },
+      ];
+    }
+
+    // Find the closest values in the global data
+    let closestLowerValue = -Infinity;
+    let closestHigherValue = Infinity;
+
+    for (const item of diseaseData) {
+      if (item.level <= immunityLevel && item.level > closestLowerValue) {
+        closestLowerValue = item.level;
+      }
+      if (item.level >= immunityLevel && item.level < closestHigherValue) {
+        closestHigherValue = item.level;
+      }
+    }
+
+    // If no valid closest values are found, return an empty array
+    if (closestLowerValue === -Infinity || closestHigherValue === Infinity) return [];
+
+    // Calculate the index for the annotation line
+    const lowerIndex = diseaseData.findIndex(
+      (item) => item.level === closestLowerValue
+    );
+    const higherIndex = diseaseData.findIndex(
+      (item) => item.level === closestHigherValue
+    );
+
+    // If no valid indices are found, return an empty array
+    if (lowerIndex === -1 || higherIndex === -1) return [];
+
+    // Calculate the position for the annotation line
+    const difference = closestHigherValue - closestLowerValue;
+    if (difference === 0) return []; // Avoid division by zero
+
+    const annotationPosition =
+      lowerIndex + (immunityLevel - closestLowerValue) / difference;
+
+    console.log("Annotation Position:", annotationPosition); // Debugging
 
     return [
       {
         type: "line",
         mode: "vertical",
         scaleID: "x",
-        value: index,
+        value: annotationPosition,
         borderColor: "red",
         borderWidth: 2,
         label: {
@@ -235,45 +386,68 @@ export default function PatientSelector() {
     ];
   };
 
-  const data = {
-    labels: Array.from({ length: 10 }, (_, i) => i + 1), // Labels for immunity levels (1 to 10)
-    datasets: graphData,
+  const getChartDataForReport = (reportDate) => {
+    const report = patientData.find((r) => r.reportDate === reportDate);
+    if (!report) return { labels: [], datasets: [] };
+
+    const diseaseData = globalData[report.diseaseName];
+    if (!diseaseData) return { labels: [], datasets: [] };
+
+    const labels = diseaseData.map((item) => item.level);
+    const datasets = [
+      {
+        label: report.diseaseName,
+        data: diseaseData.map((item) => item.patients),
+        borderColor: `hsl(${report.diseaseName.length * 50}, 70%, 50%)`,
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+      },
+    ];
+
+    return { labels, datasets };
   };
 
-  const options = {
-    responsive: true,
-    maintainAspectRatio: false, // Allow custom chart size
-    plugins: {
-      legend: {
-        display: true,
-        labels: { color: "white" },
-      },
-      annotation: {
-        annotations: expandedReports[selectedReports[0]]
-          ? getAnnotationForReport(selectedReports[0])
-          : [],
-      },
-    },
-    scales: {
-      x: {
-        title: {
+  const getChartOptionsForReport = (reportDate) => {
+    return {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
           display: true,
-          text: "Immunity Level",
-          color: "white",
+          labels: { color: "white" },
         },
-        grid: { display: false },
-        ticks: { color: "white" },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Population",
-          color: "white",
+        annotation: {
+          annotations: getAnnotationForReport(reportDate),
         },
-        grid: { color: "rgba(255, 255, 255, 0.1)" },
-        ticks: { color: "white" },
       },
-    },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Immunity Level",
+            color: "white",
+          },
+          grid: { display: false },
+          ticks: { color: "white" },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Number of Patients",
+            color: "white",
+          },
+          grid: { color: "rgba(255, 255, 255, 0.1)" },
+          ticks: { color: "white" },
+        },
+      },
+    };
+  };
+
+  // Function to handle refresh
+  const handleRefresh = () => {
+    localStorage.removeItem("selectedUser"); // Remove selectedUser from local storage
+    window.location.reload(); // Reload the page
   };
 
   return (
@@ -407,7 +581,10 @@ export default function PatientSelector() {
                       id={`graph-container-${reportDate}`}
                       style={{ height: "300px", width: "100%" }} // Increase chart size
                     >
-                      <Line data={data} options={options} />
+                      <Line
+                        data={getChartDataForReport(reportDate)}
+                        options={getChartOptionsForReport(reportDate)}
+                      />
                     </div>
                   )}
                 </div>
@@ -416,6 +593,10 @@ export default function PatientSelector() {
           </div>
         </div>
       </div>
+      {/* Refresh Button */}
+      <button className={styles.refreshButton} onClick={handleRefresh}>
+  <FontAwesomeIcon icon={faSync} className={styles.largeIcon} />
+</button>
     </div>
   );
 }
