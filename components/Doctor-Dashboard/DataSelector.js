@@ -198,6 +198,16 @@ const DataSelector = () => {
           {savedDataSets.map((dataSet) => (
             <div key={dataSet._id} className={styles.savedItem}>
               <div>
+              <input
+                    type="checkbox"
+                    id={`disease-${dataSet._id}-checkbox`}
+                    className={styles.checkboxInput}
+                    // onChange={() => handleDiseaseChange(disease)}
+                  />
+                  <label
+                    htmlFor={`disease-${dataSet._id}-checkbox`}
+                    className={styles.checkboxLabel}
+                  ></label>
                 {renamingId === dataSet._id ? (
                   <input
                     className={styles.dataSetNameInput}
