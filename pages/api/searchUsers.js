@@ -1,26 +1,28 @@
 import dbConnect from "../../lib/dbConnect";
-import User from "../../models/User";
+import PatientData from "../../models/PatientData";
 
 export default async function handler(req, res) {
   if (req.method !== "GET") {
     return res.status(405).json({ message: "Method not allowed" });
   }
 
-  const { query } = req.query;
+  const { query } = req.query; // Extract the search query from the request
 
   try {
     await dbConnect();
 
-    const users = await User.find({
-      role: "user",
+    // Search for patients based on the query
+    const patients = await PatientData.find({
       $or: [
-        { firstName: { $regex: query, $options: "i" } },
-        { lastName: { $regex: query, $options: "i" } },
-        { userId: { $regex: query, $options: "i" } }, // Added userId search
+        { patientId: { $regex: query, $options: "i" } },
+        { patientName: { $regex: query, $options: "i" } },
+        { background: { $regex: query, $options: "i" } },
+        { "sampleInfo.slide": { $regex: query, $options: "i" } }, // Search by slide in sampleInfo
+        { "sampleInfo.date": { $regex: query, $options: "i" } },  // Search by date in sampleInfo
       ],
-    }).select("userId firstName lastName email"); // Include userId in the selected fields
+    }).select("patientId patientName background age gender sampleInfo");
 
-    res.status(200).json(users);
+    res.status(200).json(patients);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal Server Error" });

@@ -129,6 +129,83 @@ export default function PatientSelector() {
     ],
   };
 
+  const diseaseMapping = [
+    { name: "Fiducial", type: "control" },
+    { name: "10x_Spotting_Buffer", type: "control" },
+    { name: "Human_IgM_Isotype_Control_0.1", type: "control" },
+    { name: "Human_IgG_Isotype_Control_0.1", type: "control" },
+    { name: "PBS", type: "control" },
+    { name: "EMPTY", type: "control" },
+    { name: "Fiducial", type: "control" },
+    { name: "Antigen1", type: "common cold" },
+    { name: "hCoV.229E.S1+S2", type: "common cold" },
+    { name: "hCoV.OC43.S1", type: "common cold" },
+    { name: "hCoV.OC43.S1+S2", type: "common cold" },
+    { name: "LA2-94/2013", type: "rsv" },
+    { name: "TH-10526/2014", type: "rsv" },
+    { name: "SARS-CoV-2_NP", type: "covid" },
+    { name: "SARS-CoV-2.S1+S2.ECD", type: "covid" },
+    { name: "SARS-CoV-2.S1", type: "covid" },
+    { name: "SARS-CoV-2.S1.RBD", type: "covid" },
+    { name: "SARS-CoV-2.S1.XBB.1.5", type: "covid" },
+    { name: "SARS.CoV2.S1.RBD.XBB.1.5", type: "covid" },
+    { name: "SARS.CoV2.S-ECD.trimer.XBB.1.5", type: "covid" },
+    { name: "SARS.CoV2.S1.RBD.BA.2.86", type: "covid" },
+    { name: "SARS.CoV2.S1.RBD.JN.1", type: "covid" },
+    { name: "FluB_Phu/HA0", type: "flu" },
+    { name: "Flu.H3N2.A/Darwin/HA", type: "flu" },
+    { name: "Flu.H1N1.A/Wis.Victoria/HA", type: "flu" },
+    { name: "Human_IgM_Isotype_Control_0.3", type: "control" },
+    { name: "Flu.H1N2.A/Victoria/HA", type: "flu" },
+    { name: "Flu.H3N2.A/Mass/HA", type: "flu" },
+    { name: "Human_IgG_Isotype_Control_0.3", type: "control" },
+    { name: "EBV_p18_GST", type: "epstein bar" },
+    { name: "EBV-EA", type: "epstein bar" },
+    { name: "MuV.Miyahara_HN", type: "mumps" },
+    { name: "MuV.Miyahara_F0", type: "mumps" },
+    { name: "RuV_E1", type: "rubella" },
+    { name: "RuV_E1-E2", type: "rubella" },
+    { name: "RuV_C", type: "rubella" },
+    { name: "MeV_H", type: "measles" },
+    { name: "MeV_H.full_length", type: "measles" },
+    { name: "MeV_F0", type: "measles" },
+    { name: "VZV_Oka.B", type: "shingles" },
+    { name: "VZV_Oka.HHV-3_gE", type: "shingles" },
+    { name: "VZV_Oka.gH-gL", type: "shingles" },
+    { name: "WNV_E.Full", type: "west nile" },
+    { name: "WNV_Pre-M", type: "west nile" },
+    { name: "WNV.NY99_E.Domain_III", type: "west nile" },
+    { name: "WNV.Santa-Greece-2010_E.Domain_III", type: "west nile" },
+    { name: "WNV.NY99_NS1", type: "west nile" },
+    { name: "HAV_5-164", type: "hepatitis A" },
+    { name: "HAV_722-830", type: "hepatitis A" },
+    { name: "a-Hu_IgG_0.3", type: "control" },
+    { name: "HAV_1392-1521", type: "hepatitis A" },
+    { name: "HBVc", type: "hepatitis B" },
+    { name: "a-Hu_IgM_0.3", type: "control" },
+    { name: "HBVe", type: "hepatitis B" },
+    { name: "HBV_surfaceAg_ad", type: "hepatitis B" },
+    { name: "a-Hu_IgG_0.1", type: "control" },
+    { name: "Native_Bordetella_pertussis_toxin/ptxD", type: "pertussis" },
+    {
+      name: "Recombinant_B._pertussis_pertactin_autotransporter_protein",
+      type: "pertussis",
+    },
+    { name: "a-Hu_IgM_0.1", type: "control" },
+    { name: "Native_Bordetella_pertussis_filamentous", type: "pertussis" },
+    { name: "Recombinant_B._pertussis_Fimbriae_2/3", type: "pertussis" },
+    { name: "SARS.CoV2.S-ECD.trimer.JN.1", type: "covid" },
+    { name: "FluB_Aus/HA1", type: "flu" },
+    { name: "Human_IgM_Isotype_Control_0.03", type: "control" },
+    { name: "Flu.H3N2.A/Thai/HA", type: "flu" },
+    { name: "Human_IgG_Isotype_Control_0.03", type: "control" },
+    { name: "Flu.H5N1.A/Vietnam/1194/2004/HA", type: "flu" },
+    { name: "EBV-EBNA1", type: "epstein bar" },
+    { name: "Streptavidin_AF555", type: "die" },
+    { name: "Streptavidin_AF647", type: "die" },
+    { name: "Streptavidin_AF790", type: "die" },
+  ];
+
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -148,34 +225,34 @@ export default function PatientSelector() {
     }
   }, []);
 
-  useEffect(() => {
-    if (selectedUser) {
-      const fetchReports = async () => {
-        try {
-          const response = await axios.get(
-            `/api/report?patientId=${selectedUser.userId}`
-          );
-          if (response.data.length === 0) {
-            setPatientData([]);
-          } else {
-            setPatientData(response.data);
-            const uniqueDiseases = [
-              ...new Set(response.data.map((report) => report.diseaseName)),
-            ];
-            setDiseases(
-              uniqueDiseases.map((disease) => ({
-                name: disease,
-                data: globalData[disease] || [],
-              }))
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching reports:", error);
-        }
-      };
-      fetchReports();
-    }
-  }, [selectedUser]);
+  // useEffect(() => {
+  //   if (selectedUser) {
+  //     const fetchReports = async () => {
+  //       try {
+  //         const response = await axios.get(
+  //           `/api/report?patientId=${selectedUser.userId}`
+  //         );
+  //         if (response.data.length === 0) {
+  //           setPatientData([]);
+  //         } else {
+  //           setPatientData(response.data);
+  //           const uniqueDiseases = [
+  //             ...new Set(response.data.map((report) => report.diseaseName)),
+  //           ];
+  //           setDiseases(
+  //             uniqueDiseases.map((disease) => ({
+  //               name: disease,
+  //               data: globalData[disease] || [],
+  //             }))
+  //           );
+  //         }
+  //       } catch (error) {
+  //         console.error("Error fetching reports:", error);
+  //       }
+  //     };
+  //     fetchReports();
+  //   }
+  // }, [selectedUser]);
 
   const handleSearch = async (e) => {
     const value = e.target.value;
@@ -193,30 +270,227 @@ export default function PatientSelector() {
     }
   };
 
+  // const handleUserClick = (user) => {
+  //   const selected = {
+  //     name: `${user.patientName}`,
+  //     userId: user.patientId,
+  //   };
+  //   setSelectedUser(selected);
+  //   if (typeof window !== "undefined") {
+  //     localStorage.setItem("selectedUser", JSON.stringify(selected));
+  //   }
+  //   setSearchResults([]);
+  //   setSearchTerm("");
+  // };
+
+  // const handleUserClick = async (user) => {
+  //   const selected = {
+  //     name: `${user.patientName}`,
+  //     userId: user.patientId,
+  //     slide: user.sampleInfo?.slide,  // Assuming sampleInfo is part of the user object
+  //     block: user.sampleInfo?.block,  // Assuming sampleInfo is part of the user object
+  //   };
+
+  //   setSelectedUser(selected);
+
+  //   // Fetch append data using the slide and block from the selected user
+  //   if (selected.slide && selected.block) {
+  //     try {
+  //       const response = await axios.get(
+  //         `/api/getAppendData?slide=${selected.slide}&block=${selected.block}`
+  //       );
+
+  //       if (response.data.length > 0) {
+  //         // Set append data or process as needed
+  //         console.log("Append Data:", response.data);
+  //       } else {
+  //         console.log("No matching append data found");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching append data:", error);
+  //     }
+  //   }
+
+  //   if (typeof window !== "undefined") {
+  //     localStorage.setItem("selectedUser", JSON.stringify(selected));
+  //   }
+
+  //   setSearchResults([]);
+  //   setSearchTerm("");
+  // };
+
+  useEffect(() => {
+    if (selectedUser) {
+      const fetchAppendData = async () => {
+        try {
+          const { slide, block } = selectedUser;
+
+          if (slide && block) {
+            const response = await axios.get(
+              `/api/getAppendData?slide=${slide}&block=${block}`
+            );
+
+            if (response.data.length === 0) {
+              setPatientData([]);
+              setDiseases([]);
+            } else {
+              setPatientData(response.data);
+
+              // Map names to their types and filter for unique types
+              const diseaseTypes = [
+                ...new Set(
+                  response.data
+                    .map(
+                      (item) =>
+                        diseaseMapping.find((map) => map.name === item.Name)
+                          ?.type
+                    )
+                    .filter(Boolean) // Remove undefined values
+                ),
+              ];
+
+              setDiseases(
+                diseaseTypes.map((type) => ({
+                  type,
+                  data: patientData.filter((item) =>
+                    diseaseMapping.some(
+                      (map) => map.name === item.Name && map.type === type
+                    )
+                  ),
+                }))
+              );
+            }
+          } else {
+            console.error("Slide and Block are required to fetch Append data.");
+          }
+        } catch (error) {
+          console.error("Error fetching append data:", error);
+        }
+      };
+
+      fetchAppendData();
+    }
+  }, [selectedUser]);
+
   const handleUserClick = (user) => {
     const selected = {
-      name: `${user.firstName} ${user.lastName}`,
-      userId: user.userId,
+      name: `${user.patientName}`,
+      userId: user.patientId,
+      slide: user.sampleInfo?.slide,
+      block: user.sampleInfo?.block,
     };
+
     setSelectedUser(selected);
+
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedUser", JSON.stringify(selected));
     }
-    setSearchResults([]);
-    setSearchTerm("");
   };
 
+  // const handleDiseaseChange = (disease) => {
+  //   const isAlreadySelected = selectedDiseases.some(
+  //     (item) => item.name === disease.name
+  //   );
+  //   if (isAlreadySelected) {
+  //     setSelectedDiseases((prev) =>
+  //       prev.filter((item) => item.name !== disease.name)
+  //     );
+  //   } else {
+  //     setSelectedDiseases((prev) => [...prev, disease]);
+  //   }
+  // };
+
+  // Function to get unique names for a specific type
+  const getUniqueNamesByType = (type) => {
+    // Filter the array to include only items with the given type
+    const filtered = diseaseMapping.filter((disease) => disease.type === type);
+
+    // Use a Set to store unique names
+    const uniqueNames = new Set(filtered.map((disease) => disease.name));
+
+    // Convert the Set back to an array
+    return Array.from(uniqueNames);
+  };
+
+  // Example: Get unique names for "control"
+
   const handleDiseaseChange = (disease) => {
-    const isAlreadySelected = selectedDiseases.some(
-      (item) => item.name === disease.name
+    console.log(selectedDiseases.length);
+    console.log(disease.data);
+
+    // Get unique names by disease type
+    const uniqueNames = getUniqueNamesByType(disease.type);
+    console.log("Unique Names:", uniqueNames);
+
+    // Local variable to store API data
+    let apiData = [];
+
+    // Trigger the API call and handle the response later
+    axios
+      .post("/api/getDataByNames", { uniqueNames })
+      .then((response) => {
+        apiData = response.data.data; // Store the API data in the local variable
+        console.log("Filtered Data:", apiData);
+
+        // Prepare data for the graph
+        const graphData = uniqueNames.reduce((acc, name) => {
+          // Filter apiData by the current name
+          const filteredData = apiData.filter((item) => item.Name === name);
+
+          // Group levels and their counts
+          const levelData = filteredData.reduce((levelAcc, item) => {
+            const level = item.Value; // Assuming "Value" represents the level
+            if (levelAcc[level]) {
+              levelAcc[level].patients += 1; // Increment patient count
+            } else {
+              levelAcc[level] = { level: parseInt(level, 10), patients: 1 };
+            }
+            return levelAcc;
+          }, {});
+
+          // Convert levelData object into an array
+          const levelArray = Object.values(levelData);
+
+          // Add to the result map under the disease type
+          acc[name] = levelArray;
+
+          return acc;
+        }, {});
+
+        console.log("Graph Data:", { [disease.type]: graphData });
+        console.log("Graph Data:", graphData);
+
+        // Update selected reports with graphData
+        const diseaseName = disease.type;
+        setSelectedReports((prev) => {
+          const exists = prev.some((report) => report.name === diseaseName);
+
+          if (exists) {
+            // Remove the disease if already selected
+            return prev.filter((report) => report.name !== diseaseName);
+          } else {
+            // Add the disease and its data
+            return [
+              ...prev,
+              { name: diseaseName, data: graphData, uniqueNames },
+            ];
+          }
+        });
+      })
+      .catch((error) => {
+        console.error(
+          "Error fetching data:",
+          error.response?.data || error.message
+        );
+      });
+  };
+
+  const handleReportChange = (reportDate) => {
+    setSelectedReports((prev) =>
+      prev.includes(reportDate)
+        ? prev.filter((item) => item !== reportDate)
+        : [...prev, reportDate]
     );
-    if (isAlreadySelected) {
-      setSelectedDiseases((prev) =>
-        prev.filter((item) => item.name !== disease.name)
-      );
-    } else {
-      setSelectedDiseases((prev) => [...prev, disease]);
-    }
   };
 
   useEffect(() => {
@@ -235,14 +509,6 @@ export default function PatientSelector() {
 
     setGraphData(updatedGraphData);
   }, [selectedDiseases, diseases]);
-
-  const handleReportChange = (reportDate) => {
-    setSelectedReports((prev) =>
-      prev.includes(reportDate)
-        ? prev.filter((item) => item !== reportDate)
-        : [...prev, reportDate]
-    );
-  };
 
   const handleDownloadPDF = (reportDate, diseaseName) => {
     const input = document.getElementById(`graph-container-${reportDate}`);
@@ -375,29 +641,37 @@ export default function PatientSelector() {
     ];
   };
 
-  const getChartDataForReport = (reportDate) => {
-    const report = patientData.find((r) => r.reportDate === reportDate);
-    if (!report) return { labels: [], datasets: [] };
+  const getChartDataForReport = (data,uniqueNames) => {
+    console.log("Data 1:", data);
+    console.log("Unique Names 1:", uniqueNames);
+    if (!uniqueNames || uniqueNames.length === 0) {
+      return { labels: [], datasets: [] };
+    }
 
-    const diseaseData = globalData[report.diseaseName];
-    if (!diseaseData) return { labels: [], datasets: [] };
+    // Extract the levels (x-axis labels) from the first disease's data
+    const labels = data[uniqueNames[0]]?.map((item) => item.level) || [];
 
-    const labels = diseaseData.map((item) => item.level);
-    const datasets = [
-      {
-        label: report.diseaseName,
-        data: diseaseData.map((item) => item.patients),
-        borderColor: `hsl(${report.diseaseName.length * 50}, 70%, 50%)`,
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true,
-      },
-    ];
+    // Build datasets for each disease
+    const datasets = uniqueNames
+      .map((diseaseName, index) => {
+        const diseaseData = data[diseaseName];
+        if (!diseaseData) return null; // Skip if no data for the disease
+
+        return {
+          label: diseaseName,
+          data: diseaseData.map((item) => item.patients),
+          borderColor: `hsl(${index * 50}, 70%, 50%)`, // Unique color for each dataset
+          borderWidth: 2,
+          tension: 0.4,
+          fill: true,
+        };
+      })
+      .filter((dataset) => dataset !== null); // Remove null entries
 
     return { labels, datasets };
   };
 
-  const getChartOptionsForReport = (reportDate) => {
+  const getChartOptionsForReport = (data, uniqueNames) => {
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -406,11 +680,11 @@ export default function PatientSelector() {
           display: true,
           labels: { color: "white" },
         },
-        annotation: {
-          annotations: selectedReports.includes(reportDate)
-            ? getAnnotationForReport(reportDate)
-            : [],
-        },
+        // annotation: {
+        //   annotations: selectedReports.includes(reportDate)
+        //     ? getAnnotationForReport(reportDate)
+        //     : [],
+        // },
       },
       scales: {
         x: {
@@ -465,7 +739,7 @@ export default function PatientSelector() {
                     className={styles.dropdownItem}
                     onClick={() => handleUserClick(user)}
                   >
-                    {user.firstName} {user.lastName}
+                    {user.patientName}
                   </li>
                 ))}
               </ul>
@@ -496,12 +770,12 @@ export default function PatientSelector() {
                     htmlFor={`disease-${idx}`}
                     className={styles.checkboxLabel}
                   ></label>
-                  <span className={styles.checkboxText}>{disease.name}</span>
+                  <span className={styles.checkboxText}>{disease.type}</span>
                 </div>
               ))}
             </div>
           </div>
-          <div className={styles.section}>
+          {/* <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
             {patientData.length === 0 ? (
               <p className={styles.noReport}>No Report Found</p>
@@ -534,50 +808,47 @@ export default function PatientSelector() {
                 })}
               </div>
             )}
-          </div>
+          </div> */}
         </div>
 
         <div className={styles.patientData}>
           <h3 className={styles.sectionTitle}>Patient Data</h3>
           <div className={styles.list}>
-            {selectedReports.map((reportDate, idx) => {
-              const report = patientData.find(
-                (r) => r.reportDate === reportDate
-              );
+            {selectedReports.map((report, idx) => {
+              const { name, data, uniqueNames } = report;
+
               return (
                 <div key={idx} className={styles.item}>
                   <div className={styles.reportHeader}>
                     <span>
                       <span
                         className={styles.dropdownIcon}
-                        onClick={() => toggleReportGraph(reportDate)}
+                        onClick={() => toggleReportGraph(name)}
                       >
                         <FontAwesomeIcon
                           icon={
-                            expandedReports[reportDate]
-                              ? faChevronUp
-                              : faChevronDown
+                            expandedReports[name] ? faChevronUp : faChevronDown
                           }
                         />
                       </span>
-                      <span>{report?.diseaseName}</span>
+                      <span>{name}</span>
                     </span>
                     <button
                       className={styles.button}
-                      onClick={() => handleDownloadPDF(reportDate,report?.diseaseName)}
+                      onClick={() => handleDownloadPDF(reportDate, name)}
                     >
                       Download PDF
                     </button>
                   </div>
-                  {expandedReports[reportDate] && (
+                  {expandedReports[name] && (
                     <div
                       className={styles.graph}
-                      id={`graph-container-${reportDate}`}
+                      id={`graph-container-${name}`}
                       style={{ height: "300px", width: "100%" }} // Increase chart size
                     >
                       <Line
-                        data={getChartDataForReport(reportDate)}
-                        options={getChartOptionsForReport(reportDate)}
+                        data={getChartDataForReport(data, uniqueNames)}
+                        options={getChartOptionsForReport(data, uniqueNames)}
                       />
                     </div>
                   )}
