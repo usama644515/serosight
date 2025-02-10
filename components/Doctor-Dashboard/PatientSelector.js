@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./PatientSelector.module.css";
 import axios from "axios";
+import { CircularProgress } from "@mui/material"; // Using Material-UI for the loader
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -216,6 +217,7 @@ export default function PatientSelector() {
   const [patientData, setPatientData] = useState([]);
   const [expandedReports, setExpandedReports] = useState({});
   const [diseases, setDiseases] = useState([]);
+  const [loadingDiseases, setLoadingDiseases] = useState({});
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -423,70 +425,62 @@ export default function PatientSelector() {
     console.log(disease.data);
 
     if (isChecked) {
-      // Handle the checkbox being checked
       console.log(`Checkbox for ${disease.type} checked`);
 
-      // Get unique names by disease type
       const uniqueNames = getUniqueNamesByType(disease.type);
       console.log("Unique Names:", uniqueNames);
 
-      // Local variable to store API data
+      // Set the loading state for the specific disease
+      setLoadingDiseases(true);
+
       let apiData = [];
 
-      // Trigger the API call and handle the response later
       axios
         .post("/api/getDataByNames", { uniqueNames })
         .then((response) => {
-          apiData = response.data.data; // Store the API data in the local variable
+          apiData = response.data.data;
           console.log("Filtered Data:", apiData);
 
-          // Prepare data for the graph
           const graphData = uniqueNames.reduce((acc, name) => {
-            // Filter apiData by the current name
             const filteredData = apiData.filter((item) => item.Name === name);
-
-            // Group levels and their counts
             const levelData = filteredData.reduce((levelAcc, item) => {
-              const level = item.Value; // Assuming "Value" represents the level
+              const level = item.Value;
               if (levelAcc[level]) {
-                levelAcc[level].patients += 1; // Increment patient count
+                levelAcc[level].patients += 1;
               } else {
                 levelAcc[level] = { level: parseInt(level, 10), patients: 1 };
               }
               return levelAcc;
             }, {});
 
-            // Convert levelData object into an array
-            const levelArray = Object.values(levelData);
-
-            // Add to the result map under the disease type
-            acc[name] = levelArray;
-
+            acc[name] = Object.values(levelData);
             return acc;
           }, {});
 
           console.log("Graph Data:", { [disease.type]: graphData });
-          console.log("Graph Data:", graphData);
 
-          // Update selected reports with graphData
           const diseaseName = disease.type;
           setSelectedReports((prev) => [
             ...prev,
             { name: diseaseName, data: graphData, uniqueNames },
           ]);
+
+          // Remove loading state after data is fetched
+          setLoadingDiseases(false);
         })
         .catch((error) => {
           console.error(
             "Error fetching data:",
             error.response?.data || error.message
           );
+          setLoadingDiseases(false);
         });
     } else {
-      // Handle the checkbox being unchecked
       console.log(`Checkbox for ${disease.type} unchecked`);
       setSelectedReports((prev) =>
         prev.filter((report) => report.name !== disease.type)
       );
+      setLoadingDiseases(false);
     }
   };
 
@@ -521,57 +515,59 @@ export default function PatientSelector() {
       const [day, month, year] = reportDate.split("/");
       return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
     };
-  
+
     try {
       // Reformat the date for the element ID
       const sanitizedDate = reportDate.replace(/\//g, "-");
       const input = document.getElementById(`graph-container-${diseaseName}`);
-  
+
       // Check if the element exists
       if (!input) {
-        console.error(`Element with ID graph-container-${diseaseName} not found.`);
+        console.error(
+          `Element with ID graph-container-${diseaseName} not found.`
+        );
         return;
       }
-  
+
       html2canvas(input, { scale: 2 }).then((canvas) => {
         const imgData = canvas.toDataURL("image/png");
         const pdf = new jsPDF("landscape");
-  
+
         // Add title and header details
         pdf.setFontSize(18);
         pdf.setTextColor(33, 150, 243);
         pdf.text("Patient Immunity Report", 105, 20, { align: "center" });
-  
+
         pdf.setFontSize(12);
         pdf.setTextColor(0, 0, 0);
         pdf.text(`Patient ID: ${selectedUser.userId}`, 20, 40);
         pdf.text(`Patient Name: ${selectedUser.name}`, 20, 50);
         pdf.text(`Selected Diseases: ${diseaseName}`, 20, 60);
-  
+
         // Convert and format the date
         const formattedDate = new Intl.DateTimeFormat("en-US", {
           day: "numeric",
           month: "long",
           year: "numeric",
         }).format(new Date(parseReportDate(reportDate)));
-  
+
         pdf.text(`Date: ${formattedDate}`, 20, 70);
-  
+
         // Add separator line
         pdf.setDrawColor(33, 150, 243);
         pdf.setLineWidth(0.5);
         pdf.line(20, 80, 280, 80);
-  
+
         // Add the chart as an image
         const imgWidth = 160;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         pdf.addImage(imgData, "PNG", 20, 90, imgWidth, imgHeight);
-  
+
         // Add footer text
         pdf.setFontSize(10);
         pdf.setTextColor(100, 100, 100);
         pdf.text("Generated by ImmunoMap", 105, 200, { align: "center" });
-  
+
         // Save the PDF
         pdf.save(`${selectedUser.name}_${diseaseName}_report.pdf`);
       });
@@ -579,8 +575,6 @@ export default function PatientSelector() {
       console.error("Error generating PDF:", error);
     }
   };
-  
-  
 
   const toggleReportGraph = (reportDate) => {
     setExpandedReports((prev) => ({
@@ -595,19 +589,21 @@ export default function PatientSelector() {
       console.error("Immunity level is not a number:", immunity);
       return [];
     }
-  
+
     const uniqueName = uniqueNames[0];
     const diseaseData = data[uniqueName];
     if (!diseaseData) {
       console.error("No disease data found for unique name:", uniqueName);
       return [];
     }
-  
+
     // Find the correct label range for the immunity level
     const rangeStep = 1400;
     const rangeIndex = Math.floor(immunityLevel / rangeStep);
-    const labelRange = `[${rangeIndex * rangeStep}, ${(rangeIndex + 1) * rangeStep}]`;
-  
+    const labelRange = `[${rangeIndex * rangeStep}, ${
+      (rangeIndex + 1) * rangeStep
+    }]`;
+
     return [
       {
         type: "line",
@@ -626,36 +622,38 @@ export default function PatientSelector() {
       },
     ];
   };
-  
+
   const getChartDataForReport = (data, uniqueNames) => {
     if (!uniqueNames || uniqueNames.length === 0) {
       return { labels: [], datasets: [] };
     }
-  
+
     const rangeStep = 1400;
-    const maxLevel = Math.max(...data[uniqueNames[0]].map((item) => item.level));
+    const maxLevel = Math.max(
+      ...data[uniqueNames[0]].map((item) => item.level)
+    );
     const labels = [];
     for (let i = 0; i <= maxLevel; i += rangeStep) {
       labels.push(`[${i}, ${i + rangeStep}]`);
     }
-  
+
     const datasets = uniqueNames
       .map((diseaseName, index) => {
         const diseaseData = data[diseaseName];
         if (!diseaseData) return null;
-  
+
         const rangeData = labels.map((label) => {
           const [start, end] = label
             .replace("[", "")
             .replace("]", "")
             .split(", ")
             .map(Number);
-  
+
           return diseaseData
             .filter((item) => item.level >= start && item.level < end)
             .reduce((sum, item) => sum + item.patients, 0);
         });
-  
+
         return {
           label: diseaseName,
           data: rangeData,
@@ -666,13 +664,13 @@ export default function PatientSelector() {
         };
       })
       .filter((dataset) => dataset !== null);
-  
+
     return { labels, datasets };
   };
-  
+
   const getChartOptionsForReport = (data, uniqueNames) => {
     const annotations = getAnnotationForReport(7000, uniqueNames, data);
-  
+
     return {
       responsive: true,
       maintainAspectRatio: false,
@@ -684,11 +682,9 @@ export default function PatientSelector() {
         annotation: {
           // annotations,
           annotations: selectedReport.includes(selectedUser.date)
-        ? getAnnotationForReport(7000, uniqueNames, data)
-        : [],
-        
-        
-    },
+            ? getAnnotationForReport(7000, uniqueNames, data)
+            : [],
+        },
       },
       scales: {
         x: {
@@ -712,7 +708,7 @@ export default function PatientSelector() {
       },
     };
   };
-  
+
   // Example usage
   // const uniqueNames = ["LA2-94/2013", "TH-10526/2014"];
   // const data = {
@@ -727,13 +723,13 @@ export default function PatientSelector() {
   //     // Add more data here
   //   ],
   // };
-  
+
   // const chartData = getChartDataForReport(data, uniqueNames);
   // const chartOptions = getChartOptionsForReport(data, uniqueNames);
-  
+
   // console.log("Chart Data:", chartData);
   // console.log("Chart Options:", chartOptions);
-  
+
   const handleRefresh = () => {
     localStorage.removeItem("selectedUser");
     window.location.reload();
@@ -868,43 +864,56 @@ export default function PatientSelector() {
 
               return (
                 <div key={idx} className={styles.item}>
-                  <div className={styles.reportHeader}>
-                    <span>
-                      <span
-                        className={styles.dropdownIcon}
-                        onClick={() => toggleReportGraph(name)}
-                      >
-                        <FontAwesomeIcon
-                          icon={
-                            expandedReports[name] ? faChevronUp : faChevronDown
-                          }
-                        />
+                  <>
+                    <div className={styles.reportHeader}>
+                      <span>
+                        <span
+                          className={styles.dropdownIcon}
+                          onClick={() => toggleReportGraph(name)}
+                        >
+                          <FontAwesomeIcon
+                            icon={
+                              expandedReports[name]
+                                ? faChevronUp
+                                : faChevronDown
+                            }
+                          />
+                        </span>
+                        <span>{name}</span>
                       </span>
-                      <span>{name}</span>
-                    </span>
-                    <button
-                      className={styles.button}
-                      onClick={() => handleDownloadPDF(selectedUser.date, name)}
-                    >
-                      Download PDF
-                    </button>
-                  </div>
-                  {expandedReports[name] && (
-                    <div
-                      className={styles.graph}
-                      id={`graph-container-${name}`}
-                      style={{ height: "300px", width: "100%" }} // Increase chart size
-                    >
-                      <Line
-                        data={getChartDataForReport(data, uniqueNames)}
-                        options={getChartOptionsForReport(data, uniqueNames)}
-                      />
+                      <button
+                        className={styles.button}
+                        onClick={() =>
+                          handleDownloadPDF(selectedUser.date, name)
+                        }
+                      >
+                        Download PDF
+                      </button>
                     </div>
-                  )}
+                    {expandedReports[name] && (
+                      <div
+                        className={styles.graph}
+                        id={`graph-container-${name}`}
+                        style={{ height: "300px", width: "100%" }}
+                      >
+                        <Line
+                          data={getChartDataForReport(data, uniqueNames)}
+                          options={getChartOptionsForReport(data, uniqueNames)}
+                        />
+                      </div>
+                    )}
+                  </>
                 </div>
               );
             })}
           </div>
+          {loadingDiseases ? (
+            <div className={styles.loader}>
+              <CircularProgress />
+            </div>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       {/* Refresh Button */}
