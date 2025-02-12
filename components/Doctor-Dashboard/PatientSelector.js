@@ -736,6 +736,7 @@ const getChartOptionsForReport = (data, uniqueNames,patientData) => {
       legend: {
         display: true,
         labels: { color: "white" },
+        onClick: null, // Disables dataset hiding
       },
       annotation: {
         annotations,
