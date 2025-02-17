@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./PatientSelector.module.css";
 import axios from "axios";
+import { useSampleInfo } from "./ContextProvider";
 import { CircularProgress } from "@mui/material"; // Using Material-UI for the loader
 import {
   Chart as ChartJS,
@@ -218,6 +219,7 @@ export default function PatientSelector() {
   const [expandedReports, setExpandedReports] = useState({});
   const [diseases, setDiseases] = useState([]);
   const [loadingDiseases, setLoadingDiseases] = useState(false);
+  const { sampleInfoList } = useSampleInfo();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -323,6 +325,7 @@ export default function PatientSelector() {
   // };
 
   useEffect(() => {
+    console.log("provider sampleInfoList", sampleInfoList);
     if (selectedUser) {
       const fetchAppendData = async () => {
         try {
@@ -382,7 +385,7 @@ export default function PatientSelector() {
       slide: user.sampleInfo?.slide,
       block: user.sampleInfo?.block,
       date: user.sampleInfo?.date,
-      immunity: user.sampleInfo?.immunity,
+      // immunity: user.sampleInfo?.immunity,
     };
 
     setSelectedUser(selected);
@@ -439,7 +442,22 @@ export default function PatientSelector() {
         .post("/api/getDataByNames", { uniqueNames })
         .then((response) => {
           apiData = response.data.data;
-          console.log("Filtered Data:", apiData);
+          console.log("API Data before filtering:", apiData);
+
+          // Check if sampleInfoList exists and has data
+          if (sampleInfoList && sampleInfoList.length > 0) {
+            console.log("sampleInfoList:", sampleInfoList);
+
+            apiData = apiData.filter((item) => {
+              return sampleInfoList.some(
+                (sample) =>
+                  String(sample.block) === String(item.Block) &&
+                  String(sample.slide) === String(item.Slide)
+              );
+            });
+
+            console.log("Filtered API Data based on sampleInfoList:", apiData);
+          }
 
           const graphData = uniqueNames.reduce((acc, name) => {
             const filteredData = apiData.filter((item) => item.Name === name);
@@ -561,259 +579,258 @@ export default function PatientSelector() {
     return { labels, datasets };
   };
 
-//   const getAnnotationForReport = (uniqueNames, patientData) => {
-//     console.error("function is running..............");
+  //   const getAnnotationForReport = (uniqueNames, patientData) => {
+  //     console.error("function is running..............");
 
-//     // Validate inputs
-//     if (!Array.isArray(uniqueNames) || uniqueNames.length === 0) {
-//       console.error("Unique names are missing or not an array");
-//       return [];
-//     }
-//     if (!Array.isArray(patientData) || patientData.length === 0) {
-//       console.error("Patient data is missing or not an array");
-//       return [];
-//     }
+  //     // Validate inputs
+  //     if (!Array.isArray(uniqueNames) || uniqueNames.length === 0) {
+  //       console.error("Unique names are missing or not an array");
+  //       return [];
+  //     }
+  //     if (!Array.isArray(patientData) || patientData.length === 0) {
+  //       console.error("Patient data is missing or not an array");
+  //       return [];
+  //     }
 
-//     const rangeStep = 1400; // Step size for grouping immunity levels
+  //     const rangeStep = 1400; // Step size for grouping immunity levels
 
-//     // Map uniqueNames to their corresponding average immunity range
-//     const nameValues = uniqueNames
-//       .map((name) => {
-//         // Filter patientData for the current name
-//         const matchingData = patientData.filter((item) => item.Name === name);
-//         console.log(`Matching Data for ${name}:`, matchingData);
+  //     // Map uniqueNames to their corresponding average immunity range
+  //     const nameValues = uniqueNames
+  //       .map((name) => {
+  //         // Filter patientData for the current name
+  //         const matchingData = patientData.filter((item) => item.Name === name);
+  //         console.log(`Matching Data for ${name}:`, matchingData);
 
-//         if (matchingData.length === 0) {
-//           console.warn(`No matching data found for name: ${name}`);
-//           return null;
-//         }
+  //         if (matchingData.length === 0) {
+  //           console.warn(`No matching data found for name: ${name}`);
+  //           return null;
+  //         }
 
-//         // Extract and log immunity levels
-//         const immunityLevels = matchingData.map((item) =>
-//           Number(item.Value || 0)
-//         );
-//         console.log(`Immunity Levels for ${name}:`, immunityLevels);
+  //         // Extract and log immunity levels
+  //         const immunityLevels = matchingData.map((item) =>
+  //           Number(item.Value || 0)
+  //         );
+  //         console.log(`Immunity Levels for ${name}:`, immunityLevels);
 
-//         // Calculate the average immunity level
-//         const averageValue =
-//           immunityLevels.reduce((sum, value) => sum + value, 0) /
-//           matchingData.length;
-//         console.log(`Average Immunity for ${name}:`, averageValue);
+  //         // Calculate the average immunity level
+  //         const averageValue =
+  //           immunityLevels.reduce((sum, value) => sum + value, 0) /
+  //           matchingData.length;
+  //         console.log(`Average Immunity for ${name}:`, averageValue);
 
-//         // Determine the range for this immunity level
-//         const rangeIndex = Math.floor(averageValue / rangeStep);
-//         const lowerBound = rangeIndex * rangeStep;
-//         const upperBound = (rangeIndex + 1) * rangeStep;
-//         const rangeMidpoint = (lowerBound + upperBound) / 2;
+  //         // Determine the range for this immunity level
+  //         const rangeIndex = Math.floor(averageValue / rangeStep);
+  //         const lowerBound = rangeIndex * rangeStep;
+  //         const upperBound = (rangeIndex + 1) * rangeStep;
+  //         const rangeMidpoint = (lowerBound + upperBound) / 2;
 
-//         return {
-//           name,
-//           avgValue: rangeMidpoint,
-//           labelRange: `[${lowerBound}, ${upperBound}]`,
-//         };
-//       })
-//       .filter((item) => item !== null);
-// console.log('final',nameValues);
-//     // Generate annotation lines based on the calculated ranges
-//     return nameValues.map(({ name, avgValue, labelRange }, index) => ({
-      
-//       type: "line",
-//       mode: "vertical",
-//       scaleID: "x",
-//       value: avgValue,
-//       borderColor: `hsl(${index * 50}, 70%, 50%)`, // Dynamic color for differentiation
-//       borderWidth: 2,
-//       label: {
-//         content: `${name}: ${labelRange}`,
-//         enabled: true,
-//         position: "top",
-//         backgroundColor: "black",
-//         color: "white",
-//       },
-//     }));
-//   };
+  //         return {
+  //           name,
+  //           avgValue: rangeMidpoint,
+  //           labelRange: `[${lowerBound}, ${upperBound}]`,
+  //         };
+  //       })
+  //       .filter((item) => item !== null);
+  // console.log('final',nameValues);
+  //     // Generate annotation lines based on the calculated ranges
+  //     return nameValues.map(({ name, avgValue, labelRange }, index) => ({
 
-//   // Example usage in getChartOptionsForReport
-//   const getChartOptionsForReport = (data, uniqueNames,patientData) => {
+  //       type: "line",
+  //       mode: "vertical",
+  //       scaleID: "x",
+  //       value: avgValue,
+  //       borderColor: `hsl(${index * 50}, 70%, 50%)`, // Dynamic color for differentiation
+  //       borderWidth: 2,
+  //       label: {
+  //         content: `${name}: ${labelRange}`,
+  //         enabled: true,
+  //         position: "top",
+  //         backgroundColor: "black",
+  //         color: "white",
+  //       },
+  //     }));
+  //   };
 
-//     return {
-//       responsive: true,
-//       maintainAspectRatio: false,
-//       plugins: {
-//         legend: {
-//           display: true,
-//           labels: { color: "white" },
-//         },
-//         annotation: {
-//           // annotations,
-//           annotations: selectedReport.includes(selectedUser.date)
-//             ? getAnnotationForReport(uniqueNames, patientData)
-//             : [],
-//         },
-//       },
-//       scales: {
-//         x: {
-//           title: {
-//             display: true,
-//             text: "Immunity Level",
-//             color: "white",
-//           },
-//           grid: { display: false },
-//           ticks: { color: "white" },
-//         },
-//         y: {
-//           title: {
-//             display: true,
-//             text: "Number of Patients",
-//             color: "white",
-//           },
-//           grid: { color: "rgba(255, 255, 255, 0.1)" },
-//           ticks: { color: "white" },
-//         },
-//       },
-//     };
-//   };
-  
+  //   // Example usage in getChartOptionsForReport
+  //   const getChartOptionsForReport = (data, uniqueNames,patientData) => {
 
+  //     return {
+  //       responsive: true,
+  //       maintainAspectRatio: false,
+  //       plugins: {
+  //         legend: {
+  //           display: true,
+  //           labels: { color: "white" },
+  //         },
+  //         annotation: {
+  //           // annotations,
+  //           annotations: selectedReport.includes(selectedUser.date)
+  //             ? getAnnotationForReport(uniqueNames, patientData)
+  //             : [],
+  //         },
+  //       },
+  //       scales: {
+  //         x: {
+  //           title: {
+  //             display: true,
+  //             text: "Immunity Level",
+  //             color: "white",
+  //           },
+  //           grid: { display: false },
+  //           ticks: { color: "white" },
+  //         },
+  //         y: {
+  //           title: {
+  //             display: true,
+  //             text: "Number of Patients",
+  //             color: "white",
+  //           },
+  //           grid: { color: "rgba(255, 255, 255, 0.1)" },
+  //           ticks: { color: "white" },
+  //         },
+  //       },
+  //     };
+  //   };
 
-
-
-const getAnnotationForReport = (immunityLevels, uniqueNames, data) => {
-  if (!Array.isArray(immunityLevels)) {
-    immunityLevels = [immunityLevels];
-  }
-  
-  return immunityLevels.map((immunity) => {
-    const immunityLevel = Number(immunity);
-    if (isNaN(immunityLevel)) {
-      console.error("Immunity level is not a number:", immunity);
-      return null;
+  const getAnnotationForReport = (immunityLevels, uniqueNames, data) => {
+    if (!Array.isArray(immunityLevels)) {
+      immunityLevels = [immunityLevels];
     }
 
-    const uniqueName = uniqueNames[0];
-    const diseaseData = data[uniqueName];
-    if (!diseaseData) {
-      console.error("No disease data found for unique name:", uniqueName);
-      return null;
-    }
+    return immunityLevels
+      .map((immunity) => {
+        const immunityLevel = Number(immunity);
+        if (isNaN(immunityLevel)) {
+          console.error("Immunity level is not a number:", immunity);
+          return null;
+        }
 
-    const rangeStep = 1400;
-    const rangeIndex = Math.floor(immunityLevel / rangeStep);
-    const labelRange = `[${rangeIndex * rangeStep}, ${(rangeIndex + 1) * rangeStep}]`;
+        const uniqueName = uniqueNames[0];
+        const diseaseData = data[uniqueName];
+        if (!diseaseData) {
+          console.error("No disease data found for unique name:", uniqueName);
+          return null;
+        }
+
+        const rangeStep = 1400;
+        const rangeIndex = Math.floor(immunityLevel / rangeStep);
+        const labelRange = `[${rangeIndex * rangeStep}, ${
+          (rangeIndex + 1) * rangeStep
+        }]`;
+
+        return {
+          type: "line",
+          mode: "vertical",
+          scaleID: "x",
+          value: labelRange,
+          borderColor: "red",
+          borderWidth: 2,
+          label: {
+            content: `Immunity: ${immunityLevel}`,
+            enabled: true,
+            position: "top",
+            backgroundColor: "red",
+            color: "white",
+          },
+        };
+      })
+      .filter((annotation) => annotation !== null);
+  };
+
+  const getChartOptionsForReport = (data, uniqueNames, patientData) => {
+    // const immunityLevels = [6500.0038, 14000]; // Example multiple immunity levels
+    const immunityLevels = getimmunitylevel(uniqueNames, patientData); // Example multiple immunity levels
+    // getimmunitylevel(uniqueNames,patientData);
+    const annotations = selectedReport.includes(selectedUser.date)
+      ? getAnnotationForReport(immunityLevels, uniqueNames, data)
+      : [];
+    console.log("annotations", annotations);
 
     return {
-      type: "line",
-      mode: "vertical",
-      scaleID: "x",
-      value: labelRange,
-      borderColor: "red",
-      borderWidth: 2,
-      label: {
-        content: `Immunity: ${immunityLevel}`,
-        enabled: true,
-        position: "top",
-        backgroundColor: "red",
-        color: "white",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          labels: { color: "white" },
+          onClick: null, // Disables dataset hiding
+        },
+        annotation: {
+          annotations,
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Immunity Level",
+            color: "white",
+          },
+          grid: { display: false },
+          ticks: { color: "white" },
+        },
+        y: {
+          title: {
+            display: true,
+            text: "Number of Patients",
+            color: "white",
+          },
+          grid: { color: "rgba(255, 255, 255, 0.1)" },
+          ticks: { color: "white" },
+        },
       },
     };
-  }).filter(annotation => annotation !== null);
-};
-
-
-const getChartOptionsForReport = (data, uniqueNames,patientData) => {
-  // const immunityLevels = [6500.0038, 14000]; // Example multiple immunity levels
-  const immunityLevels = getimmunitylevel(uniqueNames,patientData); // Example multiple immunity levels
-  // getimmunitylevel(uniqueNames,patientData);
-  const annotations = selectedReport.includes(selectedUser.date)
-    ? getAnnotationForReport(immunityLevels, uniqueNames, data)
-    : [];
-    console.log('annotations',annotations);
-
-  return {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: true,
-        labels: { color: "white" },
-        onClick: null, // Disables dataset hiding
-      },
-      annotation: {
-        annotations,
-      },
-    },
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: "Immunity Level",
-          color: "white",
-        },
-        grid: { display: false },
-        ticks: { color: "white" },
-      },
-      y: {
-        title: {
-          display: true,
-          text: "Number of Patients",
-          color: "white" },
-        grid: { color: "rgba(255, 255, 255, 0.1)" },
-        ticks: { color: "white" },
-      },
-    },
   };
-};
 
-const getimmunitylevel = (uniqueNames, patientData) => {
-  console.error("function is running..............");
+  const getimmunitylevel = (uniqueNames, patientData) => {
+    console.error("function is running..............");
 
-  // Validate inputs
-  if (!Array.isArray(uniqueNames) || uniqueNames.length === 0) {
+    // Validate inputs
+    if (!Array.isArray(uniqueNames) || uniqueNames.length === 0) {
       console.error("Unique names are missing or not an array");
       return [];
-  }
-  if (!Array.isArray(patientData) || patientData.length === 0) {
+    }
+    if (!Array.isArray(patientData) || patientData.length === 0) {
       console.error("Patient data is missing or not an array");
       return [];
-  }
+    }
 
-  const rangeStep = 1400; // Step size for grouping immunity levels
+    const rangeStep = 1400; // Step size for grouping immunity levels
 
-  // Map uniqueNames to their corresponding average immunity range
-  const avgValues = uniqueNames
+    // Map uniqueNames to their corresponding average immunity range
+    const avgValues = uniqueNames
       .map((name) => {
-          // Filter patientData for the current name
-          const matchingData = patientData.filter((item) => item.Name === name);
+        // Filter patientData for the current name
+        const matchingData = patientData.filter((item) => item.Name === name);
 
-          if (matchingData.length === 0) {
-              console.warn(`No matching data found for name: ${name}`);
-              return null;
-          }
+        if (matchingData.length === 0) {
+          console.warn(`No matching data found for name: ${name}`);
+          return null;
+        }
 
-          // Extract immunity levels
-          const immunityLevels = matchingData.map((item) =>
-              Number(item.Value || 0)
-          );
+        // Extract immunity levels
+        const immunityLevels = matchingData.map((item) =>
+          Number(item.Value || 0)
+        );
 
-          // Calculate the average immunity level
-          const averageValue =
-              immunityLevels.reduce((sum, value) => sum + value, 0) /
-              matchingData.length;
+        // Calculate the average immunity level
+        const averageValue =
+          immunityLevels.reduce((sum, value) => sum + value, 0) /
+          matchingData.length;
 
-          // Determine the range midpoint for this immunity level
-          const rangeIndex = Math.floor(averageValue / rangeStep);
-          const lowerBound = rangeIndex * rangeStep;
-          const upperBound = (rangeIndex + 1) * rangeStep;
-          const rangeMidpoint = (lowerBound + upperBound) / 2;
+        // Determine the range midpoint for this immunity level
+        const rangeIndex = Math.floor(averageValue / rangeStep);
+        const lowerBound = rangeIndex * rangeStep;
+        const upperBound = (rangeIndex + 1) * rangeStep;
+        const rangeMidpoint = (lowerBound + upperBound) / 2;
 
-          return rangeMidpoint;
+        return rangeMidpoint;
       })
       .filter((value) => value !== null);
 
-  console.log('Final avgValues:', avgValues);
-  return avgValues; // Return only the array of avgValue values
-};
-
+    console.log("Final avgValues:", avgValues);
+    return avgValues; // Return only the array of avgValue values
+  };
 
   // Example usage
   // const uniqueNames = ["LA2-94/2013", "TH-10526/2014"];

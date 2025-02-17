@@ -1,18 +1,22 @@
 import React, { useState, useEffect } from "react";
 import styles from "./DataSelector.module.css";
 import axios from "axios";
+import { useSampleInfo } from "./ContextProvider";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const DataSelector = () => {
   const [selected, setSelected] = useState({
-    immunity: "All",
-    vaccineYes: [],
-    vaccineNo: [],
+    // immunity: "All",
+    medications: [],
+    vaccine: [],
     smoking: "All",
   });
-
+  const { setSampleInfoList } = useSampleInfo();
   const [savedDataSets, setSavedDataSets] = useState([]);
   const [renamingId, setRenamingId] = useState(null);
   const [renamingName, setRenamingName] = useState("");
+  const [selectedDataSetId, setSelectedDataSetId] = useState(null);
 
   useEffect(() => {
     // Fetch saved datasets from the database
@@ -97,57 +101,129 @@ const DataSelector = () => {
     }
   };
 
+  const [patients, setPatients] = useState([]);
+
+  useEffect(() => {
+    if (selectedDataSetId) {
+      const selectedDataSet = savedDataSets.find(
+        (dataSet) => dataSet._id === selectedDataSetId
+      );
+
+      if (selectedDataSet) {
+        fetch("/api/patient-matching", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ criteria: selectedDataSet.criteria }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            console.log("Matched patients:", data);
+
+            // Extract block and slide info
+            const extractedSampleInfo = data.map((patient) => ({
+              block: patient.sampleInfo.block,
+              slide: patient.sampleInfo.slide,
+            }));
+
+            // Set the sample info in context
+            setSampleInfoList(extractedSampleInfo);
+
+            // Show the toast with the matched patients length
+            // toast.success(`Matched patients: ${data.length}`);
+          })
+          .catch((error) =>
+            console.error("Error fetching patient data:", error)
+          );
+      }
+    } else {
+      // If no dataset is selected, clear the sample info list
+      setSampleInfoList(null);
+    }
+  }, [selectedDataSetId, savedDataSets]);
+
   return (
     <div id="comparison-data-selector">
       <h1 className={styles.title}>Create comparison data.</h1>
       <p className={styles.subtitle}>Select Data Sets</p>
       <div className={styles.container}>
-        {/* Immunity Data */}
+        {/* Medications Data */}
         <div className={styles.filterGroup}>
-          <p className={styles.filterLabel}>Immunity Data</p>
+          <p className={styles.filterLabel}>Medications</p>
           <div className={styles.filterOptions}>
             {[
-              "All",
-              "Mono",
-              "Respiratory",
-              "Hepatitis",
-              "MMR",
-              "West Nile",
+              // "All",
+              // "Mono",
+              // "Respiratory",
+              // "Hepatitis",
+              // "MMR",
+              // "West Nile",
+              "Plaquanil",
+              "Methotrexate",
+              "Otezla",
+              "Arava",
+              "tnf_alpha",
+              "jak_kinase_inh",
+              "il_23_inh",
+              "il_6_inh",
+              "il_17_inh",
+              "orencia",
+              "Imuran",
+              "cellcept",
+              "cytoxan",
+              "prednisone",
+              "benlysta",
+              "rituxan",
             ].map((item) => (
               <button
                 key={item}
                 className={`${styles.filterButton} ${
-                  isSelected("immunity", item) ? styles.active : ""
+                  isSelected("medications", item) ? styles.active : ""
                 }`}
-                onClick={() => handleSelect("immunity", item)}
+                onClick={() => handleSelect("medications", item)}
               >
                 {item}
               </button>
             ))}
           </div>
         </div>
-
+        <hr />
+        <br />
         {/* Vaccine Status */}
         <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Vaccine Status</p>
           <div>
             <div className={styles.filterOptions}>
-              <p>Yes</p>
-              {["Mono", "Respiratory", "Hepatitis", "MMR", "West Nile"].map(
-                (item) => (
-                  <button
-                    key={`yes-${item}`}
-                    className={`${styles.filterButton} ${
-                      isSelected("vaccineYes", item) ? styles.active : ""
-                    }`}
-                    onClick={() => handleSelect("vaccineYes", item)}
-                  >
-                    {item}
-                  </button>
-                )
-              )}
+              {/* <p>Yes</p> */}
+              {[
+                "covid19",
+                "pertussis",
+                "rsv",
+                "varicella",
+                "measles",
+                "mumps",
+                "rubella",
+                "hepA",
+                "hepB",
+                "Influenza",
+                // "mononucleosis",
+                // "H1N5 AVIAN",
+                // "west nile virus",
+                // "Diabetes",
+              ].map((item) => (
+                <button
+                  key={`yes-${item}`}
+                  className={`${styles.filterButton} ${
+                    isSelected("vaccine", item) ? styles.active : ""
+                  }`}
+                  onClick={() => handleSelect("vaccine", item)}
+                >
+                  {item}
+                </button>
+              ))}
             </div>
-            <br />
+            {/* <br />
             <div className={styles.filterOptions}>
               <p>No</p>
               {["Mono", "Respiratory", "Hepatitis", "MMR", "West Nile"].map(
@@ -163,15 +239,16 @@ const DataSelector = () => {
                   </button>
                 )
               )}
-            </div>
+            </div> */}
           </div>
         </div>
-
+        <hr />
+        <br />
         {/* Smoking Status */}
         <div className={styles.filterGroup}>
           <p className={styles.filterLabel}>Smoking Status</p>
           <div className={styles.filterOptions}>
-            {["All", "Yes", "No"].map((item) => (
+            {["Yes", "No"].map((item) => (
               <button
                 key={item}
                 className={`${styles.filterButton} ${
@@ -198,16 +275,21 @@ const DataSelector = () => {
           {savedDataSets.map((dataSet) => (
             <div key={dataSet._id} className={styles.savedItem}>
               <div>
-              <input
-                    type="checkbox"
-                    id={`disease-${dataSet._id}-checkbox`}
-                    className={styles.checkboxInput}
-                    // onChange={() => handleDiseaseChange(disease)}
-                  />
-                  <label
-                    htmlFor={`disease-${dataSet._id}-checkbox`}
-                    className={styles.checkboxLabel}
-                  ></label>
+                <input
+                  type="checkbox"
+                  id={`disease-${dataSet._id}-checkbox`}
+                  className={styles.checkboxInput}
+                  checked={selectedDataSetId === dataSet._id}
+                  onChange={() =>
+                    setSelectedDataSetId(
+                      selectedDataSetId === dataSet._id ? null : dataSet._id
+                    )
+                  }
+                />
+                <label
+                  htmlFor={`disease-${dataSet._id}-checkbox`}
+                  className={styles.checkboxLabel}
+                ></label>
                 {renamingId === dataSet._id ? (
                   <input
                     className={styles.dataSetNameInput}

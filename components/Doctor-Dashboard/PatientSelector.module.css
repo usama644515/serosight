@@ -199,7 +199,7 @@
     background-color: #ffffff;
     border: 1px solid #ccc;
     border-radius: 4px;
-    max-height: 150px;
+    max-height: 200px;
     overflow-y: auto;
     position: absolute;
     /* width: 100%; */
@@ -216,6 +216,16 @@
     padding: 10px;
     cursor: pointer;
   }
+  .dropdownItem{
+    margin: 2px;
+    padding: 5px;
+  }
+  .dropdownItem:hover{
+    background-color: gray;
+  }
+
+
+  
   .reportHeader{
     display: flex;
     justify-content: space-between;
