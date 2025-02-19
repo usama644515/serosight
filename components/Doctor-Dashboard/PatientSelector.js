@@ -698,14 +698,14 @@ export default function PatientSelector() {
     }
 
     return immunityLevels
-      .map((immunity) => {
+      .map((immunity, index) => {
         const immunityLevel = Number(immunity);
         if (isNaN(immunityLevel)) {
           console.error("Immunity level is not a number:", immunity);
           return null;
         }
 
-        const uniqueName = uniqueNames[0];
+        const uniqueName = uniqueNames[index % uniqueNames.length];
         const diseaseData = data[uniqueName];
         if (!diseaseData) {
           console.error("No disease data found for unique name:", uniqueName);
@@ -719,17 +719,18 @@ export default function PatientSelector() {
         }]`;
 
         return {
+          id: `${uniqueName}-annotation`,
           type: "line",
           mode: "vertical",
           scaleID: "x",
           value: labelRange,
-          borderColor: "red",
+          borderColor: `hsl(${index * 50}, 70%, 50%)`, // Same color as the curve line
           borderWidth: 2,
           label: {
             content: `Immunity: ${immunityLevel}`,
             enabled: true,
             position: "top",
-            backgroundColor: "red",
+            backgroundColor: `hsl(${index * 50}, 70%, 50%)`, // Matching background color
             color: "white",
           },
         };
@@ -738,13 +739,10 @@ export default function PatientSelector() {
   };
 
   const getChartOptionsForReport = (data, uniqueNames, patientData) => {
-    // const immunityLevels = [6500.0038, 14000]; // Example multiple immunity levels
-    const immunityLevels = getimmunitylevel(uniqueNames, patientData); // Example multiple immunity levels
-    // getimmunitylevel(uniqueNames,patientData);
+    const immunityLevels = getimmunitylevel(uniqueNames, patientData);
     const annotations = selectedReport.includes(selectedUser.date)
       ? getAnnotationForReport(immunityLevels, uniqueNames, data)
       : [];
-    console.log("annotations", annotations);
 
     return {
       responsive: true,
@@ -753,10 +751,40 @@ export default function PatientSelector() {
         legend: {
           display: true,
           labels: { color: "white" },
-          onClick: null, // Disables dataset hiding
+          onClick: (e, legendItem, legend) => {
+            const chart = legend.chart;
+            const datasetIndex = legendItem.datasetIndex;
+
+            // Toggle dataset and annotation visibility together
+            if (chart.isDatasetVisible(datasetIndex)) {
+              chart.hide(datasetIndex);
+              const datasetLabel = chart.data.datasets[datasetIndex].label;
+              const annotationId = `${datasetLabel}-annotation`;
+              if (chart.options.plugins.annotation.annotations[annotationId]) {
+                chart.options.plugins.annotation.annotations[
+                  annotationId
+                ].display = false;
+              }
+            } else {
+              chart.show(datasetIndex);
+              const datasetLabel = chart.data.datasets[datasetIndex].label;
+              const annotationId = `${datasetLabel}-annotation`;
+              if (chart.options.plugins.annotation.annotations[annotationId]) {
+                chart.options.plugins.annotation.annotations[
+                  annotationId
+                ].display = true;
+              }
+            }
+            chart.update();
+          },
         },
         annotation: {
-          annotations,
+          annotations: Object.fromEntries(
+            annotations.map((annotation) => [
+              annotation.id,
+              { ...annotation, display: true },
+            ])
+          ),
         },
       },
       scales: {
