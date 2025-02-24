@@ -444,47 +444,157 @@ export default function PatientSelector() {
           apiData = response.data.data;
           console.log("API Data before filtering:", apiData);
 
-          // Check if sampleInfoList exists and has data
-          if (sampleInfoList && sampleInfoList.length > 0) {
-            console.log("sampleInfoList:", sampleInfoList);
+          axios
+            .get("/api/getAllPatients")
+            .then((patientResponse) => {
+              const allPatients = patientResponse.data.data;
+              console.log("All Patients Data:", allPatients);
 
-            apiData = apiData.filter((item) => {
-              return sampleInfoList.some(
-                (sample) =>
-                  String(sample.block) === String(item.Block) &&
-                  String(sample.slide) === String(item.Slide)
+              apiData = apiData.filter((item) =>
+                allPatients.some(
+                  (patient) =>
+                    String(patient.sampleInfo.block) === String(item.Block) &&
+                    String(patient.sampleInfo.slide) === String(item.Slide)
+                )
               );
-            });
 
-            console.log("Filtered API Data based on sampleInfoList:", apiData);
-          }
+              console.log("Filtered API Data based on allPatients:", apiData);
 
-          const graphData = uniqueNames.reduce((acc, name) => {
-            const filteredData = apiData.filter((item) => item.Name === name);
-            const levelData = filteredData.reduce((levelAcc, item) => {
-              const level = item.Value;
-              if (levelAcc[level]) {
-                levelAcc[level].patients += 1;
-              } else {
-                levelAcc[level] = { level: parseInt(level, 10), patients: 1 };
+              // Check if sampleInfoList (dataset) exists and has data
+              if (sampleInfoList && sampleInfoList.length > 0) {
+                console.log("sampleInfoList:", sampleInfoList);
+
+                apiData = apiData.filter((item) => {
+                  return sampleInfoList.some(
+                    (sample) =>
+                      String(sample.block) === String(item.Block) &&
+                      String(sample.slide) === String(item.Slide)
+                  );
+                });
+
+                console.log(
+                  "Filtered API Data based on sampleInfoList:",
+                  apiData
+                );
               }
-              return levelAcc;
-            }, {});
 
-            acc[name] = Object.values(levelData);
-            return acc;
-          }, {});
+              // Process apiData: filter out non-positive values, subtract background, and calculate averages per patient per Name
+              let processedData = {};
 
-          console.log("Graph Data:", { [disease.type]: graphData });
+              // Group apiData by patient block and slide
+              allPatients.forEach((patient) => {
+                const matchedData = apiData.filter(
+                  (item) =>
+                    String(item.Block) === String(patient.sampleInfo.block) &&
+                    String(item.Slide) === String(patient.sampleInfo.slide)
+                );
 
-          const diseaseName = disease.type;
-          setSelectedReports((prev) => [
-            ...prev,
-            { name: diseaseName, data: graphData, uniqueNames },
-          ]);
+                if (matchedData.length > 0) {
+                  if (!processedData[patient.patientId]) {
+                    processedData[patient.patientId] = {};
+                  }
 
-          // Remove loading state after data is fetched
-          setLoadingDiseases(false);
+                  matchedData.forEach((item) => {
+                    const name = item.Name;
+                    const value = parseFloat(item.Value);
+                    const background = parseFloat(item.Background);
+
+                    if (value > 0) {
+                      const finalValue = value - background;
+
+                      if (!processedData[patient.patientId][name]) {
+                        processedData[patient.patientId][name] = {
+                          total: 0,
+                          count: 0,
+                        };
+                      }
+
+                      processedData[patient.patientId][name].total +=
+                        finalValue;
+                      processedData[patient.patientId][name].count += 1;
+                    }
+                  });
+                }
+              });
+
+              // Convert processedData to store averages per patient per Name
+              let patientAverages = Object.keys(processedData).map(
+                (patientId) => {
+                  const nameAverages = Object.keys(
+                    processedData[patientId]
+                  ).map((name) => ({
+                    Name: name,
+                    AverageValue:
+                      processedData[patientId][name].count > 0
+                        ? processedData[patientId][name].total /
+                          processedData[patientId][name].count
+                        : 0,
+                  }));
+
+                  return {
+                    PatientId: patientId,
+                    Averages: nameAverages,
+                  };
+                }
+              );
+
+              console.log(
+                "Processed API Data with Averages Per Patient and Name:",
+                patientAverages
+              );
+              // Step 1: Extract unique names from processed patientAverages
+              const uniqueNames = [
+                ...new Set(
+                  patientAverages.flatMap((p) => p.Averages.map((a) => a.Name))
+                ),
+              ];
+
+              // Step 2: Process graphData based on patientAverages
+              const graphData = uniqueNames.reduce((acc, name) => {
+                // Filter out relevant data for this name
+                const filteredData = patientAverages.flatMap((p) =>
+                  p.Averages.filter((a) => a.Name === name).map(
+                    (a) => a.AverageValue
+                  )
+                );
+
+                // Step 3: Group by immunity level
+                const levelData = filteredData.reduce((levelAcc, avgValue) => {
+                  const level = Math.round(avgValue / 10) * 10; // Round to nearest 10
+                  if (levelAcc[level]) {
+                    levelAcc[level].patients += 1;
+                  } else {
+                    levelAcc[level] = {
+                      level: level,
+                      patients: 1,
+                    };
+                  }
+                  return levelAcc;
+                }, {});
+
+                // Step 4: Store the processed data
+                acc[name] = Object.values(levelData);
+                return acc;
+              }, {});
+
+              // Output graphData
+              console.log("Formatted Immunity Data for Graph:", graphData);
+
+              // console.log("Graph Data:", { [disease.type]: graphData });
+
+              const diseaseName = disease.type;
+              setSelectedReports((prev) => [
+                ...prev,
+                { name: diseaseName, data: graphData, uniqueNames },
+              ]);
+
+              // Remove loading state after data is fetched
+              setLoadingDiseases(false);
+            })
+            .catch((error) => {
+              console.error("Error fetching all patients:", error);
+              setLoadingDiseases(false);
+            });
         })
         .catch((error) => {
           console.error(
@@ -838,9 +948,9 @@ export default function PatientSelector() {
 
         // Extract immunity levels
         const immunityLevels = matchingData.map((item) =>
-          Number(item.Value || 0)
+          Number(item.Value  || 0)
         );
-
+console.log('selectedPatient',immunityLevels);
         // Calculate the average immunity level
         const averageValue =
           immunityLevels.reduce((sum, value) => sum + value, 0) /
