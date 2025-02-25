@@ -341,6 +341,7 @@ export default function PatientSelector() {
               setDiseases([]);
             } else {
               setPatientData(response.data);
+              // console.log("Patient Data:", response.data);
 
               // Map names to their types and filter for unique types
               const diseaseTypes = [
@@ -921,7 +922,7 @@ export default function PatientSelector() {
   };
 
   const getimmunitylevel = (uniqueNames, patientData) => {
-    console.error("function is running..............");
+    console.error("function is running..............", patientData);
 
     // Validate inputs
     if (!Array.isArray(uniqueNames) || uniqueNames.length === 0) {
@@ -945,16 +946,28 @@ export default function PatientSelector() {
           console.warn(`No matching data found for name: ${name}`);
           return null;
         }
+        console.log("matchingData", matchingData);
 
-        // Extract immunity levels
-        const immunityLevels = matchingData.map((item) =>
-          Number(item.Value  || 0)
+        // Filter out items where Value is 0 or falsy
+        const filteredData = matchingData.filter(
+          (item) => Number(item.Value) !== 0
         );
-console.log('selectedPatient',immunityLevels);
+
+        console.log("filteredData", filteredData);
+
+        // Extract immunity levels after subtracting Background
+        const immunityLevels = filteredData.map(
+          (item) => Number(item.Value || 0) - Number(item.Background || 0)
+        );
+
+        console.log("subtractedImmunityLevels", immunityLevels);
+
         // Calculate the average immunity level
         const averageValue =
           immunityLevels.reduce((sum, value) => sum + value, 0) /
-          matchingData.length;
+          (filteredData.length || 1);
+
+        console.log("averageValue", averageValue);
 
         // Determine the range midpoint for this immunity level
         const rangeIndex = Math.floor(averageValue / rangeStep);
