@@ -11,6 +11,7 @@ const DataSelector = () => {
     medications: [],
     vaccine: [],
     smoking: "All",
+    exposure: [],
   });
   const { setSampleInfoList } = useSampleInfo();
   const [savedDataSets, setSavedDataSets] = useState([]);
@@ -110,6 +111,8 @@ const DataSelector = () => {
       );
 
       if (selectedDataSet) {
+        // Store exposure in local storage
+        localStorage.setItem("exposure", selectedDataSet.criteria.exposure);
         fetch("/api/patient-matching", {
           method: "POST",
           headers: {
@@ -255,6 +258,23 @@ const DataSelector = () => {
                   isSelected("smoking", item) ? styles.active : ""
                 }`}
                 onClick={() => handleSelect("smoking", item)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Exposure */}
+        <div className={styles.filterGroup}>
+          <p className={styles.filterLabel}>Exposure</p>
+          <div className={styles.filterOptions}>
+            {["200", "500"].map((item) => (
+              <button
+                key={item}
+                className={`${styles.filterButton} ${
+                  isSelected("exposure", item) ? styles.active : ""
+                }`}
+                onClick={() => handleSelect("exposure", item)}
               >
                 {item}
               </button>

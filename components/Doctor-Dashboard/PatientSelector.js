@@ -460,21 +460,29 @@ export default function PatientSelector() {
               );
 
               console.log("Filtered API Data based on allPatients:", apiData);
+              console.log('sampleinfolist',sampleInfoList);
 
               // Check if sampleInfoList (dataset) exists and has data
-              if (sampleInfoList && sampleInfoList.length > 0) {
+              if (sampleInfoList && sampleInfoList.length >= 0) {
                 console.log("sampleInfoList:", sampleInfoList);
 
+                // Retrieve exposure array from local storage and parse it
+                const storedExposure = localStorage.getItem("exposure");
+                console.log("Stored Exposure Array:", storedExposure);
+
                 apiData = apiData.filter((item) => {
-                  return sampleInfoList.some(
-                    (sample) =>
-                      String(sample.block) === String(item.Block) &&
-                      String(sample.slide) === String(item.Slide)
+                  return (
+                    sampleInfoList.some(
+                      (sample) =>
+                        String(sample.block) === String(item.Block) &&
+                        String(sample.slide) === String(item.Slide)
+                    ) &&
+                    storedExposure.includes(item.Exposure) // Ensure exposure matches
                   );
                 });
 
                 console.log(
-                  "Filtered API Data based on sampleInfoList:",
+                  "Filtered API Data based on sampleInfoList and Exposure:",
                   apiData
                 );
               }
@@ -1089,7 +1097,7 @@ export default function PatientSelector() {
             <h2>Patient Selection</h2>
             <input
               className={styles.input}
-              placeholder="Input patient code or name"
+              placeholder="Input patient code"
               value={searchTerm}
               onChange={handleSearch}
             />
@@ -1101,7 +1109,7 @@ export default function PatientSelector() {
                     className={styles.dropdownItem}
                     onClick={() => handleUserClick(user)}
                   >
-                    {user.patientName}
+                    {user.patientId}
                   </li>
                 ))}
               </ul>
@@ -1110,11 +1118,11 @@ export default function PatientSelector() {
           {selectedUser && (
             <div className={styles.selectedUser}>
               <p>
-                ID: <strong>{selectedUser.userId}</strong>
+                Patient Code: <strong>{selectedUser.userId}</strong>
               </p>
-              <p>
+              {/* <p>
                 Name: <strong>{selectedUser.name}</strong>
-              </p>
+              </p> */}
             </div>
           )}
           <div className={styles.section}>
