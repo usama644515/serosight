@@ -10,6 +10,8 @@ const DataSelector = () => {
     // immunity: "All",
     medications: [],
     vaccine: [],
+    actualInfection: [],
+    disease: [],
     smoking: "All",
     exposure: [],
   });
@@ -210,10 +212,6 @@ const DataSelector = () => {
                 "hepA",
                 "hepB",
                 "Influenza",
-                // "mononucleosis",
-                // "H1N5 AVIAN",
-                // "west nile virus",
-                // "Diabetes",
               ].map((item) => (
                 <button
                   key={`yes-${item}`}
@@ -243,6 +241,74 @@ const DataSelector = () => {
                 )
               )}
             </div> */}
+          </div>
+        </div>
+        <hr />
+        <br />
+        {/* Actual infection*/}
+        <div className={styles.filterGroup}>
+          <p className={styles.filterLabel}>Actual Infection</p>
+          <div>
+            <div className={styles.filterOptions}>
+              {/* <p>Yes</p> */}
+              {[
+                "covid19",
+                "Influenza",
+                "rsv",
+                "varicella",
+                "measles",
+                "mumps",
+                "rubella",
+                "hepA",
+                "hepB",
+                "mononucleosis",
+                "H1N5 AVIAN",
+                "west nile virus",
+                "Diabetes",
+              ].map((item) => (
+                <button
+                  key={`yes-${item}`}
+                  className={`${styles.filterButton} ${
+                    isSelected("actualInfection", item) ? styles.active : ""
+                  }`}
+                  onClick={() => handleSelect("actualInfection", item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        <hr />
+        <br />
+        {/*Disease status*/}
+        <div className={styles.filterGroup}>
+          <p className={styles.filterLabel}>Disease Status</p>
+          <div>
+            <div className={styles.filterOptions}>
+              {/* <p>Yes</p> */}
+              {[
+                "Rheumatoid Arthritis",
+                "psoniatic arthritis",
+                "ankylosing spondylitis",
+                "lupus",
+                "vasculitis",
+                "sjogreens",
+                "gout",
+                "CAD(heart disease)",
+                "cancer",
+              ].map((item) => (
+                <button
+                  key={`yes-${item}`}
+                  className={`${styles.filterButton} ${
+                    isSelected("disease", item) ? styles.active : ""
+                  }`}
+                  onClick={() => handleSelect("disease", item)}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <hr />

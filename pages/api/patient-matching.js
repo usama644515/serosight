@@ -18,9 +18,11 @@ export default async function handler(req, res) {
 
       // Check vaccine status (medication Status)
       if (criteria.medications && Array.isArray(criteria.medications)) {
-        const medicationsConditions = criteria.medications.map((medications) => ({
-          [`medications.${medications}`]: true,
-        }));
+        const medicationsConditions = criteria.medications.map(
+          (medications) => ({
+            [`medications.${medications}`]: true,
+          })
+        );
         conditions.push({ $and: medicationsConditions });
       }
 
@@ -30,6 +32,22 @@ export default async function handler(req, res) {
           [`vaxStatus.${vaccine}`]: true,
         }));
         conditions.push({ $and: vaccineConditions });
+      }
+      // Check actual infection (actual infection)
+      if (criteria.actualinfection && Array.isArray(criteria.actualinfection)) {
+        const actualinfectionConditions = criteria.actualinfection.map(
+          (actualinfection) => ({
+            [`actualInfection.${actualinfection}`]: true,
+          })
+        );
+        conditions.push({ $and: actualinfectionConditions });
+      }
+      // Check Disease status (disease status)
+      if (criteria.disease && Array.isArray(criteria.disease)) {
+        const diseaseConditions = criteria.disease.map((disease) => ({
+          [`diseasestatus.${disease}`]: true,
+        }));
+        conditions.push({ $and: diseaseConditions });
       }
 
       // Check smoking status (now handled like vaccine with multiple selections)
