@@ -244,6 +244,7 @@ const DataSelector = () => {
           </div>
         </div>
         <hr />
+        
         <br />
         {/* Actual infection*/}
         <div className={styles.filterGroup}>
