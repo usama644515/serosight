@@ -9,12 +9,13 @@ import {
   LinearScale,
   PointElement,
   LineElement,
+  BarElement, // Add this
   Title,
   Tooltip,
   Legend,
   Filler,
 } from "chart.js";
-import { Line } from "react-chartjs-2";
+import { Line, Bar } from "react-chartjs-2"; // Import Bar for box plot
 import ChartAnnotation from "chartjs-plugin-annotation";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
@@ -24,6 +25,8 @@ import {
   faChevronUp,
   faSync,
 } from "@fortawesome/free-solid-svg-icons";
+import dynamic from "next/dynamic";
+const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 // Register required Chart.js components and the annotation plugin
 ChartJS.register(
@@ -31,6 +34,7 @@ ChartJS.register(
   LinearScale,
   PointElement,
   LineElement,
+  BarElement, // Register BarElement
   Title,
   Tooltip,
   Legend,
@@ -40,7 +44,7 @@ ChartJS.register(
 
 export default function PatientSelector() {
   // Static global data for testing
-  const globalData = {
+  const globalData2 = {
     Influenza: [
       { level: 5, patients: 10 },
       { level: 15, patients: 20 },
@@ -220,6 +224,7 @@ export default function PatientSelector() {
   const [diseases, setDiseases] = useState([]);
   const [loadingDiseases, setLoadingDiseases] = useState(false);
   const { sampleInfoList } = useSampleInfo();
+  const [graphType, setGraphType] = useState("line"); // State to toggle between line and box plot
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -460,7 +465,7 @@ export default function PatientSelector() {
               );
 
               console.log("Filtered API Data based on allPatients:", apiData);
-              console.log('sampleinfolist',sampleInfoList);
+              console.log("sampleinfolist", sampleInfoList);
 
               // Check if sampleInfoList (dataset) exists and has data
               if (sampleInfoList && sampleInfoList.length >= 0) {
@@ -476,8 +481,7 @@ export default function PatientSelector() {
                       (sample) =>
                         String(sample.block) === String(item.Block) &&
                         String(sample.slide) === String(item.Slide)
-                    ) &&
-                    storedExposure.includes(item.Exposure) // Ensure exposure matches
+                    ) && storedExposure.includes(item.Exposure) // Ensure exposure matches
                   );
                 });
 
@@ -551,6 +555,7 @@ export default function PatientSelector() {
                 "Processed API Data with Averages Per Patient and Name:",
                 patientAverages
               );
+
               // Step 1: Extract unique names from processed patientAverages
               const uniqueNames = [
                 ...new Set(
@@ -588,6 +593,8 @@ export default function PatientSelector() {
 
               // Output graphData
               console.log("Formatted Immunity Data for Graph:", graphData);
+              // set data for whisker graph
+              extractLevels(graphData);
 
               // console.log("Graph Data:", { [disease.type]: graphData });
 
@@ -613,6 +620,8 @@ export default function PatientSelector() {
           setLoadingDiseases(false);
         });
     } else {
+      console.log('graphData for removal', graphData);
+      removeLevels(graphData);
       console.log(`Checkbox for ${disease.type} unchecked`);
       setSelectedReports((prev) =>
         prev.filter((report) => report.name !== disease.type)
@@ -1087,6 +1096,83 @@ export default function PatientSelector() {
   const filteredReports = patientData.filter((report) =>
     selectedDiseases.some((disease) => disease.name === report.diseaseName)
   );
+  const [globalData, setGlobalData] = useState({});
+
+  const extractLevels = (data) => {
+    setGlobalData((prevData) => {
+      const updatedData = { ...prevData };
+
+      for (const disease in data) {
+        if (!updatedData[disease]) {
+          updatedData[disease] = [];
+        }
+
+        // Extract levels and append to the existing array
+        const newLevels = data[disease].map((entry) => entry.level);
+        updatedData[disease] = [...updatedData[disease], ...newLevels];
+      }
+      console.log("whisker data", updatedData); // Now it will store and retain previous data
+      return updatedData; // Update state with new values
+    });
+  };
+
+  const removeLevels = (data) => {
+    setGlobalData((prevData) => {
+      const updatedData = { ...prevData };
+
+      for (const disease in data) {
+        if (updatedData[disease]) {
+          // Filter out the levels to be removed
+          const levelsToRemove = data[disease].map((entry) => entry.level);
+          updatedData[disease] = updatedData[disease].filter(
+            (level) => !levelsToRemove.includes(level)
+          );
+
+          // If the disease array becomes empty, you can optionally delete the key
+          if (updatedData[disease].length === 0) {
+            delete updatedData[disease];
+          }
+        }
+      }
+
+      console.log("Updated data after removal:", updatedData);
+      return updatedData; // Update state with removed values
+    });
+  };
+
+  // Sample dataset for diseases
+  // const globalData = {
+  //   Influenza: [
+  //     10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160,
+  //     170, 180, 190, 200,
+  //   ],
+  //   Respiratory: [
+  //     15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165,
+  //     175, 185, 195, 205,
+  //   ],
+  //   MMR: [
+  //     5, 15, 25, 35, 45, 55, 65, 75, 85, 95, 105, 115, 125, 135, 145, 155, 165,
+  //     175, 185, 195,
+  //   ],
+  //   Hepatitis: [
+  //     10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160,
+  //     170, 180, 190, 200,
+  //   ],
+  // };
+
+  // Convert data into traces for Plotly
+  const traces = Object.keys(globalData).map((disease) => ({
+    y: globalData[disease],
+    type: "box",
+    name: disease,
+    boxpoints: "outliers", // Show outliers as points
+    marker: { color: "#004AAD" }, // Custom color
+  }));
+
+  // Toggle between line and box plot
+  const toggleGraphType = () => {
+    setGraphType((prev) => (prev === "line" ? "boxplot" : "line"));
+  };
 
   return (
     <div className={styles.container} id="patient-data-selector">
@@ -1207,13 +1293,16 @@ export default function PatientSelector() {
 
         <div className={styles.patientData}>
           <h3 className={styles.sectionTitle}>Patient Data</h3>
+          <button onClick={toggleGraphType} className={styles.toggleButton}>
+            Switch to {graphType === "line" ? "Whisker Graph" : "Line Graph"}
+          </button>
           <div className={styles.list}>
-            {selectedReports.map((report, idx) => {
-              const { name, data, uniqueNames } = report;
+            {graphType === "line" ? (
+              selectedReports.map((report, idx) => {
+                const { name, data, uniqueNames } = report;
 
-              return (
-                <div key={idx} className={styles.item}>
-                  <>
+                return (
+                  <div key={idx} className={styles.item}>
                     <div className={styles.reportHeader}>
                       <span>
                         <span
@@ -1255,10 +1344,25 @@ export default function PatientSelector() {
                         />
                       </div>
                     )}
-                  </>
-                </div>
-              );
-            })}
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ padding: "20px", textAlign: "center" }}>
+                <h1>Whisker and Box Plot Graph</h1>
+                <Plot
+                  data={traces}
+                  layout={{
+                    title: "Disease Severity Distribution",
+                    yaxis: { title: "Severity Level" },
+                    xaxis: { title: "Diseases" },
+                    showlegend: true,
+                    autosize: true,
+                  }}
+                  style={{ width: "100%", height: "500px" }}
+                />
+              </div>
+            )}
           </div>
           {loadingDiseases ? (
             <div className={styles.loader}>

@@ -266,3 +266,17 @@
     color: red;
   }
   
+
+  .toggleButton {
+    background-color: #18206F;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-bottom: 20px;
+    border-radius: 5px;
+  }
+  
+  .toggleButton:hover {
+    background-color: #0918a2;
+  }

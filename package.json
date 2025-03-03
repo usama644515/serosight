@@ -33,9 +33,11 @@
     "next": "^15.0.3",
     "next-auth": "^4.24.11",
     "nodemailer": "^6.9.16",
+    "plotly.js": "^3.0.1",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "18.2.0",
+    "react-plotly.js": "^2.6.0",
     "react-toastify": "^10.0.6",
     "stripe": "^17.4.0",
     "swiper": "^11.1.15"
