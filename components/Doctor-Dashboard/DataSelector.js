@@ -12,7 +12,7 @@ const DataSelector = () => {
     actualInfection: [],
     disease: [],
     smoking: [],
-    exposure: [],
+    exposure: ["200", "500"], // Default all selected in exposure
   });
   const { setSampleInfoList } = useSampleInfo();
   const [savedDataSets, setSavedDataSets] = useState([]);
@@ -37,22 +37,59 @@ const DataSelector = () => {
         // If "All" is selected, toggle between selecting all values and none
         newSelection =
           prev[category].length === allValues.length ? [] : [...allValues];
+      } else if (value === "None") {
+        // If "None" is selected, set the selection to "None" as a string
+        newSelection = "None";
       } else {
-        newSelection = [...prev[category]];
+        // If "None" was previously selected, reset to an empty array
+        if (prev[category] === "None") {
+          newSelection = [];
+        } else {
+          newSelection = [...prev[category]];
+        }
         const index = newSelection.indexOf(value);
         if (index > -1) {
           newSelection.splice(index, 1); // Deselect the value
         } else {
           newSelection.push(value); // Select the value
         }
+
+        // Ensure at least one option is selected for exposure
+        if (category === "exposure" && newSelection.length === 0) {
+          toast.error("At least one exposure option must be selected.");
+          return prev; // Return previous state if no option is selected
+        }
       }
       return { ...prev, [category]: newSelection };
     });
   };
 
-  const isSelected = (category, value) => selected[category].includes(value);
+  const isSelected = (category, value) => {
+    if (selected[category] === "None") {
+      return value === "None";
+    }
+    return selected[category].includes(value);
+  };
 
   const saveDataSet = () => {
+    // Check if any filter is selected
+    const isAnyFilterSelected = Object.values(selected).some(
+      (selection) =>
+        (Array.isArray(selection) && selection.length > 0) ||
+        selection === "None"
+    );
+
+    if (!isAnyFilterSelected) {
+      toast.error("Please select at least one filter before saving.");
+      return;
+    }
+
+    // Ensure exposure is not empty
+    if (selected.exposure.length === 0) {
+      toast.error("At least one exposure option must be selected.");
+      return;
+    }
+
     const newDataSet = {
       name: "New Data Set",
       criteria: { ...selected },
@@ -64,10 +101,11 @@ const DataSelector = () => {
       .post("/api/datasets", newDataSet)
       .then((response) => {
         setSavedDataSets((prev) => [...prev, response.data]);
+        toast.success("Data set saved successfully!");
       })
       .catch((error) => {
         console.error("Error saving dataset:", error);
-        alert("There was an error saving the dataset.");
+        toast.error("There was an error saving the dataset.");
       });
   };
 
@@ -81,8 +119,12 @@ const DataSelector = () => {
           )
         );
         setRenamingId(null);
+        toast.success("Data set renamed successfully!");
       })
-      .catch((error) => console.error("Error renaming dataset:", error));
+      .catch((error) => {
+        console.error("Error renaming dataset:", error);
+        toast.error("There was an error renaming the dataset.");
+      });
   };
 
   const deleteDataSet = (id) => {
@@ -93,8 +135,12 @@ const DataSelector = () => {
           setSavedDataSets((prev) =>
             prev.filter((dataSet) => dataSet._id !== id)
           );
+          toast.success("Data set deleted successfully!");
         })
-        .catch((error) => console.error("Error deleting dataset:", error));
+        .catch((error) => {
+          console.error("Error deleting dataset:", error);
+          toast.error("There was an error deleting the dataset.");
+        });
     }
   };
 
@@ -215,6 +261,17 @@ const DataSelector = () => {
             >
               All
             </button>
+            <button
+              key="medications-none"
+              className={`${styles.filterButton} ${
+                selected.medications === "None" ? styles.active : ""
+              }`}
+              onClick={() =>
+                handleSelect("medications", "None", medicationsOptions)
+              }
+            >
+              None
+            </button>
             {medicationsOptions.map((item) => (
               <button
                 key={item}
@@ -247,6 +304,17 @@ const DataSelector = () => {
                 onClick={() => handleSelect("vaccine", "All", vaccineOptions)}
               >
                 All
+              </button>
+              <button
+                key="vaccine-none"
+                className={`${styles.filterButton} ${
+                  selected.vaccine === "None" ? styles.active : ""
+                }`}
+                onClick={() =>
+                  handleSelect("vaccine", "None", vaccineOptions)
+                }
+              >
+                None
               </button>
               {vaccineOptions.map((item) => (
                 <button
@@ -282,6 +350,17 @@ const DataSelector = () => {
               >
                 All
               </button>
+              <button
+                key="actualInfection-none"
+                className={`${styles.filterButton} ${
+                  selected.actualInfection === "None" ? styles.active : ""
+                }`}
+                onClick={() =>
+                  handleSelect("actualInfection", "None", actualInfectionOptions)
+                }
+              >
+                None
+              </button>
               {actualInfectionOptions.map((item) => (
                 <button
                   key={`yes-${item}`}
@@ -316,6 +395,17 @@ const DataSelector = () => {
               >
                 All
               </button>
+              <button
+                key="disease-none"
+                className={`${styles.filterButton} ${
+                  selected.disease === "None" ? styles.active : ""
+                }`}
+                onClick={() =>
+                  handleSelect("disease", "None", diseaseOptions)
+                }
+              >
+                None
+              </button>
               {diseaseOptions.map((item) => (
                 <button
                   key={`yes-${item}`}
@@ -346,6 +436,17 @@ const DataSelector = () => {
               onClick={() => handleSelect("smoking", "All", smokingOptions)}
             >
               All
+            </button>
+            <button
+              key="smoking-none"
+              className={`${styles.filterButton} ${
+                selected.smoking === "None" ? styles.active : ""
+              }`}
+              onClick={() =>
+                handleSelect("smoking", "None", smokingOptions)
+              }
+            >
+              None
             </button>
             {smokingOptions.map((item) => (
               <button

@@ -620,7 +620,7 @@ export default function PatientSelector() {
           setLoadingDiseases(false);
         });
     } else {
-      console.log('graphData for removal', graphData);
+      console.log("graphData for removal", graphData);
       removeLevels(graphData);
       console.log(`Checkbox for ${disease.type} unchecked`);
       setSelectedReports((prev) =>
@@ -1356,10 +1356,19 @@ export default function PatientSelector() {
                     title: "Disease Severity Distribution",
                     yaxis: { title: "Severity Level" },
                     xaxis: { title: "Diseases" },
-                    showlegend: true,
+                    showlegend: false,
                     autosize: true,
+                    margin: {
+                      l: 50, // Left margin
+                      r: 10, // Right margin (reduced to hide right-side items)
+                      b: 50, // Bottom margin
+                      t: 50, // Top margin
+                      pad: 4,
+                    },
+                    width: 800, // Adjust the width as needed
+                    height: 400, // Adjust the height as needed
                   }}
-                  style={{ width: "100%", height: "500px" }}
+                  style={{ width: "100%", height: "400px" }}
                 />
               </div>
             )}
