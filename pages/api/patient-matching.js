@@ -1,6 +1,67 @@
 import connectDb from "../../lib/dbConnect";
 import PatientData from "../../models/PatientData";
 
+// Define the options for each category
+const medicationsOptions = [
+  "Plaquanil",
+  "Methotrexate",
+  "Otezla",
+  "Arava",
+  "tnf_alpha",
+  "jak_kinase_inh",
+  "il_23_inh",
+  "il_6_inh",
+  "il_17_inh",
+  "orencia",
+  "Imuran",
+  "cellcept",
+  "cytoxan",
+  "prednisone",
+  "benlysta",
+  "rituxan",
+];
+
+const vaccineOptions = [
+  "covid19",
+  "pertussis",
+  "rsv",
+  "varicella",
+  "measles",
+  "mumps",
+  "rubella",
+  "hepA",
+  "hepB",
+  "Influenza",
+];
+
+const actualInfectionOptions = [
+  "covid19",
+  "Influenza",
+  "rsv",
+  "varicella",
+  "measles",
+  "mumps",
+  "rubella",
+  "hepA",
+  "hepB",
+  "mononucleosis",
+  "H1N5 AVIAN",
+  "west nile virus",
+  "Diabetes",
+];
+
+const diseaseOptions = [
+  "Rheumatoid Arthritis",
+  "psoriatic arthritis",
+  "ankylosing spondylitis",
+  "lupus",
+  "vasculitis",
+  "sjogreens",
+  "gout",
+  "CAD(heart disease)",
+  "cancer",
+];
+
 export default async function handler(req, res) {
   await connectDb();
 
@@ -13,70 +74,70 @@ export default async function handler(req, res) {
       }
 
       // Build query based on criteria
-      const query = {};
-      const conditions = [];
+      const andConditions = [];
 
-      // Check medications status
-      if (criteria.medications && criteria.medications !== "None") {
-        if (Array.isArray(criteria.medications) && criteria.medications.length > 0) {
-          const medicationsConditions = criteria.medications.map((medication) => ({
-            [`medications.${medication}`]: true,
-          }));
-          conditions.push({ $and: medicationsConditions });
-        }
-      }
+      // Function to handle filtering logic for a given criteria
+      const buildConditions = (criteriaKey, fieldName, options) => {
+        if (criteria[criteriaKey] && criteria[criteriaKey].length > 0) {
+          const items = criteria[criteriaKey];
+          const noneIndex = items.indexOf("None1");
 
-      // Check vaccine status
-      if (criteria.vaccine && criteria.vaccine !== "None") {
-        const vaccineConditions = Array.isArray(criteria.vaccine)
-          ? criteria.vaccine.map((vaccine) => ({
-              [`vaxStatus.${vaccine}`]: true,
-            }))
-          : [{ [`vaxStatus.${criteria.vaccine}`]: true }];
-        conditions.push({ $and: vaccineConditions });
-      }
-
-      // Check actual infection status
-      if (criteria.actualinfection && criteria.actualinfection !== "None") {
-        if (Array.isArray(criteria.actualinfection) && criteria.actualinfection.length > 0) {
-          const actualinfectionConditions = criteria.actualinfection.map((infection) => ({
-            [`actualInfection.${infection}`]: true,
-          }));
-          conditions.push({ $and: actualinfectionConditions });
-        }
-      }
-
-      // Check disease status
-      if (criteria.disease && criteria.disease !== "None") {
-        if (Array.isArray(criteria.disease) && criteria.disease.length > 0) {
-          const diseaseConditions = criteria.disease.map((disease) => ({
-            [`diseasestatus.${disease}`]: true,
-          }));
-          conditions.push({ $and: diseaseConditions });
-        }
-      }
-
-      // Check smoking status
-      if (criteria.smoking && criteria.smoking !== "None") {
-        if (Array.isArray(criteria.smoking)) {
-          const smokingConditions = [];
-          if (criteria.smoking.includes("Yes")) smokingConditions.push(true);
-          if (criteria.smoking.includes("No")) smokingConditions.push(false);
-          if (smokingConditions.length > 0) {
-            conditions.push({ smokingStatus: { $in: smokingConditions } });
+          if (noneIndex !== -1) {
+            // If "None" is selected, ensure all options in this category are false
+            const noneConditions = options.map((key) => ({
+              [`${fieldName}.${key}`]: false,
+            }));
+            andConditions.push({ $and: noneConditions });
           }
-        } else {
-          conditions.push({ smokingStatus: criteria.smoking === "Yes" });
+
+          // For other selected items (excluding "None"), ensure those fields are true
+          const otherItems = items.filter((item) => item !== "None1");
+          if (otherItems.length > 0) {
+            const otherConditions = otherItems.map((item) => ({
+              [`${fieldName}.${item}`]: true,
+            }));
+            andConditions.push({ $or: otherConditions });
+          }
+        }
+      };
+
+      // Apply filtering to each category
+      buildConditions("medications", "medications", medicationsOptions);
+      buildConditions("vaccine", "vaxStatus", vaccineOptions);
+      buildConditions("actualInfection", "actualInfection", actualInfectionOptions);
+      buildConditions("disease", "diseasestatus", diseaseOptions);
+
+      // Handle smoking status separately
+      if (criteria.smoking && criteria.smoking.length > 0) {
+        const smokingConditions = [];
+
+        if (criteria.smoking.includes("None1")) {
+          // If "None" is present, filter patients where smokingStatus is false
+          smokingConditions.push({ smokingStatus: false });
+        }
+
+        // For other items (excluding "None"), filter patients based on smoking status
+        const otherSmokingItems = criteria.smoking.filter((item) => item !== "None");
+        if (otherSmokingItems.length > 0) {
+          const smokingStatusConditions = [];
+          if (otherSmokingItems.includes("Yes")) smokingStatusConditions.push(true);
+          if (otherSmokingItems.includes("No")) smokingStatusConditions.push(false);
+          if (smokingStatusConditions.length > 0) {
+            smokingConditions.push({ smokingStatus: { $in: smokingStatusConditions } });
+          }
+        }
+
+        if (smokingConditions.length > 0) {
+          andConditions.push({ $or: smokingConditions });
         }
       }
 
-      // If conditions were added, combine them with $and
-      if (conditions.length > 0) {
-        query.$and = conditions;
-      }
+      // Combine all conditions with $and
+      const finalQuery = andConditions.length > 0 ? { $and: andConditions } : {};
+      console.log(JSON.stringify(finalQuery, null, 2));
 
       // Fetch patient data based on query
-      const patients = await PatientData.find(query);
+      const patients = await PatientData.find(finalQuery);
 
       res.status(200).json(patients);
     } catch (error) {

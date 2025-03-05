@@ -37,27 +37,13 @@ const DataSelector = () => {
         // If "All" is selected, toggle between selecting all values and none
         newSelection =
           prev[category].length === allValues.length ? [] : [...allValues];
-      } else if (value === "None") {
-        // If "None" is selected, set the selection to "None" as a string
-        newSelection = "None";
       } else {
-        // If "None" was previously selected, reset to an empty array
-        if (prev[category] === "None") {
-          newSelection = [];
-        } else {
-          newSelection = [...prev[category]];
-        }
+        newSelection = [...prev[category]];
         const index = newSelection.indexOf(value);
         if (index > -1) {
           newSelection.splice(index, 1); // Deselect the value
         } else {
           newSelection.push(value); // Select the value
-        }
-
-        // Ensure at least one option is selected for exposure
-        if (category === "exposure" && newSelection.length === 0) {
-          toast.error("At least one exposure option must be selected.");
-          return prev; // Return previous state if no option is selected
         }
       }
       return { ...prev, [category]: newSelection };
@@ -181,6 +167,7 @@ const DataSelector = () => {
 
   // Define all values for each category
   const medicationsOptions = [
+    "None",
     "Plaquanil",
     "Methotrexate",
     "Otezla",
@@ -199,6 +186,7 @@ const DataSelector = () => {
     "rituxan",
   ];
   const vaccineOptions = [
+    "None",
     "covid19",
     "pertussis",
     "rsv",
@@ -211,8 +199,9 @@ const DataSelector = () => {
     "Influenza",
   ];
   const actualInfectionOptions = [
+    "None",
     "covid19",
-    "Influenza",
+    "influenza",
     "rsv",
     "varicella",
     "measles",
@@ -226,6 +215,7 @@ const DataSelector = () => {
     "Diabetes",
   ];
   const diseaseOptions = [
+    "None",
     "Rheumatoid Arthritis",
     "psoniatic arthritis",
     "ankylosing spondylitis",
@@ -261,17 +251,6 @@ const DataSelector = () => {
             >
               All
             </button>
-            <button
-              key="medications-none"
-              className={`${styles.filterButton} ${
-                selected.medications === "None" ? styles.active : ""
-              }`}
-              onClick={() =>
-                handleSelect("medications", "None", medicationsOptions)
-              }
-            >
-              None
-            </button>
             {medicationsOptions.map((item) => (
               <button
                 key={item}
@@ -304,17 +283,6 @@ const DataSelector = () => {
                 onClick={() => handleSelect("vaccine", "All", vaccineOptions)}
               >
                 All
-              </button>
-              <button
-                key="vaccine-none"
-                className={`${styles.filterButton} ${
-                  selected.vaccine === "None" ? styles.active : ""
-                }`}
-                onClick={() =>
-                  handleSelect("vaccine", "None", vaccineOptions)
-                }
-              >
-                None
               </button>
               {vaccineOptions.map((item) => (
                 <button
@@ -350,17 +318,6 @@ const DataSelector = () => {
               >
                 All
               </button>
-              <button
-                key="actualInfection-none"
-                className={`${styles.filterButton} ${
-                  selected.actualInfection === "None" ? styles.active : ""
-                }`}
-                onClick={() =>
-                  handleSelect("actualInfection", "None", actualInfectionOptions)
-                }
-              >
-                None
-              </button>
               {actualInfectionOptions.map((item) => (
                 <button
                   key={`yes-${item}`}
@@ -395,17 +352,6 @@ const DataSelector = () => {
               >
                 All
               </button>
-              <button
-                key="disease-none"
-                className={`${styles.filterButton} ${
-                  selected.disease === "None" ? styles.active : ""
-                }`}
-                onClick={() =>
-                  handleSelect("disease", "None", diseaseOptions)
-                }
-              >
-                None
-              </button>
               {diseaseOptions.map((item) => (
                 <button
                   key={`yes-${item}`}
@@ -436,17 +382,6 @@ const DataSelector = () => {
               onClick={() => handleSelect("smoking", "All", smokingOptions)}
             >
               All
-            </button>
-            <button
-              key="smoking-none"
-              className={`${styles.filterButton} ${
-                selected.smoking === "None" ? styles.active : ""
-              }`}
-              onClick={() =>
-                handleSelect("smoking", "None", smokingOptions)
-              }
-            >
-              None
             </button>
             {smokingOptions.map((item) => (
               <button
