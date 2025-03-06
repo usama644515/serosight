@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "./PatientSelector.module.css";
 import axios from "axios";
+import BoxPlotGraph from "./BoxPlotGraph";
 import { useSampleInfo } from "./ContextProvider";
 import { CircularProgress } from "@mui/material"; // Using Material-UI for the loader
 import {
@@ -629,6 +630,8 @@ export default function PatientSelector() {
       setLoadingDiseases(false);
     }
   };
+  // Inside your component
+  const [whiskerLines, setWhiskerLines] = useState(false); // Default is false
 
   const handleReportChange = (reportDate) => {
     setSelectedReport((prev) =>
@@ -636,6 +639,7 @@ export default function PatientSelector() {
         ? prev.filter((item) => item !== reportDate)
         : [...prev, reportDate]
     );
+    setWhiskerLines((prev) => !prev); // Toggle whiskerLines true/false
   };
 
   useEffect(() => {
@@ -1169,6 +1173,36 @@ export default function PatientSelector() {
     marker: { color: "#004AAD" }, // Custom color
   }));
 
+  // Function to calculate the median of an array
+  const calculateMedian = (arr) => {
+    const sortedArr = [...arr].sort((a, b) => a - b);
+    const mid = Math.floor(sortedArr.length / 2);
+    return sortedArr.length % 2 !== 0
+      ? sortedArr[mid]
+      : (sortedArr[mid - 1] + sortedArr[mid]) / 2;
+  };
+
+  // Calculate immunity thresholds (medians) for each disease
+  const immunityThresholds = Object.keys(globalData).reduce((acc, disease) => {
+    acc[disease] = calculateMedian(globalData[disease]);
+    return acc;
+  }, {});
+  // Create shapes for immunity thresholds
+  const shapes = Object.keys(immunityThresholds).map((disease) => ({
+    type: "line",
+    x0: 0, // Start of the line (left side of the graph)
+    x1: 1, // End of the line (right side of the graph)
+    y0: immunityThresholds[disease], // Y-axis value for the immunity line
+    y1: immunityThresholds[disease],
+    xref: "paper", // Span the entire width of the graph
+    yref: "y", // Refer to the y-axis
+    line: {
+      color: "red", // Red color for the line
+      width: 1, // Line thickness
+      dash: "solid", // Solid line (no dashes)
+    },
+  }));
+
   // Toggle between line and box plot
   const toggleGraphType = () => {
     setGraphType((prev) => (prev === "line" ? "boxplot" : "line"));
@@ -1275,12 +1309,13 @@ export default function PatientSelector() {
               <div className={styles.checkboxContainer2}>
                 <input
                   type="checkbox"
-                  id={`report`}
+                  id="report"
                   className={styles.checkboxInput}
+                  checked={whiskerLines} // Controlled by state
                   onChange={() => handleReportChange(selectedUser.date)}
                 />
                 <label
-                  htmlFor={`report`}
+                  htmlFor="report"
                   className={styles.checkboxLabel}
                 ></label>
                 <span className={styles.checkboxText2}>
@@ -1348,29 +1383,11 @@ export default function PatientSelector() {
                 );
               })
             ) : (
-              <div style={{ padding: "20px", textAlign: "center" }}>
-                <h1>Whisker and Box Plot Graph</h1>
-                <Plot
-                  data={traces}
-                  layout={{
-                    title: "Disease Severity Distribution",
-                    yaxis: { title: "Severity Level" },
-                    xaxis: { title: "Diseases" },
-                    showlegend: false,
-                    autosize: true,
-                    margin: {
-                      l: 50, // Left margin
-                      r: 10, // Right margin (reduced to hide right-side items)
-                      b: 50, // Bottom margin
-                      t: 50, // Top margin
-                      pad: 4,
-                    },
-                    width: 800, // Adjust the width as needed
-                    height: 400, // Adjust the height as needed
-                  }}
-                  style={{ width: "100%", height: "400px" }}
-                />
-              </div>
+              <BoxPlotGraph
+                globalData={globalData}
+                patientData={patientData}
+                showImmunityLines={whiskerLines}
+              />
             )}
           </div>
           {loadingDiseases ? (
