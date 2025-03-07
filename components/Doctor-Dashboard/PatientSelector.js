@@ -1025,6 +1025,8 @@ export default function PatientSelector() {
   // console.log("Chart Data:", chartData);
   // console.log("Chart Options:", chartOptions);
 
+ 
+
   const handleDownloadPDF = (reportDate, diseaseName) => {
     // Helper function to parse DD/MM/YYYY to YYYY-MM-DD
     const parseReportDate = (reportDate) => {
@@ -1059,8 +1061,18 @@ export default function PatientSelector() {
         pdf.text(`Patient ID: ${selectedUser.userId}`, 20, 40);
         pdf.text(`Patient Name: ${selectedUser.name}`, 20, 50);
         pdf.text(`Selected Diseases: ${diseaseName}`, 20, 60);
+        if (sampleInfoList && sampleInfoList.length > 0) {
+          pdf.text(`DataSet Name: ${localStorage.getItem("dataSetName")}`, 20, 70);
+          // Convert and format the date
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        }).format(new Date(parseReportDate(reportDate)));
 
-        // Convert and format the date
+        pdf.text(`Date: ${formattedDate}`, 20, 80);
+        }else{
+          // Convert and format the date
         const formattedDate = new Intl.DateTimeFormat("en-US", {
           day: "numeric",
           month: "long",
@@ -1068,6 +1080,9 @@ export default function PatientSelector() {
         }).format(new Date(parseReportDate(reportDate)));
 
         pdf.text(`Date: ${formattedDate}`, 20, 70);
+        }
+
+        
 
         // Add separator line
         pdf.setDrawColor(33, 150, 243);
@@ -1387,6 +1402,9 @@ export default function PatientSelector() {
                 globalData={globalData}
                 patientData={patientData}
                 showImmunityLines={whiskerLines}
+                reportDate = {selectedUser.date}
+                selectedUser={selectedUser}
+                sampleInfoList={sampleInfoList}
               />
             )}
           </div>

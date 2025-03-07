@@ -443,10 +443,13 @@ const DataSelector = () => {
                   id={`disease-${dataSet._id}-checkbox`}
                   className={styles.checkboxInput}
                   checked={selectedDataSetId === dataSet._id}
-                  onChange={() =>
+                  onChange={() =>{
                     setSelectedDataSetId(
                       selectedDataSetId === dataSet._id ? null : dataSet._id
-                    )
+                    );
+                    localStorage.setItem("dataSetName", dataSet.name); 
+                    console.log(dataSet.name);
+                  }
                   }
                 />
                 <label
@@ -457,7 +460,11 @@ const DataSelector = () => {
                   <input
                     className={styles.dataSetNameInput}
                     value={renamingName}
-                    onChange={(e) => setRenamingName(e.target.value)}
+                    onChange={(e) => { 
+                      setRenamingName(e.target.value);
+                      
+                    }}
+                    
                     onBlur={() => renameDataSet(dataSet._id, renamingName)}
                   />
                 ) : (
