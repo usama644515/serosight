@@ -15,10 +15,13 @@ const DataSelector = () => {
     exposure: ["200", "500"], // Default all selected in exposure
   });
   const { setSampleInfoList } = useSampleInfo();
+  const { setExposureList } = useSampleInfo();
+  const { setDatasetNames } = useSampleInfo();
   const [savedDataSets, setSavedDataSets] = useState([]);
   const [renamingId, setRenamingId] = useState(null);
   const [renamingName, setRenamingName] = useState("");
-  const [selectedDataSetId, setSelectedDataSetId] = useState(null);
+  const [selectedDataSetIds, setSelectedDataSetIds] = useState([]);
+  const [patientDataMap, setPatientDataMap] = useState({});
 
   useEffect(() => {
     // Fetch saved datasets from the database
@@ -130,16 +133,19 @@ const DataSelector = () => {
     }
   };
 
-  const [patients, setPatients] = useState([]);
-
-  useEffect(() => {
-    if (selectedDataSetId) {
+  const handleDataSetSelection = (id) => {
+    setSelectedDataSetIds((prev) =>
+      prev.includes(id)
+        ? prev.filter((datasetId) => datasetId !== id)
+        : [...prev, id]
+    );
+  
+    if (!patientDataMap[id]) {
       const selectedDataSet = savedDataSets.find(
-        (dataSet) => dataSet._id === selectedDataSetId
+        (dataSet) => dataSet._id === id
       );
-
+  
       if (selectedDataSet) {
-        localStorage.setItem("exposure", selectedDataSet.criteria.exposure);
         fetch("/api/patient-matching", {
           method: "POST",
           headers: {
@@ -149,21 +155,71 @@ const DataSelector = () => {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("Matched patients:", data);
-            const extractedSampleInfo = data.map((patient) => ({
-              block: patient.sampleInfo.block,
-              slide: patient.sampleInfo.slide,
+            console.log("Matched patients for dataset:", id, data);
+            setPatientDataMap((prev) => ({
+              ...prev,
+              [id]: data,
             }));
-            setSampleInfoList(extractedSampleInfo);
           })
           .catch((error) =>
             console.error("Error fetching patient data:", error)
           );
       }
-    } else {
-      setSampleInfoList(null);
     }
-  }, [selectedDataSetId, savedDataSets]);
+  
+    // Handle exposure values and dataset names
+    const selectedDataSet = savedDataSets.find((dataSet) => dataSet._id === id);
+    if (selectedDataSet) {
+      const newExposure = selectedDataSet.criteria.exposure;
+      const datasetName = selectedDataSet.name;
+  
+      if (selectedDataSetIds.includes(id)) {
+        // Dataset is being unchecked: remove exposure values and dataset name
+        setExposureList((prev) =>
+          prev.filter((exp) => !newExposure.includes(exp)) // Remove exposure values for the unchecked dataset
+        );
+        setDatasetNames((prev) =>
+          prev.filter((name) => name !== datasetName) // Remove dataset name for the unchecked dataset
+        );
+      } else {
+        // Dataset is being checked: add exposure values and dataset name
+        setExposureList((prev) => {
+          const updatedExposureList = [...prev];
+          newExposure.forEach((exp) => {
+            if (!updatedExposureList.includes(exp)) {
+              updatedExposureList.push(exp); // Add only unique exposure values
+            }
+          });
+          return updatedExposureList;
+        });
+        setDatasetNames((prev) => {
+          if (!prev.includes(datasetName)) {
+            return [...prev, datasetName]; // Add dataset name if not already present
+          }
+          return prev;
+        });
+      }
+    }
+  };
+
+  const compareAndMergePatientData = () => {
+    const allPatients = selectedDataSetIds.flatMap(
+      (id) => patientDataMap[id] || []
+    );
+    const uniquePatients = Array.from(
+      new Set(allPatients.map(JSON.stringify))
+    ).map(JSON.parse);
+    console.log("Merged and unique patients:", uniquePatients);
+    setSampleInfoList(uniquePatients);
+  };
+
+  useEffect(() => {
+    if (selectedDataSetIds.length > 0) {
+      compareAndMergePatientData();
+    } else {
+      setSampleInfoList([]);
+    }
+  }, [selectedDataSetIds, patientDataMap]);
 
   // Define all values for each category
   const medicationsOptions = [
@@ -308,7 +364,8 @@ const DataSelector = () => {
               <button
                 key="actualInfection-all"
                 className={`${styles.filterButton} ${
-                  selected.actualInfection.length === actualInfectionOptions.length
+                  selected.actualInfection.length ===
+                  actualInfectionOptions.length
                     ? styles.active
                     : ""
                 }`}
@@ -325,7 +382,11 @@ const DataSelector = () => {
                     isSelected("actualInfection", item) ? styles.active : ""
                   }`}
                   onClick={() =>
-                    handleSelect("actualInfection", item, actualInfectionOptions)
+                    handleSelect(
+                      "actualInfection",
+                      item,
+                      actualInfectionOptions
+                    )
                   }
                 >
                   {item}
@@ -442,15 +503,8 @@ const DataSelector = () => {
                   type="checkbox"
                   id={`disease-${dataSet._id}-checkbox`}
                   className={styles.checkboxInput}
-                  checked={selectedDataSetId === dataSet._id}
-                  onChange={() =>{
-                    setSelectedDataSetId(
-                      selectedDataSetId === dataSet._id ? null : dataSet._id
-                    );
-                    localStorage.setItem("dataSetName", dataSet.name); 
-                    console.log(dataSet.name);
-                  }
-                  }
+                  checked={selectedDataSetIds.includes(dataSet._id)}
+                  onChange={() => handleDataSetSelection(dataSet._id)}
                 />
                 <label
                   htmlFor={`disease-${dataSet._id}-checkbox`}
@@ -460,11 +514,7 @@ const DataSelector = () => {
                   <input
                     className={styles.dataSetNameInput}
                     value={renamingName}
-                    onChange={(e) => { 
-                      setRenamingName(e.target.value);
-                      
-                    }}
-                    
+                    onChange={(e) => setRenamingName(e.target.value)}
                     onBlur={() => renameDataSet(dataSet._id, renamingName)}
                   />
                 ) : (

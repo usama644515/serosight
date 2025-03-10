@@ -4,9 +4,13 @@ const SampleInfoContext = createContext();
 
 export const SampleInfoProvider = ({ children }) => {
   const [sampleInfoList, setSampleInfoList] = useState([]);
+  const [ExposureList, setExposureList] = useState([]);
+  const [DatasetNames, setDatasetNames] = useState([]);
 
   return (
-    <SampleInfoContext.Provider value={{ sampleInfoList, setSampleInfoList }}>
+    <SampleInfoContext.Provider
+      value={{ sampleInfoList, setSampleInfoList, ExposureList, setExposureList,DatasetNames,setDatasetNames }}
+    >
       {children}
     </SampleInfoContext.Provider>
   );

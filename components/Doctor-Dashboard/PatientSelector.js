@@ -224,7 +224,7 @@ export default function PatientSelector() {
   const [expandedReports, setExpandedReports] = useState({});
   const [diseases, setDiseases] = useState([]);
   const [loadingDiseases, setLoadingDiseases] = useState(false);
-  const { sampleInfoList } = useSampleInfo();
+  const { sampleInfoList, ExposureList, DatasetNames } = useSampleInfo();
   const [graphType, setGraphType] = useState("line"); // State to toggle between line and box plot
 
   useEffect(() => {
@@ -265,21 +265,21 @@ export default function PatientSelector() {
   //   }
   // }, [selectedUser]);
 
-  const handleSearch = async (e) => {
-    const value = e.target.value;
-    setSearchTerm(value);
+  // const handleSearch = async (e) => {
+  //   const value = e.target.value;
+  //   setSearchTerm(value);
 
-    if (value.trim()) {
-      try {
-        const response = await axios.get(`/api/searchUsers?query=${value}`);
-        setSearchResults(response.data);
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      }
-    } else {
-      setSearchResults([]);
-    }
-  };
+  //   if (value.trim()) {
+  //     try {
+  //       const response = await axios.get(`/api/searchUsers?query=${value}`);
+  //       setSearchResults(response.data);
+  //     } catch (error) {
+  //       console.error("Error fetching users:", error);
+  //     }
+  //   } else {
+  //     setSearchResults([]);
+  //   }
+  // };
 
   // const handleUserClick = (user) => {
   //   const selected = {
@@ -385,6 +385,22 @@ export default function PatientSelector() {
     }
   }, [selectedUser]);
 
+  const handleSearch = async (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.trim()) {
+      try {
+        const response = await axios.get(`/api/searchUsers?query=${value}`);
+        setSearchResults(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    } else {
+      setSearchResults([]);
+    }
+  };
+
   const handleUserClick = (user) => {
     const selected = {
       name: `${user.patientName}`,
@@ -392,12 +408,17 @@ export default function PatientSelector() {
       slide: user.sampleInfo?.slide,
       block: user.sampleInfo?.block,
       date: user.sampleInfo?.date,
-      // immunity: user.sampleInfo?.immunity,
+      // immunity: user.sampleInfo?.immunity, // Uncomment if needed
     };
 
+    // Update the selected user state
     setSelectedUser(selected);
-    console.log(selectedUser);
 
+    // Clear the search term and results
+    setSearchTerm("");
+    setSearchResults([]);
+
+    // Save to localStorage if running in the browser
     if (typeof window !== "undefined") {
       localStorage.setItem("selectedUser", JSON.stringify(selected));
     }
@@ -469,20 +490,22 @@ export default function PatientSelector() {
               console.log("sampleinfolist", sampleInfoList);
 
               // Check if sampleInfoList (dataset) exists and has data
-              if (sampleInfoList && sampleInfoList.length >= 0) {
+              if (sampleInfoList.length > 0) {
                 console.log("sampleInfoList:", sampleInfoList);
 
                 // Retrieve exposure array from local storage and parse it
-                const storedExposure = localStorage.getItem("exposure");
-                console.log("Stored Exposure Array:", storedExposure);
+                // const storedExposure = localStorage.getItem("exposure");
+                console.log("Stored Exposure Array:", ExposureList);
+                console.log("Data set Names:", DatasetNames);
 
                 apiData = apiData.filter((item) => {
                   return (
                     sampleInfoList.some(
                       (sample) =>
-                        String(sample.block) === String(item.Block) &&
-                        String(sample.slide) === String(item.Slide)
-                    ) && storedExposure.includes(item.Exposure) // Ensure exposure matches
+                        String(sample.sampleInfo.block) ===
+                          String(item.Block) &&
+                        String(sample.sampleInfo.slide) === String(item.Slide)
+                    ) && ExposureList.includes(item.Exposure) // Ensure exposure matches
                   );
                 });
 
@@ -1025,8 +1048,6 @@ export default function PatientSelector() {
   // console.log("Chart Data:", chartData);
   // console.log("Chart Options:", chartOptions);
 
- 
-
   const handleDownloadPDF = (reportDate, diseaseName) => {
     // Helper function to parse DD/MM/YYYY to YYYY-MM-DD
     const parseReportDate = (reportDate) => {
@@ -1059,30 +1080,28 @@ export default function PatientSelector() {
         pdf.setFontSize(12);
         pdf.setTextColor(0, 0, 0);
         pdf.text(`Patient ID: ${selectedUser.userId}`, 20, 40);
-        pdf.text(`Patient Name: ${selectedUser.name}`, 20, 50);
-        pdf.text(`Selected Diseases: ${diseaseName}`, 20, 60);
+        // pdf.text(`Patient Name: ${selectedUser.name}`, 20, 50);
+        pdf.text(`Selected Diseases: ${diseaseName}`, 20, 50);
         if (sampleInfoList && sampleInfoList.length > 0) {
-          pdf.text(`DataSet Name: ${localStorage.getItem("dataSetName")}`, 20, 70);
+          pdf.text(`DataSet Name: ${DatasetNames.join(", ")}`, 20, 60);
           // Convert and format the date
-        const formattedDate = new Intl.DateTimeFormat("en-US", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(new Date(parseReportDate(reportDate)));
+          const formattedDate = new Intl.DateTimeFormat("en-US", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }).format(new Date(parseReportDate(reportDate)));
 
-        pdf.text(`Date: ${formattedDate}`, 20, 80);
-        }else{
+          pdf.text(`Date: ${formattedDate}`, 20, 70);
+        } else {
           // Convert and format the date
-        const formattedDate = new Intl.DateTimeFormat("en-US", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }).format(new Date(parseReportDate(reportDate)));
+          const formattedDate = new Intl.DateTimeFormat("en-US", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+          }).format(new Date(parseReportDate(reportDate)));
 
-        pdf.text(`Date: ${formattedDate}`, 20, 70);
+          pdf.text(`Date: ${formattedDate}`, 20, 70);
         }
-
-        
 
         // Add separator line
         pdf.setDrawColor(33, 150, 243);
@@ -1402,7 +1421,7 @@ export default function PatientSelector() {
                 globalData={globalData}
                 patientData={patientData}
                 showImmunityLines={whiskerLines}
-                reportDate = {selectedUser.date}
+                reportDate={selectedUser.date}
                 selectedUser={selectedUser}
                 sampleInfoList={sampleInfoList}
               />

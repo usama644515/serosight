@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import dynamic from "next/dynamic";
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+import { useSampleInfo } from "./ContextProvider";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -64,6 +65,7 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
 const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser, reportDate, diseaseName,sampleInfoList }) => {
   const plotContainerRef = useRef(null); // Ref for the container div
   const [isPlotReady, setIsPlotReady] = useState(false); // State to track if the plot is ready
+   const {DatasetNames } = useSampleInfo();
 
   // Convert data into traces for Plotly
   const traces = Object.keys(globalData).map((disease, index) => {
@@ -85,6 +87,11 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
 
   // Function to handle PDF download
   const handleDownloadPDF = () => {
+    // Helper function to parse DD/MM/YYYY to YYYY-MM-DD
+    const parseReportDate = (reportDate) => {
+      const [day, month, year] = reportDate.split("/");
+      return `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
+    };
     if (!plotContainerRef.current) {
       console.error(`Plot container not found.`);
       return;
@@ -106,10 +113,22 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
       
      
       if (sampleInfoList && sampleInfoList.length > 0) {
-        pdf.text(`DataSet Name: ${localStorage.getItem("dataSetName")}`, 20, 50);
-        pdf.text(`Report Date: ${reportDate}`, 20, 60);
+        pdf.text(`DataSet Name: ${DatasetNames.join(", ")}`, 20, 50);
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(new Date(parseReportDate(reportDate)));
+        
+        pdf.text(`Date: ${formattedDate}`, 20, 60);
       }else{
-        pdf.text(`Report Date: ${reportDate}`, 20, 50);
+        const formattedDate = new Intl.DateTimeFormat("en-US", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(new Date(parseReportDate(reportDate)));
+        
+        pdf.text(`Date: ${formattedDate}`, 20, 50);
       }
 
       // Add separator line
