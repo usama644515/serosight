@@ -14,9 +14,7 @@ const DataSelector = () => {
     smoking: [],
     exposure: ["200", "500"], // Default all selected in exposure
   });
-  const { setSampleInfoList } = useSampleInfo();
-  const { setExposureList } = useSampleInfo();
-  const { setDatasetNames } = useSampleInfo();
+  const { setSampleInfoList, setExposureList, setDatasetNames, setDatasetPatientMap } = useSampleInfo();
   const [savedDataSets, setSavedDataSets] = useState([]);
   const [renamingId, setRenamingId] = useState(null);
   const [renamingName, setRenamingName] = useState("");
@@ -133,19 +131,24 @@ const DataSelector = () => {
     }
   };
 
-  const handleDataSetSelection = (id) => {
-    setSelectedDataSetIds((prev) =>
-      prev.includes(id)
+  const handleDataSetSelection = (id, name) => {
+    console.log("Selected Dataset ID:", id);
+    console.log("Selected Dataset Name:", name);
+  
+    setSelectedDataSetIds((prev) => {
+      const updatedIds = prev.includes(id)
         ? prev.filter((datasetId) => datasetId !== id)
-        : [...prev, id]
-    );
+        : [...prev, id];
+      console.log("Updated Selected Dataset IDs:", updatedIds);
+      return updatedIds;
+    });
   
     if (!patientDataMap[id]) {
-      const selectedDataSet = savedDataSets.find(
-        (dataSet) => dataSet._id === id
-      );
+      console.log("Fetching patient data for dataset ID:", id);
+      const selectedDataSet = savedDataSets.find((dataSet) => dataSet._id === id);
   
       if (selectedDataSet) {
+        console.log("Selected Dataset Criteria:", selectedDataSet.criteria);
         fetch("/api/patient-matching", {
           method: "POST",
           headers: {
@@ -155,16 +158,28 @@ const DataSelector = () => {
         })
           .then((response) => response.json())
           .then((data) => {
-            console.log("Matched patients for dataset:", id, data);
-            setPatientDataMap((prev) => ({
-              ...prev,
-              [id]: data,
-            }));
+            console.log("Matched patients for dataset:", id, name, data);
+            // store value in the state variable local
+            setPatientDataMap((prev) => {
+              const updatedPatientDataMap = { ...prev, [name]: data };
+              console.log("Updated Patient Data Map:", updatedPatientDataMap);
+              return updatedPatientDataMap;
+            });
+            // Store the patient data for this dataset in the provider
+            setDatasetPatientMap((prev) => {
+              const updatedDatasetPatientMap = { ...prev, [name]: data };
+              console.log("Updated Dataset Patient Map in Provider:", updatedDatasetPatientMap);
+              return updatedDatasetPatientMap;
+            });
           })
-          .catch((error) =>
-            console.error("Error fetching patient data:", error)
-          );
+          .catch((error) => {
+            console.error("Error fetching patient data:", error);
+          });
+      } else {
+        console.log("Dataset not found in savedDataSets:", id);
       }
+    } else {
+      console.log("Patient data already fetched for dataset ID:", id);
     }
   
     // Handle exposure values and dataset names
@@ -172,34 +187,43 @@ const DataSelector = () => {
     if (selectedDataSet) {
       const newExposure = selectedDataSet.criteria.exposure;
       const datasetName = selectedDataSet.name;
-  
-      if (selectedDataSetIds.includes(id)) {
-        // Dataset is being unchecked: remove exposure values and dataset name
-        setExposureList((prev) =>
-          prev.filter((exp) => !newExposure.includes(exp)) // Remove exposure values for the unchecked dataset
-        );
-        setDatasetNames((prev) =>
-          prev.filter((name) => name !== datasetName) // Remove dataset name for the unchecked dataset
-        );
-      } else {
-        // Dataset is being checked: add exposure values and dataset name
-        setExposureList((prev) => {
-          const updatedExposureList = [...prev];
-          newExposure.forEach((exp) => {
-            if (!updatedExposureList.includes(exp)) {
-              updatedExposureList.push(exp); // Add only unique exposure values
-            }
-          });
-          return updatedExposureList;
-        });
-        setDatasetNames((prev) => {
+      console.log("Selected Dataset Exposure:", newExposure);
+      console.log("Selected Dataset Name:", datasetName);
+    
+      setExposureList((prevMap) => {
+        const newMap = new Map(prevMap);
+    
+        if (selectedDataSetIds.includes(id)) {
+          console.log("Dataset is being unchecked. Removing dataset and exposure.");
+          newMap.delete(datasetName);
+        } else {
+          console.log("Dataset is being checked. Adding dataset and exposure.");
+          newMap.set(datasetName, newExposure);
+        }
+    
+        console.log("Updated Exposure Map:", Object.fromEntries(newMap));
+        return newMap;
+      });
+    
+      setDatasetNames((prev) => {
+        if (selectedDataSetIds.includes(id)) {
+          const updatedDatasetNames = prev.filter((name) => name !== datasetName);
+          console.log("Updated Dataset Names after removal:", updatedDatasetNames);
+          return updatedDatasetNames;
+        } else {
           if (!prev.includes(datasetName)) {
-            return [...prev, datasetName]; // Add dataset name if not already present
+            const updatedDatasetNames = [...prev, datasetName];
+            console.log("Updated Dataset Names after addition:", updatedDatasetNames);
+            return updatedDatasetNames;
           }
+          console.log("Dataset name already exists:", datasetName);
           return prev;
-        });
-      }
+        }
+      });
+    } else {
+      console.log("Dataset not found in savedDataSets for exposure/dataset name handling:", id);
     }
+   
   };
 
   const compareAndMergePatientData = () => {
@@ -504,7 +528,7 @@ const DataSelector = () => {
                   id={`disease-${dataSet._id}-checkbox`}
                   className={styles.checkboxInput}
                   checked={selectedDataSetIds.includes(dataSet._id)}
-                  onChange={() => handleDataSetSelection(dataSet._id)}
+                  onChange={() => handleDataSetSelection(dataSet._id,dataSet.name)}
                 />
                 <label
                   htmlFor={`disease-${dataSet._id}-checkbox`}

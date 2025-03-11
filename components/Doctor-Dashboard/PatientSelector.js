@@ -224,7 +224,10 @@ export default function PatientSelector() {
   const [expandedReports, setExpandedReports] = useState({});
   const [diseases, setDiseases] = useState([]);
   const [loadingDiseases, setLoadingDiseases] = useState(false);
-  const { sampleInfoList, ExposureList, DatasetNames } = useSampleInfo();
+  const [keysArray, setKeysArray] = useState([]);
+  const [datasetantigen, setdatasetantigen] = useState([]); // Initialize state with an empty array
+  const { sampleInfoList, ExposureList, DatasetNames, DatasetPatientMap } =
+    useSampleInfo();
   const [graphType, setGraphType] = useState("line"); // State to toggle between line and box plot
 
   useEffect(() => {
@@ -332,6 +335,7 @@ export default function PatientSelector() {
 
   useEffect(() => {
     console.log("provider sampleInfoList", sampleInfoList);
+    console.log("provider DatasetPatientMap", DatasetPatientMap);
     if (selectedUser) {
       const fetchAppendData = async () => {
         try {
@@ -454,6 +458,9 @@ export default function PatientSelector() {
   const handleDiseaseChange = (disease, isChecked) => {
     console.log(selectedDiseases.length);
     console.log(disease.data);
+    console.log("provider DatasetPatientMap", DatasetPatientMap);
+    console.log("Exposure List", ExposureList);
+    console.log("Dataset Name List", DatasetNames);
 
     if (isChecked) {
       console.log(`Checkbox for ${disease.type} checked`);
@@ -487,146 +494,329 @@ export default function PatientSelector() {
               );
 
               console.log("Filtered API Data based on allPatients:", apiData);
-              console.log("sampleinfolist", sampleInfoList);
 
-              // Check if sampleInfoList (dataset) exists and has data
-              if (sampleInfoList.length > 0) {
-                console.log("sampleInfoList:", sampleInfoList);
+              // Initialize an object to store processed data for each dataset
+              const processedDataByDataset = {};
 
-                // Retrieve exposure array from local storage and parse it
-                // const storedExposure = localStorage.getItem("exposure");
-                console.log("Stored Exposure Array:", ExposureList);
-                console.log("Data set Names:", DatasetNames);
+              // Check if DatasetPatientMap exists and has data
+              if (Object.keys(DatasetPatientMap).length > 0) {
+                console.log("DatasetPatientMap:", DatasetPatientMap);
 
-                apiData = apiData.filter((item) => {
-                  return (
-                    sampleInfoList.some(
-                      (sample) =>
-                        String(sample.sampleInfo.block) ===
-                          String(item.Block) &&
-                        String(sample.sampleInfo.slide) === String(item.Slide)
-                    ) && ExposureList.includes(item.Exposure) // Ensure exposure matches
-                  );
-                });
+                // Iterate over each dataset in DatasetPatientMap
+                Object.entries(DatasetPatientMap).forEach(
+                  ([datasetId, sampleInfoList]) => {
+                    console.log(`Processing dataset ID: ${datasetId}`);
+                    console.log(
+                      `SampleInfoList for dataset ${datasetId}:`,
+                      sampleInfoList
+                    );
 
-                console.log(
-                  "Filtered API Data based on sampleInfoList and Exposure:",
-                  apiData
-                );
-              }
+                    // Filter API data for the current dataset
+                    const filteredApiData = apiData.filter((item) => {
+                      return (
+                        sampleInfoList.some(
+                          (sample) =>
+                            String(sample.sampleInfo.block) === String(item.Block) &&
+                            String(sample.sampleInfo.slide) === String(item.Slide)
+                        ) &&
+                         // Check if datasetId exists in the Map
+                        ExposureList.get(datasetId)?.includes(item.Exposure) // Get exposure array and check
+                      );
+                    });
+                    
+                    
 
-              // Process apiData: filter out non-positive values, subtract background, and calculate averages per patient per Name
-              let processedData = {};
+                    console.log(
+                      `Filtered API Data for dataset ${datasetId}:`,
+                      filteredApiData
+                    );
 
-              // Group apiData by patient block and slide
-              allPatients.forEach((patient) => {
-                const matchedData = apiData.filter(
-                  (item) =>
-                    String(item.Block) === String(patient.sampleInfo.block) &&
-                    String(item.Slide) === String(patient.sampleInfo.slide)
-                );
+                    // Process filtered API data for the current dataset
+                    let processedData = {};
 
-                if (matchedData.length > 0) {
-                  if (!processedData[patient.patientId]) {
-                    processedData[patient.patientId] = {};
-                  }
+                    // Group filteredApiData by patient block and slide
+                    allPatients.forEach((patient) => {
+                      const matchedData = filteredApiData.filter(
+                        (item) =>
+                          String(item.Block) ===
+                            String(patient.sampleInfo.block) &&
+                          String(item.Slide) ===
+                            String(patient.sampleInfo.slide)
+                      );
 
-                  matchedData.forEach((item) => {
-                    const name = item.Name;
-                    const value = parseFloat(item.Value);
-                    const background = parseFloat(item.Background);
+                      if (matchedData.length > 0) {
+                        if (!processedData[patient.patientId]) {
+                          processedData[patient.patientId] = {};
+                        }
 
-                    if (value > 0) {
-                      const finalValue = value - background;
+                        matchedData.forEach((item) => {
+                          const name = item.Name;
+                          const value = parseFloat(item.Value);
+                          const background = parseFloat(item.Background);
 
-                      if (!processedData[patient.patientId][name]) {
-                        processedData[patient.patientId][name] = {
-                          total: 0,
-                          count: 0,
+                          if (value > 0) {
+                            const finalValue = value - background;
+
+                            if (!processedData[patient.patientId][name]) {
+                              processedData[patient.patientId][name] = {
+                                total: 0,
+                                count: 0,
+                              };
+                            }
+
+                            processedData[patient.patientId][name].total +=
+                              finalValue;
+                            processedData[patient.patientId][name].count += 1;
+                          }
+                        });
+                      }
+                    });
+
+                    // Convert processedData to store averages per patient per Name
+                    let patientAverages = Object.keys(processedData).map(
+                      (patientId) => {
+                        const nameAverages = Object.keys(
+                          processedData[patientId]
+                        ).map((name) => ({
+                          Name: name,
+                          AverageValue:
+                            processedData[patientId][name].count > 0
+                              ? processedData[patientId][name].total /
+                                processedData[patientId][name].count
+                              : 0,
+                        }));
+
+                        return {
+                          PatientId: patientId,
+                          Averages: nameAverages,
                         };
                       }
+                    );
 
-                      processedData[patient.patientId][name].total +=
-                        finalValue;
-                      processedData[patient.patientId][name].count += 1;
-                    }
-                  });
-                }
-              });
+                    console.log(
+                      `Processed API Data with Averages for Dataset ${datasetId}:`,
+                      patientAverages
+                    );
 
-              // Convert processedData to store averages per patient per Name
-              let patientAverages = Object.keys(processedData).map(
-                (patientId) => {
-                  const nameAverages = Object.keys(
-                    processedData[patientId]
-                  ).map((name) => ({
-                    Name: name,
-                    AverageValue:
-                      processedData[patientId][name].count > 0
-                        ? processedData[patientId][name].total /
-                          processedData[patientId][name].count
-                        : 0,
-                  }));
-
-                  return {
-                    PatientId: patientId,
-                    Averages: nameAverages,
-                  };
-                }
-              );
-
-              console.log(
-                "Processed API Data with Averages Per Patient and Name:",
-                patientAverages
-              );
-
-              // Step 1: Extract unique names from processed patientAverages
-              const uniqueNames = [
-                ...new Set(
-                  patientAverages.flatMap((p) => p.Averages.map((a) => a.Name))
-                ),
-              ];
-
-              // Step 2: Process graphData based on patientAverages
-              const graphData = uniqueNames.reduce((acc, name) => {
-                // Filter out relevant data for this name
-                const filteredData = patientAverages.flatMap((p) =>
-                  p.Averages.filter((a) => a.Name === name).map(
-                    (a) => a.AverageValue
-                  )
+                    // Store processed data for the current dataset
+                    processedDataByDataset[datasetId] = patientAverages;
+                  }
                 );
 
-                // Step 3: Group by immunity level
-                const levelData = filteredData.reduce((levelAcc, avgValue) => {
-                  const level = Math.round(avgValue / 10) * 10; // Round to nearest 10
-                  if (levelAcc[level]) {
-                    levelAcc[level].patients += 1;
-                  } else {
-                    levelAcc[level] = {
-                      level: level,
-                      patients: 1,
+                console.log(
+                  "Processed Data by Dataset:",
+                  processedDataByDataset
+                );
+
+                // Format graph data for each dataset
+                const graphDataByDataset = {};
+
+                Object.entries(processedDataByDataset).forEach(
+                  ([datasetId, patientAverages]) => {
+                    // Step 1: Extract unique names from processed patientAverages
+                    const uniqueNames = [
+                      ...new Set(
+                        patientAverages.flatMap((p) =>
+                          p.Averages.map((a) => a.Name)
+                        )
+                      ),
+                    ];
+
+                    // Step 2: Process graphData based on patientAverages
+                    const graphData = uniqueNames.reduce((acc, name) => {
+                      // Filter out relevant data for this name
+                      const filteredData = patientAverages.flatMap((p) =>
+                        p.Averages.filter((a) => a.Name === name).map(
+                          (a) => a.AverageValue
+                        )
+                      );
+
+                      // Step 3: Group by immunity level
+                      const levelData = filteredData.reduce(
+                        (levelAcc, avgValue) => {
+                          const level = Math.round(avgValue / 10) * 10; // Round to nearest 10
+                          if (levelAcc[level]) {
+                            levelAcc[level].patients += 1;
+                          } else {
+                            levelAcc[level] = {
+                              level: level,
+                              patients: 1,
+                            };
+                          }
+                          return levelAcc;
+                        },
+                        {}
+                      );
+
+                      // Step 4: Store the processed data
+                      acc[name] = Object.values(levelData);
+                      return acc;
+                    }, {});
+
+                    // Store graph data for the current dataset
+                    graphDataByDataset[datasetId] = graphData;
+                  }
+                );
+
+                console.log(
+                  "Formatted Immunity Data for Graph by Dataset:",
+                  graphDataByDataset
+                );
+
+                // Initialize an empty object to store the flattened data
+                const flattenedData = {};
+
+                // Iterate over the nested data
+                for (const [exposure, datasets] of Object.entries(
+                  graphDataByDataset
+                )) {
+                  for (const [datasetName, data] of Object.entries(datasets)) {
+                    // Create a unique key by combining exposure and dataset name
+                    const uniqueKey = `${exposure}, ${datasetName}`;
+                  
+                    // Correctly update the state by passing the previous state
+                    setdatasetantigen((prev) => [...prev, datasetName]); 
+                  
+                    // Add the data to the flattened object
+                    flattenedData[uniqueKey] = data;
+                  }
+                  
+                }
+
+                console.log("Flattened Data:", flattenedData);
+                // Extract keys from the flattenedData object
+                setKeysArray(Object.keys(flattenedData));
+                extractLevels(flattenedData);
+
+
+                // Set selected reports for each dataset
+                const diseaseName = disease.type;
+                setSelectedReports((prev) => [
+                  ...prev,
+                  {
+                    name: diseaseName,
+                    data: flattenedData,
+                    uniqueNames: keysArray,
+                    // datasetId,
+                  },
+                ]);
+              } else {
+                // If no dataset is selected, process data as before
+                let processedData = {};
+
+                // Group apiData by patient block and slide
+                allPatients.forEach((patient) => {
+                  const matchedData = apiData.filter(
+                    (item) =>
+                      String(item.Block) === String(patient.sampleInfo.block) &&
+                      String(item.Slide) === String(patient.sampleInfo.slide)
+                  );
+
+                  if (matchedData.length > 0) {
+                    if (!processedData[patient.patientId]) {
+                      processedData[patient.patientId] = {};
+                    }
+
+                    matchedData.forEach((item) => {
+                      const name = item.Name;
+                      const value = parseFloat(item.Value);
+                      const background = parseFloat(item.Background);
+
+                      if (value > 0) {
+                        const finalValue = value - background;
+
+                        if (!processedData[patient.patientId][name]) {
+                          processedData[patient.patientId][name] = {
+                            total: 0,
+                            count: 0,
+                          };
+                        }
+
+                        processedData[patient.patientId][name].total +=
+                          finalValue;
+                        processedData[patient.patientId][name].count += 1;
+                      }
+                    });
+                  }
+                });
+
+                // Convert processedData to store averages per patient per Name
+                let patientAverages = Object.keys(processedData).map(
+                  (patientId) => {
+                    const nameAverages = Object.keys(
+                      processedData[patientId]
+                    ).map((name) => ({
+                      Name: name,
+                      AverageValue:
+                        processedData[patientId][name].count > 0
+                          ? processedData[patientId][name].total /
+                            processedData[patientId][name].count
+                          : 0,
+                    }));
+
+                    return {
+                      PatientId: patientId,
+                      Averages: nameAverages,
                     };
                   }
-                  return levelAcc;
+                );
+
+                console.log(
+                  "Processed API Data with Averages Per Patient and Name:",
+                  patientAverages
+                );
+
+                // Step 1: Extract unique names from processed patientAverages
+                const uniqueNames = [
+                  ...new Set(
+                    patientAverages.flatMap((p) =>
+                      p.Averages.map((a) => a.Name)
+                    )
+                  ),
+                ];
+
+                // Step 2: Process graphData based on patientAverages
+                const graphData = uniqueNames.reduce((acc, name) => {
+                  // Filter out relevant data for this name
+                  const filteredData = patientAverages.flatMap((p) =>
+                    p.Averages.filter((a) => a.Name === name).map(
+                      (a) => a.AverageValue
+                    )
+                  );
+
+                  // Step 3: Group by immunity level
+                  const levelData = filteredData.reduce(
+                    (levelAcc, avgValue) => {
+                      const level = Math.round(avgValue / 10) * 10; // Round to nearest 10
+                      if (levelAcc[level]) {
+                        levelAcc[level].patients += 1;
+                      } else {
+                        levelAcc[level] = {
+                          level: level,
+                          patients: 1,
+                        };
+                      }
+                      return levelAcc;
+                    },
+                    {}
+                  );
+
+                  // Step 4: Store the processed data
+                  acc[name] = Object.values(levelData);
+                  return acc;
                 }, {});
 
-                // Step 4: Store the processed data
-                acc[name] = Object.values(levelData);
-                return acc;
-              }, {});
+                // Output graphData
+                console.log("Formatted Immunity Data for Graph:", graphData);
+                // Set data for whisker graph
+                extractLevels(graphData);
 
-              // Output graphData
-              console.log("Formatted Immunity Data for Graph:", graphData);
-              // set data for whisker graph
-              extractLevels(graphData);
-
-              // console.log("Graph Data:", { [disease.type]: graphData });
-
-              const diseaseName = disease.type;
-              setSelectedReports((prev) => [
-                ...prev,
-                { name: diseaseName, data: graphData, uniqueNames },
-              ]);
+                const diseaseName = disease.type;
+                setSelectedReports((prev) => [
+                  ...prev,
+                  { name: diseaseName, data: graphData, uniqueNames },
+                ]);
+              }
 
               // Remove loading state after data is fetched
               setLoadingDiseases(false);
@@ -1082,7 +1272,7 @@ export default function PatientSelector() {
         pdf.text(`Patient ID: ${selectedUser.userId}`, 20, 40);
         // pdf.text(`Patient Name: ${selectedUser.name}`, 20, 50);
         pdf.text(`Selected Diseases: ${diseaseName}`, 20, 50);
-        if (sampleInfoList && sampleInfoList.length > 0) {
+        if (Object.keys(DatasetPatientMap).length > 0) {
           pdf.text(`DataSet Name: ${DatasetNames.join(", ")}`, 20, 60);
           // Convert and format the date
           const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -1119,7 +1309,7 @@ export default function PatientSelector() {
         pdf.text("Generated by ImmunoMap", 105, 200, { align: "center" });
 
         // Save the PDF
-        pdf.save(`${selectedUser.name}_${diseaseName}_report.pdf`);
+        pdf.save(`${selectedUser.userId}_${diseaseName}_report.pdf`);
       });
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -1404,10 +1594,17 @@ export default function PatientSelector() {
                         style={{ height: "300px", width: "100%" }}
                       >
                         <Line
-                          data={getChartDataForReport(data, uniqueNames)}
+                          data={getChartDataForReport(
+                            data,
+                            Object.keys(DatasetPatientMap).length > 0
+                              ? keysArray
+                              : uniqueNames
+                          )}
                           options={getChartOptionsForReport(
                             data,
-                            uniqueNames,
+                            Object.keys(DatasetPatientMap).length > 0
+                              ? keysArray
+                              : uniqueNames,
                             patientData
                           )}
                         />
