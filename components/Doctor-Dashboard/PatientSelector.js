@@ -454,7 +454,7 @@ export default function PatientSelector() {
   };
 
   // Example: Get unique names for "control"
-
+  const [uniqueName2, setUniqueNames2] = useState([]);
   const handleDiseaseChange = (disease, isChecked) => {
     console.log(selectedDiseases.length);
     console.log(disease.data);
@@ -467,6 +467,8 @@ export default function PatientSelector() {
 
       const uniqueNames = getUniqueNamesByType(disease.type);
       console.log("Unique Names:", uniqueNames);
+      // Step 3: Update the state
+      setUniqueNames2(uniqueNames);
 
       // Set the loading state for the specific disease
       setLoadingDiseases(true);
@@ -697,6 +699,7 @@ export default function PatientSelector() {
                     name: diseaseName,
                     data: flattenedData,
                     uniqueNames: keysArray,
+
                     // datasetId,
                   },
                 ]);
@@ -1037,7 +1040,7 @@ export default function PatientSelector() {
   //     };
   //   };
 
-  const getAnnotationForReport = (immunityLevels, uniqueNames, data) => {
+  const getAnnotationForReport = (immunityLevels, uniqueNames, data, isIndependent) => {
     if (!Array.isArray(immunityLevels)) {
       immunityLevels = [immunityLevels];
     }
@@ -1052,10 +1055,10 @@ export default function PatientSelector() {
 
         const uniqueName = uniqueNames[index % uniqueNames.length];
         const diseaseData = data[uniqueName];
-        if (!diseaseData) {
-          console.error("No disease data found for unique name:", uniqueName);
-          return null;
-        }
+        // if (!diseaseData) {
+        //   console.error("No disease data found for unique name:", uniqueName);
+        //   return null;
+        // }
 
         const rangeStep = 1400;
         const rangeIndex = Math.floor(immunityLevel / rangeStep);
@@ -1063,19 +1066,23 @@ export default function PatientSelector() {
           (rangeIndex + 1) * rangeStep
         }]`;
 
+        // If annotations are independent, use a fixed color and label
+        const borderColor = isIndependent ? `hsl(0, 70%, 50%)` : `hsl(${index * 50}, 70%, 50%)`;
+        const labelContent = isIndependent ? `Immunity: ${immunityLevel}` : `Immunity: ${immunityLevel}`;
+
         return {
           id: `${uniqueName}-annotation`,
           type: "line",
           mode: "vertical",
           scaleID: "x",
           value: labelRange,
-          borderColor: `hsl(${index * 50}, 70%, 50%)`, // Same color as the curve line
+          borderColor: borderColor,
           borderWidth: 2,
           label: {
-            content: `Immunity: ${immunityLevel}`,
+            content: labelContent,
             enabled: true,
             position: "top",
-            backgroundColor: `hsl(${index * 50}, 70%, 50%)`, // Matching background color
+            backgroundColor: borderColor,
             color: "white",
           },
         };
@@ -1083,10 +1090,11 @@ export default function PatientSelector() {
       .filter((annotation) => annotation !== null);
   };
 
-  const getChartOptionsForReport = (data, uniqueNames, patientData) => {
+  const getChartOptionsForReport = (data, uniqueNames, patientData,) => {
     const immunityLevels = getimmunitylevel(uniqueNames, patientData);
+    const isIndependent = Object.keys(DatasetPatientMap).length > 0;
     const annotations = selectedReport.includes(selectedUser.date)
-      ? getAnnotationForReport(immunityLevels, uniqueNames, data)
+      ? getAnnotationForReport(immunityLevels, uniqueNames, data, isIndependent)
       : [];
 
     return {
@@ -1602,9 +1610,7 @@ export default function PatientSelector() {
                           )}
                           options={getChartOptionsForReport(
                             data,
-                            Object.keys(DatasetPatientMap).length > 0
-                              ? keysArray
-                              : uniqueNames,
+                             uniqueName2,
                             patientData
                           )}
                         />

@@ -276,7 +276,7 @@ const DataSelector = () => {
     "rubella",
     "hepA",
     "hepB",
-    "Influenza",
+    "influenza",
   ];
   const actualInfectionOptions = [
     "None",
@@ -290,20 +290,20 @@ const DataSelector = () => {
     "hepA",
     "hepB",
     "mononucleosis",
-    "H1N5 AVIAN",
-    "west nile virus",
-    "Diabetes",
+    "h1n5Avian",
+    "westNileVirus",
+    "diabetes",
   ];
   const diseaseOptions = [
     "None",
-    "Rheumatoid Arthritis",
-    "psoniatic arthritis",
-    "ankylosing spondylitis",
+    "rheumatoidArthritis",
+    "psoriaticArthritis",
+    "ankylosingSpondylitis",
     "lupus",
     "vasculitis",
-    "sjogreens",
+    "sjogrens",
     "gout",
-    "CAD(heart disease)",
+    "cadHeartDisease",
     "cancer",
   ];
   const smokingOptions = ["Yes", "No"];
