@@ -1066,9 +1066,9 @@ export default function PatientSelector() {
           (rangeIndex + 1) * rangeStep
         }]`;
 
-        // If annotations are independent, use a fixed color and label
-        const borderColor = isIndependent ? `hsl(0, 70%, 50%)` : `hsl(${index * 50}, 70%, 50%)`;
-        const labelContent = isIndependent ? `Immunity: ${immunityLevel}` : `Immunity: ${immunityLevel}`;
+        // Use different colors for each annotation line regardless of isIndependent
+        const borderColor = `hsl(${index * 50}, 70%, 50%)`;
+        const labelContent = `Immunity: ${immunityLevel}`;
 
         return {
           id: `${uniqueName}-annotation`,
