@@ -38,11 +38,11 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
       const color = `hsl(${index * 50}, 70%, 50%)`; // Generate a color for each line
       return {
         type: 'line',
-        x0: 0,
-        x1: 1,
+        x0: index - 0.4, // Start at the left edge of the box
+        x1: index + 0.4, // End at the right edge of the box
         y0: immunityLevel,
         y1: immunityLevel,
-        xref: 'paper',
+        xref: 'x',
         yref: 'y',
         line: {
           color: color, // Use the generated color
@@ -52,7 +52,7 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
         label: {
           text: `Immunity: ${immunityLevel}`,
           showarrow: false,
-          x: 1.05, // Position the label to the right of the line
+          x: index + 0.5, // Position the label to the right of the line
           y: immunityLevel,
           font: { color: color, size: 12 }, // Use the same color for the label
         },
