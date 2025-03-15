@@ -62,10 +62,10 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
 };
 
 // Box plot graph component
-const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser, reportDate, diseaseName,sampleInfoList }) => {
+const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser, reportDate, diseaseName, sampleInfoList }) => {
   const plotContainerRef = useRef(null); // Ref for the container div
   const [isPlotReady, setIsPlotReady] = useState(false); // State to track if the plot is ready
-   const {DatasetNames, DatasetPatientMap } = useSampleInfo();
+  const { DatasetNames, DatasetPatientMap } = useSampleInfo();
 
   // Convert data into traces for Plotly
   const traces = Object.keys(globalData).map((disease, index) => {
@@ -110,8 +110,7 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
       pdf.setFontSize(12);
       pdf.setTextColor(0, 0, 0);
       pdf.text(`Patient ID: ${selectedUser.userId}`, 20, 40);
-      
-     
+
       if (Object.keys(DatasetPatientMap).length > 0) {
         pdf.text(`DataSet Name: ${DatasetNames.join(", ")}`, 20, 50);
         const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -119,15 +118,15 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
           month: "2-digit",
           year: "numeric",
         }).format(new Date(parseReportDate(reportDate)));
-        
+
         pdf.text(`Date: ${formattedDate}`, 20, 60);
-      }else{
+      } else {
         const formattedDate = new Intl.DateTimeFormat("en-US", {
           day: "2-digit",
           month: "2-digit",
           year: "numeric",
         }).format(new Date(parseReportDate(reportDate)));
-        
+
         pdf.text(`Date: ${formattedDate}`, 20, 50);
       }
 
@@ -175,7 +174,11 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
           layout={{
             title: "Disease Severity Distribution",
             yaxis: { title: "Severity Level", color: 'white' }, // Set axis text color to white
-            xaxis: { title: "Diseases", color: 'white' }, // Set axis text color to white
+            xaxis: {
+              title: "Diseases",
+              color: 'white', // Set axis text color to white
+              tickfont: { size: 10 }, // Reduce font size of x-axis labels
+            },
             showlegend: false,
             autosize: true,
             margin: {
@@ -200,7 +203,7 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
           onClick={handleDownloadPDF} // Pass the function reference, not the function call
           disabled={!isPlotReady} // Disable the button until the plot is ready
           style={{
-            backgroundColor: '#004AAD',
+            backgroundColor: '#18206F',
             color: 'white',
             padding: '10px 20px',
             borderRadius: '5px',

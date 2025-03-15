@@ -229,6 +229,7 @@ export default function PatientSelector() {
   const { sampleInfoList, ExposureList, DatasetNames, DatasetPatientMap } =
     useSampleInfo();
   const [graphType, setGraphType] = useState("line"); // State to toggle between line and box plot
+  const [selectedExposures, setSelectedExposures] = useState([]); // State to store selected exposures
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -239,99 +240,21 @@ export default function PatientSelector() {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedUser) {
-  //     const fetchReports = async () => {
-  //       try {
-  //         const response = await axios.get(
-  //           `/api/report?patientId=${selectedUser.userId}`
-  //         );
-  //         if (response.data.length === 0) {
-  //           setPatientData([]);
-  //         } else {
-  //           setPatientData(response.data);
-  //           const uniqueDiseases = [
-  //             ...new Set(response.data.map((report) => report.diseaseName)),
-  //           ];
-  //           setDiseases(
-  //             uniqueDiseases.map((disease) => ({
-  //               name: disease,
-  //               data: globalData[disease] || [],
-  //             }))
-  //           );
-  //         }
-  //       } catch (error) {
-  //         console.error("Error fetching reports:", error);
-  //       }
-  //     };
-  //     fetchReports();
-  //   }
-  // }, [selectedUser]);
+  // Handle exposure selection
+  const handleExposureChange = (exposure) => {
+    setSelectedExposures((prev) =>
+      prev.includes(exposure)
+        ? prev.filter((item) => item !== exposure)
+        : [...prev, exposure]
+    );
+  };
 
-  // const handleSearch = async (e) => {
-  //   const value = e.target.value;
-  //   setSearchTerm(value);
+  // Filter data based on selected exposures
+  const filterDataByExposure = (data) => {
+    if (selectedExposures.length === 0) return data;
 
-  //   if (value.trim()) {
-  //     try {
-  //       const response = await axios.get(`/api/searchUsers?query=${value}`);
-  //       setSearchResults(response.data);
-  //     } catch (error) {
-  //       console.error("Error fetching users:", error);
-  //     }
-  //   } else {
-  //     setSearchResults([]);
-  //   }
-  // };
-
-  // const handleUserClick = (user) => {
-  //   const selected = {
-  //     name: `${user.patientName}`,
-  //     userId: user.patientId,
-  //   };
-  //   setSelectedUser(selected);
-  //   if (typeof window !== "undefined") {
-  //     localStorage.setItem("selectedUser", JSON.stringify(selected));
-  //   }
-  //   setSearchResults([]);
-  //   setSearchTerm("");
-  // };
-
-  // const handleUserClick = async (user) => {
-  //   const selected = {
-  //     name: `${user.patientName}`,
-  //     userId: user.patientId,
-  //     slide: user.sampleInfo?.slide,  // Assuming sampleInfo is part of the user object
-  //     block: user.sampleInfo?.block,  // Assuming sampleInfo is part of the user object
-  //   };
-
-  //   setSelectedUser(selected);
-
-  //   // Fetch append data using the slide and block from the selected user
-  //   if (selected.slide && selected.block) {
-  //     try {
-  //       const response = await axios.get(
-  //         `/api/getAppendData?slide=${selected.slide}&block=${selected.block}`
-  //       );
-
-  //       if (response.data.length > 0) {
-  //         // Set append data or process as needed
-  //         console.log("Append Data:", response.data);
-  //       } else {
-  //         console.log("No matching append data found");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching append data:", error);
-  //     }
-  //   }
-
-  //   if (typeof window !== "undefined") {
-  //     localStorage.setItem("selectedUser", JSON.stringify(selected));
-  //   }
-
-  //   setSearchResults([]);
-  //   setSearchTerm("");
-  // };
+    return data.filter((item) => selectedExposures.includes(item.Exposure));
+  };
 
   useEffect(() => {
     console.log("provider sampleInfoList", sampleInfoList);
@@ -350,13 +273,13 @@ export default function PatientSelector() {
               setPatientData([]);
               setDiseases([]);
             } else {
-              setPatientData(response.data);
-              // console.log("Patient Data:", response.data);
+              const filteredData = filterDataByExposure(response.data);
+              setPatientData(filteredData);
 
               // Map names to their types and filter for unique types
               const diseaseTypes = [
                 ...new Set(
-                  response.data
+                  filteredData
                     .map(
                       (item) =>
                         diseaseMapping.find((map) => map.name === item.Name)
@@ -369,7 +292,7 @@ export default function PatientSelector() {
               setDiseases(
                 diseaseTypes.map((type) => ({
                   type,
-                  data: patientData.filter((item) =>
+                  data: filteredData.filter((item) =>
                     diseaseMapping.some(
                       (map) => map.name === item.Name && map.type === type
                     )
@@ -387,7 +310,7 @@ export default function PatientSelector() {
 
       fetchAppendData();
     }
-  }, [selectedUser]);
+  }, [selectedUser, selectedExposures]);
 
   const handleSearch = async (e) => {
     const value = e.target.value;
@@ -427,19 +350,6 @@ export default function PatientSelector() {
       localStorage.setItem("selectedUser", JSON.stringify(selected));
     }
   };
-
-  // const handleDiseaseChange = (disease) => {
-  //   const isAlreadySelected = selectedDiseases.some(
-  //     (item) => item.name === disease.name
-  //   );
-  //   if (isAlreadySelected) {
-  //     setSelectedDiseases((prev) =>
-  //       prev.filter((item) => item.name !== disease.name)
-  //     );
-  //   } else {
-  //     setSelectedDiseases((prev) => [...prev, disease]);
-  //   }
-  // };
 
   // Function to get unique names for a specific type
   const getUniqueNamesByType = (type) => {
@@ -518,15 +428,15 @@ export default function PatientSelector() {
                       return (
                         sampleInfoList.some(
                           (sample) =>
-                            String(sample.sampleInfo.block) === String(item.Block) &&
-                            String(sample.sampleInfo.slide) === String(item.Slide)
+                            String(sample.sampleInfo.block) ===
+                              String(item.Block) &&
+                            String(sample.sampleInfo.slide) ===
+                              String(item.Slide)
                         ) &&
-                         // Check if datasetId exists in the Map
+                        // Check if datasetId exists in the Map
                         ExposureList.get(datasetId)?.includes(item.Exposure) // Get exposure array and check
                       );
                     });
-                    
-                    
 
                     console.log(
                       `Filtered API Data for dataset ${datasetId}:`,
@@ -675,21 +585,19 @@ export default function PatientSelector() {
                   for (const [datasetName, data] of Object.entries(datasets)) {
                     // Create a unique key by combining exposure and dataset name
                     const uniqueKey = `${exposure}, ${datasetName}`;
-                  
+
                     // Correctly update the state by passing the previous state
-                    setdatasetantigen((prev) => [...prev, datasetName]); 
-                  
+                    setdatasetantigen((prev) => [...prev, datasetName]);
+
                     // Add the data to the flattened object
                     flattenedData[uniqueKey] = data;
                   }
-                  
                 }
 
                 console.log("Flattened Data:", flattenedData);
                 // Extract keys from the flattenedData object
                 setKeysArray(Object.keys(flattenedData));
                 extractLevels(flattenedData);
-
 
                 // Set selected reports for each dataset
                 const diseaseName = disease.type;
@@ -882,7 +790,7 @@ export default function PatientSelector() {
     }));
   };
 
-  const getChartDataForReport = (data, uniqueNames) => {
+  const getChartDataForReport = (data, uniqueNames, yAxisMode) => {
     if (!uniqueNames || uniqueNames.length === 0) {
       return { labels: [], datasets: [] };
     }
@@ -896,6 +804,14 @@ export default function PatientSelector() {
       labels.push(`[${i}, ${i + rangeStep}]`);
     }
 
+    // Calculate the total number of patients across all diseases and ranges
+    const totalPatients = uniqueNames.reduce((total, diseaseName) => {
+      const diseaseData = data[diseaseName];
+      if (!diseaseData) return total;
+
+      return total + diseaseData.reduce((sum, item) => sum + item.patients, 0);
+    }, 0);
+
     const datasets = uniqueNames
       .map((diseaseName, index) => {
         const diseaseData = data[diseaseName];
@@ -908,9 +824,14 @@ export default function PatientSelector() {
             .split(", ")
             .map(Number);
 
-          return diseaseData
+          const patientCount = diseaseData
             .filter((item) => item.level >= start && item.level < end)
             .reduce((sum, item) => sum + item.patients, 0);
+
+          // Convert to percentage if yAxisMode is 'percentage'
+          return yAxisMode === "percentage"
+            ? (patientCount / 300) * 100
+            : patientCount;
         });
 
         return {
@@ -1040,7 +961,12 @@ export default function PatientSelector() {
   //     };
   //   };
 
-  const getAnnotationForReport = (immunityLevels, uniqueNames, data, isIndependent) => {
+  const getAnnotationForReport = (
+    immunityLevels,
+    uniqueNames,
+    data,
+    isIndependent
+  ) => {
     if (!Array.isArray(immunityLevels)) {
       immunityLevels = [immunityLevels];
     }
@@ -1090,7 +1016,12 @@ export default function PatientSelector() {
       .filter((annotation) => annotation !== null);
   };
 
-  const getChartOptionsForReport = (data, uniqueNames, patientData,) => {
+  const getChartOptionsForReport = (
+    data,
+    uniqueNames,
+    patientData,
+    yAxisMode
+  ) => {
     const immunityLevels = getimmunitylevel(uniqueNames, patientData);
     const isIndependent = Object.keys(DatasetPatientMap).length > 0;
     const annotations = selectedReport.includes(selectedUser.date)
@@ -1153,11 +1084,17 @@ export default function PatientSelector() {
         y: {
           title: {
             display: true,
-            text: "Number of Patients",
+            text: yAxisMode === "count" ? "Number of Patients" : "Percentage",
             color: "white",
           },
           grid: { color: "rgba(255, 255, 255, 0.1)" },
           ticks: { color: "white" },
+          ...(yAxisMode === "percentage" && {
+            ticks: {
+              callback: (value) => `${value}%`,
+              color: "white",
+            },
+          }),
         },
       },
     };
@@ -1223,6 +1160,12 @@ export default function PatientSelector() {
 
     console.log("Final avgValues:", avgValues);
     return avgValues; // Return only the array of avgValue values
+  };
+
+  const [yAxisMode, setYAxisMode] = useState("count"); // 'count' or 'percentage'
+
+  const toggleYAxisMode = () => {
+    setYAxisMode((prevMode) => (prevMode === "count" ? "percentage" : "count"));
   };
 
   // Example usage
@@ -1298,7 +1241,7 @@ export default function PatientSelector() {
             year: "numeric",
           }).format(new Date(parseReportDate(reportDate)));
 
-          pdf.text(`Date: ${formattedDate}`, 20, 70);
+          pdf.text(`Date: ${formattedDate}`, 20, 60);
         }
 
         // Add separator line
@@ -1499,40 +1442,37 @@ export default function PatientSelector() {
               ))}
             </div>
           </div>
-          {/* <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
-            {patientData.length === 0 ? (
-              <p className={styles.noReport}>No Report Found</p>
-            ) : (
-              <div className={styles.checkboxGroup}>
-                {filteredReports.map((report, idx) => {
-                  const formattedDate = new Intl.DateTimeFormat("en-US", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }).format(new Date(report.reportDate));
-
-                  return (
-                    <div key={idx} className={styles.checkboxContainer2}>
-                      <input
-                        type="checkbox"
-                        id={`report-${idx}`}
-                        className={styles.checkboxInput}
-                        onChange={() => handleReportChange(report.reportDate)}
-                      />
-                      <label
-                        htmlFor={`report-${idx}`}
-                        className={styles.checkboxLabel}
-                      ></label>
-                      <span className={styles.checkboxText2}>
-                        {selectedUser.date}
-                      </span>
-                    </div>
-                  );
-                })}
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Exposure Selection</h3>
+            <div className={styles.checkboxGroup}>
+              <div className={styles.checkboxContainer}>
+                <input
+                  type="checkbox"
+                  id="exposure-200"
+                  className={styles.checkboxInput}
+                  onChange={() => handleExposureChange("200")}
+                />
+                <label
+                  htmlFor="exposure-200"
+                  className={styles.checkboxLabel}
+                ></label>
+                <span className={styles.checkboxText}>Exposure 200</span>
               </div>
-            )}
-          </div> */}
+              <div className={styles.checkboxContainer}>
+                <input
+                  type="checkbox"
+                  id="exposure-500"
+                  className={styles.checkboxInput}
+                  onChange={() => handleExposureChange("500")}
+                />
+                <label
+                  htmlFor="exposure-500"
+                  className={styles.checkboxLabel}
+                ></label>
+                <span className={styles.checkboxText}>Exposure 500</span>
+              </div>
+            </div>
+          </div>
           <div className={styles.section}>
             <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
             {patientData.length === 0 ? (
@@ -1560,9 +1500,19 @@ export default function PatientSelector() {
 
         <div className={styles.patientData}>
           <h3 className={styles.sectionTitle}>Patient Data</h3>
+          <div style = {{display: "flex"}}>
           <button onClick={toggleGraphType} className={styles.toggleButton}>
             Switch to {graphType === "line" ? "Whisker Graph" : "Line Graph"}
           </button>
+          <button
+            onClick={toggleYAxisMode}
+            className={styles.toggleButton}
+            style={{ display: graphType === "line" ? "block" : "none" }} // Show only for line graph
+          >
+            Switch to{" "}
+            {yAxisMode === "count" ? "Percentage" : "Number of Patients"}
+          </button>
+          </div>
           <div className={styles.list}>
             {graphType === "line" ? (
               selectedReports.map((report, idx) => {
@@ -1599,19 +1549,21 @@ export default function PatientSelector() {
                       <div
                         className={styles.graph}
                         id={`graph-container-${name}`}
-                        style={{ height: "300px", width: "100%" }}
+                        style={{ height: "500px", width: "100%" }}
                       >
                         <Line
                           data={getChartDataForReport(
                             data,
                             Object.keys(DatasetPatientMap).length > 0
                               ? keysArray
-                              : uniqueNames
+                              : uniqueNames,
+                            yAxisMode
                           )}
                           options={getChartOptionsForReport(
                             data,
-                             uniqueName2,
-                            patientData
+                            uniqueName2,
+                            patientData,
+                            yAxisMode
                           )}
                         />
                       </div>
