@@ -811,41 +811,46 @@ export default function PatientSelector() {
 
       return total + diseaseData.reduce((sum, item) => sum + item.patients, 0);
     }, 0);
+    console.log('total patients:',totalPatients);
 
     const datasets = uniqueNames
-      .map((diseaseName, index) => {
-        const diseaseData = data[diseaseName];
-        if (!diseaseData) return null;
+  .map((diseaseName, index) => {
+    const diseaseData = data[diseaseName];
+    if (!diseaseData) return null;
 
-        const rangeData = labels.map((label) => {
-          const [start, end] = label
-            .replace("[", "")
-            .replace("]", "")
-            .split(", ")
-            .map(Number);
+    // Calculate total patients for the current disease (line)
+    const totalDiseasePatients = diseaseData.reduce((sum, item) => sum + item.patients, 0);
+    console.log(`Total patients for ${diseaseName}:`, totalDiseasePatients);
 
-          const patientCount = diseaseData
-            .filter((item) => item.level >= start && item.level < end)
-            .reduce((sum, item) => sum + item.patients, 0);
+    const rangeData = labels.map((label) => {
+      const [start, end] = label
+        .replace("[", "")
+        .replace("]", "")
+        .split(", ")
+        .map(Number);
 
-          // Convert to percentage if yAxisMode is 'percentage'
-          return yAxisMode === "percentage"
-            ? (patientCount / 300) * 100
-            : patientCount;
-        });
+      const patientCount = diseaseData
+        .filter((item) => item.level >= start && item.level < end)
+        .reduce((sum, item) => sum + item.patients, 0);
 
-        return {
-          label: diseaseName,
-          data: rangeData,
-          borderColor: `hsl(${index * 50}, 70%, 50%)`,
-          borderWidth: 2,
-          tension: 0.4,
-          fill: false,
-        };
-      })
-      .filter((dataset) => dataset !== null);
+      // Normalize each line to sum to 100%
+      return yAxisMode === "percentage"
+        ? (patientCount / totalDiseasePatients) * 100
+        : patientCount;
+    });
 
-    return { labels, datasets };
+    return {
+      label: diseaseName,
+      data: rangeData,
+      borderColor: `hsl(${index * 50}, 70%, 50%)`,
+      borderWidth: 2,
+      tension: 0.4,
+      fill: false,
+    };
+  })
+  .filter((dataset) => dataset !== null);
+
+return { labels, datasets };
   };
 
   //   const getAnnotationForReport = (uniqueNames, patientData) => {
