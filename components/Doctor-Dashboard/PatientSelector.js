@@ -224,7 +224,7 @@ export default function PatientSelector() {
   const [expandedReports, setExpandedReports] = useState({});
   const [diseases, setDiseases] = useState([]);
   const [loadingDiseases, setLoadingDiseases] = useState(false);
-  const [keysArray, setKeysArray] = useState([]);
+  // const [keysArray, setKeysArray] = useState([]);
   const [datasetantigen, setdatasetantigen] = useState([]); // Initialize state with an empty array
   const { sampleInfoList, ExposureList, DatasetNames, DatasetPatientMap } =
     useSampleInfo();
@@ -364,7 +364,7 @@ export default function PatientSelector() {
   };
 
   // Example: Get unique names for "control"
-  const [uniqueName2, setUniqueNames2] = useState([]);
+  // const [uniqueName2, setUniqueNames2] = useState([]);
   const handleDiseaseChange = (disease, isChecked) => {
     console.log(selectedDiseases.length);
     console.log(disease.data);
@@ -374,11 +374,8 @@ export default function PatientSelector() {
 
     if (isChecked) {
       console.log(`Checkbox for ${disease.type} checked`);
-
       const uniqueNames = getUniqueNamesByType(disease.type);
       console.log("Unique Names:", uniqueNames);
-      // Step 3: Update the state
-      setUniqueNames2(uniqueNames);
 
       // Set the loading state for the specific disease
       setLoadingDiseases(true);
@@ -596,8 +593,13 @@ export default function PatientSelector() {
 
                 console.log("Flattened Data:", flattenedData);
                 // Extract keys from the flattenedData object
-                setKeysArray(Object.keys(flattenedData));
+                // setKeysArray(Object.keys(flattenedData));
+                const uniqueNames = Object.keys(flattenedData);
                 extractLevels(flattenedData);
+
+                const uniqueNames2 = getUniqueNamesByType(disease.type);
+                console.log("Unique Names2:", uniqueNames);
+                // Step 3: Update the state
 
                 // Set selected reports for each dataset
                 const diseaseName = disease.type;
@@ -606,7 +608,8 @@ export default function PatientSelector() {
                   {
                     name: diseaseName,
                     data: flattenedData,
-                    uniqueNames: keysArray,
+                    uniqueNames: uniqueNames,
+                    uniqueNames2: uniqueNames2,
 
                     // datasetId,
                   },
@@ -722,10 +725,18 @@ export default function PatientSelector() {
                 // Set data for whisker graph
                 extractLevels(graphData);
 
+                const uniqueNames2 = getUniqueNamesByType(disease.type);
+                console.log("Unique Names:", uniqueNames);
+
                 const diseaseName = disease.type;
                 setSelectedReports((prev) => [
                   ...prev,
-                  { name: diseaseName, data: graphData, uniqueNames },
+                  {
+                    name: diseaseName,
+                    data: graphData,
+                    uniqueNames,
+                    uniqueNames2,
+                  },
                 ]);
               }
 
@@ -745,6 +756,13 @@ export default function PatientSelector() {
           setLoadingDiseases(false);
         });
     } else {
+      const uniqueNames2 = getUniqueNamesByType(disease.type);
+      console.log("unchecked uniquename:", uniqueNames2);
+      if (Object.keys(DatasetPatientMap).length > 0) {
+      } else {
+        removeSelectedKeys(uniqueNames2);
+      }
+
       console.log("graphData for removal", graphData);
       removeLevels(graphData);
       console.log(`Checkbox for ${disease.type} unchecked`);
@@ -753,6 +771,14 @@ export default function PatientSelector() {
       );
       setLoadingDiseases(false);
     }
+  };
+
+  const removeSelectedKeys = (keys) => {
+    setGlobalData((prevData) => {
+      const newData = { ...prevData }; // Clone the previous state
+      keys.forEach((key) => delete newData[key]); // Remove specified keys
+      return newData;
+    });
   };
   // Inside your component
   const [whiskerLines, setWhiskerLines] = useState(false); // Default is false
@@ -811,46 +837,49 @@ export default function PatientSelector() {
 
       return total + diseaseData.reduce((sum, item) => sum + item.patients, 0);
     }, 0);
-    console.log('total patients:',totalPatients);
+    console.log("total patients:", totalPatients);
 
     const datasets = uniqueNames
-  .map((diseaseName, index) => {
-    const diseaseData = data[diseaseName];
-    if (!diseaseData) return null;
+      .map((diseaseName, index) => {
+        const diseaseData = data[diseaseName];
+        if (!diseaseData) return null;
 
-    // Calculate total patients for the current disease (line)
-    const totalDiseasePatients = diseaseData.reduce((sum, item) => sum + item.patients, 0);
-    console.log(`Total patients for ${diseaseName}:`, totalDiseasePatients);
+        // Calculate total patients for the current disease (line)
+        const totalDiseasePatients = diseaseData.reduce(
+          (sum, item) => sum + item.patients,
+          0
+        );
+        console.log(`Total patients for ${diseaseName}:`, totalDiseasePatients);
 
-    const rangeData = labels.map((label) => {
-      const [start, end] = label
-        .replace("[", "")
-        .replace("]", "")
-        .split(", ")
-        .map(Number);
+        const rangeData = labels.map((label) => {
+          const [start, end] = label
+            .replace("[", "")
+            .replace("]", "")
+            .split(", ")
+            .map(Number);
 
-      const patientCount = diseaseData
-        .filter((item) => item.level >= start && item.level < end)
-        .reduce((sum, item) => sum + item.patients, 0);
+          const patientCount = diseaseData
+            .filter((item) => item.level >= start && item.level < end)
+            .reduce((sum, item) => sum + item.patients, 0);
 
-      // Normalize each line to sum to 100%
-      return yAxisMode === "percentage"
-        ? (patientCount / totalDiseasePatients) * 100
-        : patientCount;
-    });
+          // Normalize each line to sum to 100%
+          return yAxisMode === "percentage"
+            ? (patientCount / totalDiseasePatients) * 100
+            : patientCount;
+        });
 
-    return {
-      label: diseaseName,
-      data: rangeData,
-      borderColor: `hsl(${index * 50}, 70%, 50%)`,
-      borderWidth: 2,
-      tension: 0.4,
-      fill: false,
-    };
-  })
-  .filter((dataset) => dataset !== null);
+        return {
+          label: diseaseName,
+          data: rangeData,
+          borderColor: `hsl(${index * 50}, 70%, 50%)`,
+          borderWidth: 2,
+          tension: 0.4,
+          fill: false,
+        };
+      })
+      .filter((dataset) => dataset !== null);
 
-return { labels, datasets };
+    return { labels, datasets };
   };
 
   //   const getAnnotationForReport = (uniqueNames, patientData) => {
@@ -1505,23 +1534,23 @@ return { labels, datasets };
 
         <div className={styles.patientData}>
           <h3 className={styles.sectionTitle}>Patient Data</h3>
-          <div style = {{display: "flex"}}>
-          <button onClick={toggleGraphType} className={styles.toggleButton}>
-            Switch to {graphType === "line" ? "Whisker Graph" : "Line Graph"}
-          </button>
-          <button
-            onClick={toggleYAxisMode}
-            className={styles.toggleButton}
-            style={{ display: graphType === "line" ? "block" : "none" }} // Show only for line graph
-          >
-            Switch to{" "}
-            {yAxisMode === "count" ? "Percentage" : "Number of Patients"}
-          </button>
+          <div style={{ display: "flex" }}>
+            <button onClick={toggleGraphType} className={styles.toggleButton}>
+              Switch to {graphType === "line" ? "Whisker Graph" : "Line Graph"}
+            </button>
+            <button
+              onClick={toggleYAxisMode}
+              className={styles.toggleButton}
+              style={{ display: graphType === "line" ? "block" : "none" }} // Show only for line graph
+            >
+              Switch to{" "}
+              {yAxisMode === "count" ? "Percentage" : "Number of Patients"}
+            </button>
           </div>
           <div className={styles.list}>
             {graphType === "line" ? (
               selectedReports.map((report, idx) => {
-                const { name, data, uniqueNames } = report;
+                const { name, data, uniqueNames, uniqueNames2 } = report;
 
                 return (
                   <div key={idx} className={styles.item}>
@@ -1560,13 +1589,13 @@ return { labels, datasets };
                           data={getChartDataForReport(
                             data,
                             Object.keys(DatasetPatientMap).length > 0
-                              ? keysArray
+                              ? uniqueNames
                               : uniqueNames,
                             yAxisMode
                           )}
                           options={getChartOptionsForReport(
                             data,
-                            uniqueName2,
+                            uniqueNames2,
                             patientData,
                             yAxisMode
                           )}
