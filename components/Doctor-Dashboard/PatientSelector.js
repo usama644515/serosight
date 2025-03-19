@@ -1161,24 +1161,33 @@ export default function PatientSelector() {
         }
         console.log("matchingData", matchingData);
 
-        // Filter out items where Value is 0 or falsy
-        const filteredData = matchingData.filter(
-          (item) => Number(item.Value) !== 0
-        );
-
-        console.log("filteredData", filteredData);
-
         // Extract immunity levels after subtracting Background
-        const immunityLevels = filteredData.map(
-          (item) => Number(item.Value || 0) - Number(item.Background || 0)
-        );
+        const immunityLevels = matchingData.map((item) => {
+          const value = Number(item.Value || 0);
+          const background = Number(item.Background || 0);
+
+          // Subtract Background from Value
+          const immunityLevel = value - background;
+
+          // If immunityLevel is negative, set it to 0
+          if (immunityLevel < 0) {
+            return 0;
+          }
+
+          // If value is 0, set immunity level to 0
+          if (value === 0) {
+            return 0;
+          }
+
+          return immunityLevel;
+        });
 
         console.log("subtractedImmunityLevels", immunityLevels);
 
         // Calculate the average immunity level
         const averageValue =
           immunityLevels.reduce((sum, value) => sum + value, 0) /
-          (filteredData.length || 1);
+          (immunityLevels.length || 1);
 
         console.log("averageValue", averageValue);
 
