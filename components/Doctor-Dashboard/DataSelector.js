@@ -12,9 +12,16 @@ const DataSelector = () => {
     actualInfection: [],
     disease: [],
     smoking: [],
+    serium: [],
+    biorepsitiory: [],
     exposure: ["200", "500"], // Default all selected in exposure
   });
-  const { setSampleInfoList, setExposureList, setDatasetNames, setDatasetPatientMap } = useSampleInfo();
+  const {
+    setSampleInfoList,
+    setExposureList,
+    setDatasetNames,
+    setDatasetPatientMap,
+  } = useSampleInfo();
   const [savedDataSets, setSavedDataSets] = useState([]);
   const [renamingId, setRenamingId] = useState(null);
   const [renamingName, setRenamingName] = useState("");
@@ -134,7 +141,7 @@ const DataSelector = () => {
   const handleDataSetSelection = (id, name) => {
     console.log("Selected Dataset ID:", id);
     console.log("Selected Dataset Name:", name);
-  
+
     setSelectedDataSetIds((prev) => {
       const updatedIds = prev.includes(id)
         ? prev.filter((datasetId) => datasetId !== id)
@@ -142,11 +149,13 @@ const DataSelector = () => {
       console.log("Updated Selected Dataset IDs:", updatedIds);
       return updatedIds;
     });
-  
+
     if (!patientDataMap[id]) {
       console.log("Fetching patient data for dataset ID:", id);
-      const selectedDataSet = savedDataSets.find((dataSet) => dataSet._id === id);
-  
+      const selectedDataSet = savedDataSets.find(
+        (dataSet) => dataSet._id === id
+      );
+
       if (selectedDataSet) {
         console.log("Selected Dataset Criteria:", selectedDataSet.criteria);
         fetch("/api/patient-matching", {
@@ -168,7 +177,10 @@ const DataSelector = () => {
             // Store the patient data for this dataset in the provider
             setDatasetPatientMap((prev) => {
               const updatedDatasetPatientMap = { ...prev, [name]: data };
-              console.log("Updated Dataset Patient Map in Provider:", updatedDatasetPatientMap);
+              console.log(
+                "Updated Dataset Patient Map in Provider:",
+                updatedDatasetPatientMap
+              );
               return updatedDatasetPatientMap;
             });
           })
@@ -181,7 +193,7 @@ const DataSelector = () => {
     } else {
       console.log("Patient data already fetched for dataset ID:", id);
     }
-  
+
     // Handle exposure values and dataset names
     const selectedDataSet = savedDataSets.find((dataSet) => dataSet._id === id);
     if (selectedDataSet) {
@@ -189,31 +201,41 @@ const DataSelector = () => {
       const datasetName = selectedDataSet.name;
       console.log("Selected Dataset Exposure:", newExposure);
       console.log("Selected Dataset Name:", datasetName);
-    
+
       setExposureList((prevMap) => {
         const newMap = new Map(prevMap);
-    
+
         if (selectedDataSetIds.includes(id)) {
-          console.log("Dataset is being unchecked. Removing dataset and exposure.");
+          console.log(
+            "Dataset is being unchecked. Removing dataset and exposure."
+          );
           newMap.delete(datasetName);
         } else {
           console.log("Dataset is being checked. Adding dataset and exposure.");
           newMap.set(datasetName, newExposure);
         }
-    
+
         console.log("Updated Exposure Map:", Object.fromEntries(newMap));
         return newMap;
       });
-    
+
       setDatasetNames((prev) => {
         if (selectedDataSetIds.includes(id)) {
-          const updatedDatasetNames = prev.filter((name) => name !== datasetName);
-          console.log("Updated Dataset Names after removal:", updatedDatasetNames);
+          const updatedDatasetNames = prev.filter(
+            (name) => name !== datasetName
+          );
+          console.log(
+            "Updated Dataset Names after removal:",
+            updatedDatasetNames
+          );
           return updatedDatasetNames;
         } else {
           if (!prev.includes(datasetName)) {
             const updatedDatasetNames = [...prev, datasetName];
-            console.log("Updated Dataset Names after addition:", updatedDatasetNames);
+            console.log(
+              "Updated Dataset Names after addition:",
+              updatedDatasetNames
+            );
             return updatedDatasetNames;
           }
           console.log("Dataset name already exists:", datasetName);
@@ -221,9 +243,11 @@ const DataSelector = () => {
         }
       });
     } else {
-      console.log("Dataset not found in savedDataSets for exposure/dataset name handling:", id);
+      console.log(
+        "Dataset not found in savedDataSets for exposure/dataset name handling:",
+        id
+      );
     }
-   
   };
 
   const compareAndMergePatientData = () => {
@@ -307,6 +331,8 @@ const DataSelector = () => {
     "cancer",
   ];
   const smokingOptions = ["Yes", "No"];
+  const seriumOptions = ["Yes", "No"];
+  const biorepsitioryOptions = ["Yes", "No"];
   const exposureOptions = ["200", "500"];
 
   return (
@@ -509,6 +535,66 @@ const DataSelector = () => {
             ))}
           </div>
         </div>
+        {/* serium */}
+        <div className={styles.filterGroup}>
+          <p className={styles.filterLabel}>Serium</p>
+          <div className={styles.filterOptions}>
+            <button
+              key="serium-all"
+              className={`${styles.filterButton} ${
+                selected.serium.length === seriumOptions.length
+                  ? styles.active
+                  : ""
+              }`}
+              onClick={() => handleSelect("smoking", "All", seriumOptions)}
+            >
+              All
+            </button>
+            {seriumOptions.map((item) => (
+              <button
+                key={item}
+                className={`${styles.filterButton} ${
+                  isSelected("serium", item) ? styles.active : ""
+                }`}
+                onClick={() => handleSelect("serium", item, seriumOptions)}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
+        {/* Bio_repositiory */}
+        <div className={styles.filterGroup}>
+          <p className={styles.filterLabel}>Bio_repositiory</p>
+          <div className={styles.filterOptions}>
+            <button
+              key="biorepsitiory-all"
+              className={`${styles.filterButton} ${
+                selected.serium.length === biorepsitioryOptions.length
+                  ? styles.active
+                  : ""
+              }`}
+              onClick={() =>
+                handleSelect("biorepsitiory", "All", biorepsitioryOptions)
+              }
+            >
+              All
+            </button>
+            {biorepsitioryOptions.map((item) => (
+              <button
+                key={item}
+                className={`${styles.filterButton} ${
+                  isSelected("biorepsitiory", item) ? styles.active : ""
+                }`}
+                onClick={() =>
+                  handleSelect("biorepsitiory", item, biorepsitioryOptions)
+                }
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* Save Data Set */}
         <div className={styles.saveSection}>
@@ -528,7 +614,9 @@ const DataSelector = () => {
                   id={`disease-${dataSet._id}-checkbox`}
                   className={styles.checkboxInput}
                   checked={selectedDataSetIds.includes(dataSet._id)}
-                  onChange={() => handleDataSetSelection(dataSet._id,dataSet.name)}
+                  onChange={() =>
+                    handleDataSetSelection(dataSet._id, dataSet.name)
+                  }
                 />
                 <label
                   htmlFor={`disease-${dataSet._id}-checkbox`}

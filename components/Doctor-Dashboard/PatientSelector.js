@@ -1309,7 +1309,13 @@ export default function PatientSelector() {
       console.error("Error generating PDF:", error);
     }
   };
-
+  const parseDateString = (dateString) => {
+    // Split the date string into day, month, and year
+    const [day, month, year] = dateString.split("/");
+  
+    // Return a Date object in the format YYYY-MM-DD (which new Date() can parse)
+    return new Date(`${year}-${month}-${day}`);
+  };
   const handleRefresh = () => {
     localStorage.removeItem("selectedUser");
     window.location.reload();
@@ -1534,7 +1540,11 @@ export default function PatientSelector() {
                   className={styles.checkboxLabel}
                 ></label>
                 <span className={styles.checkboxText2}>
-                  {selectedUser.date}
+                  {new Intl.DateTimeFormat("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  }).format(parseDateString(selectedUser.date))}
                 </span>
               </div>
             )}

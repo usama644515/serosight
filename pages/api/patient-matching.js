@@ -148,6 +148,68 @@ export default async function handler(req, res) {
         }
       }
 
+      // Handle serium status separately (nested under sampleInfo)
+      if (criteria.serium && criteria.serium.length > 0) {
+        const seriumConditions = [];
+
+        if (criteria.serium.includes("None")) {
+          // If "None" is present, filter patients where sampleInfo.serium is false
+          seriumConditions.push({ "sampleInfo.serium": false });
+        }
+
+        // For other items (excluding "None"), filter patients based on serium status
+        const otherSeriumItems = criteria.serium.filter(
+          (item) => item !== "None"
+        );
+        if (otherSeriumItems.length > 0) {
+          const seriumStatusConditions = [];
+          if (otherSeriumItems.includes("Yes"))
+            seriumStatusConditions.push(true);
+          if (otherSeriumItems.includes("No"))
+            seriumStatusConditions.push(false);
+          if (seriumStatusConditions.length > 0) {
+            seriumConditions.push({
+              "sampleInfo.serium": { $in: seriumStatusConditions },
+            });
+          }
+        }
+
+        if (seriumConditions.length > 0) {
+          andConditions.push({ $or: seriumConditions });
+        }
+      }
+
+      // Handle biorepsitiory status separately (nested under sampleInfo)
+      if (criteria.biorepsitiory && criteria.biorepsitiory.length > 0) {
+        const biorepsitioryConditions = [];
+
+        if (criteria.biorepsitiory.includes("None")) {
+          // If "None" is present, filter patients where sampleInfo.Bio_repositiory is false
+          biorepsitioryConditions.push({ "sampleInfo.Bio_repositiory": false });
+        }
+
+        // For other items (excluding "None"), filter patients based on biorepsitiory status
+        const otherBiorepsitioryItems = criteria.biorepsitiory.filter(
+          (item) => item !== "None"
+        );
+        if (otherBiorepsitioryItems.length > 0) {
+          const biorepsitioryStatusConditions = [];
+          if (otherBiorepsitioryItems.includes("Yes"))
+            biorepsitioryStatusConditions.push(true);
+          if (otherBiorepsitioryItems.includes("No"))
+            biorepsitioryStatusConditions.push(false);
+          if (biorepsitioryStatusConditions.length > 0) {
+            biorepsitioryConditions.push({
+              "sampleInfo.Bio_repositiory": { $in: biorepsitioryStatusConditions },
+            });
+          }
+        }
+
+        if (biorepsitioryConditions.length > 0) {
+          andConditions.push({ $or: biorepsitioryConditions });
+        }
+      }
+
       // Combine all conditions with $and
       const finalQuery =
         andConditions.length > 0 ? { $and: andConditions } : {};

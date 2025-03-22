@@ -35,7 +35,7 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
       if (isNaN(immunityLevel)) return null;
 
       const uniqueName = uniqueNames[index % uniqueNames.length];
-      const color = `hsl(${index * 50}, 70%, 50%)`; // Generate a color for each line
+      const color = `hsl(${(index * 360) / uniqueNames.length}, 70%, 50%)`; // Generate a unique color for each line
       return {
         type: 'line',
         x0: index - 0.4, // Start at the left edge of the box
@@ -54,7 +54,7 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
           showarrow: false,
           x: index + 0.5, // Position the label to the right of the line
           y: immunityLevel,
-          font: { color: color, size: 12 }, // Use the same color for the label
+          font: { color: color, size: 10 }, // Reduce font size to avoid overlap
         },
       };
     })
@@ -69,7 +69,7 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
 
   // Convert data into traces for Plotly
   const traces = Object.keys(globalData).map((disease, index) => {
-    const color = `hsl(${index * 50}, 70%, 50%)`; // Generate a color for each box plot
+    const color = `hsl(${(index * 360) / Object.keys(globalData).length}, 70%, 50%)`; // Generate a unique color for each box plot
     return {
       y: globalData[disease],
       type: "box",
