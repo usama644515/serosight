@@ -142,6 +142,7 @@ const DataSelector = () => {
     console.log("Selected Dataset ID:", id);
     console.log("Selected Dataset Name:", name);
 
+    // First update the selected dataset IDs
     setSelectedDataSetIds((prev) => {
       const updatedIds = prev.includes(id)
         ? prev.filter((datasetId) => datasetId !== id)
@@ -150,106 +151,83 @@ const DataSelector = () => {
       return updatedIds;
     });
 
-    if (!patientDataMap[id]) {
-      console.log("Fetching patient data for dataset ID:", id);
-      const selectedDataSet = savedDataSets.find(
-        (dataSet) => dataSet._id === id
-      );
-
-      if (selectedDataSet) {
-        console.log("Selected Dataset Criteria:", selectedDataSet.criteria);
-        fetch("/api/patient-matching", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ criteria: selectedDataSet.criteria }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Matched patients for dataset:", id, name, data);
-            // store value in the state variable local
-            setPatientDataMap((prev) => {
-              const updatedPatientDataMap = { ...prev, [name]: data };
-              console.log("Updated Patient Data Map:", updatedPatientDataMap);
-              return updatedPatientDataMap;
-            });
-            // Store the patient data for this dataset in the provider
-            setDatasetPatientMap((prev) => {
-              const updatedDatasetPatientMap = { ...prev, [name]: data };
-              console.log(
-                "Updated Dataset Patient Map in Provider:",
-                updatedDatasetPatientMap
-              );
-              return updatedDatasetPatientMap;
-            });
-          })
-          .catch((error) => {
-            console.error("Error fetching patient data:", error);
-          });
-      } else {
-        console.log("Dataset not found in savedDataSets:", id);
-      }
-    } else {
-      console.log("Patient data already fetched for dataset ID:", id);
+    // Find the selected dataset
+    const selectedDataSet = savedDataSets.find((dataSet) => dataSet._id === id);
+    
+    if (!selectedDataSet) {
+      console.log("Dataset not found in savedDataSets:", id);
+      return; // Exit early if dataset not found
     }
 
-    // Handle exposure values and dataset names
-    const selectedDataSet = savedDataSets.find((dataSet) => dataSet._id === id);
-    if (selectedDataSet) {
-      const newExposure = selectedDataSet.criteria.exposure;
-      const datasetName = selectedDataSet.name;
-      console.log("Selected Dataset Exposure:", newExposure);
-      console.log("Selected Dataset Name:", datasetName);
+    const datasetName = selectedDataSet.name;
+    const newExposure = selectedDataSet.criteria.exposure;
+    const isAdding = !selectedDataSetIds.includes(id);
 
-      setExposureList((prevMap) => {
-        const newMap = new Map(prevMap);
-
-        if (selectedDataSetIds.includes(id)) {
-          console.log(
-            "Dataset is being unchecked. Removing dataset and exposure."
-          );
-          newMap.delete(datasetName);
-        } else {
-          console.log("Dataset is being checked. Adding dataset and exposure.");
-          newMap.set(datasetName, newExposure);
-        }
-
-        console.log("Updated Exposure Map:", Object.fromEntries(newMap));
+    // Handle patient data fetching only if needed
+    if (isAdding && !patientDataMap[id]) {
+      console.log("Fetching patient data for dataset ID:", id);
+      
+      fetch("/api/patient-matching", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ criteria: selectedDataSet.criteria }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Matched patients for dataset:", id, name, data);
+          
+          // Update local patient data map
+          setPatientDataMap((prev) => ({
+            ...prev,
+            [id]: data
+          }));
+          
+          // Update provider's dataset patient map
+          setDatasetPatientMap((prev) => ({
+            ...prev,
+            [datasetName]: data
+          }));
+        })
+        .catch((error) => {
+          console.error("Error fetching patient data:", error);
+        });
+    } else if (!isAdding) {
+      // When unselecting a dataset, remove its data from the maps
+      setPatientDataMap((prev) => {
+        const newMap = {...prev};
+        delete newMap[id];
         return newMap;
       });
-
-      setDatasetNames((prev) => {
-        if (selectedDataSetIds.includes(id)) {
-          const updatedDatasetNames = prev.filter(
-            (name) => name !== datasetName
-          );
-          console.log(
-            "Updated Dataset Names after removal:",
-            updatedDatasetNames
-          );
-          return updatedDatasetNames;
-        } else {
-          if (!prev.includes(datasetName)) {
-            const updatedDatasetNames = [...prev, datasetName];
-            console.log(
-              "Updated Dataset Names after addition:",
-              updatedDatasetNames
-            );
-            return updatedDatasetNames;
-          }
-          console.log("Dataset name already exists:", datasetName);
-          return prev;
-        }
+      
+      setDatasetPatientMap((prev) => {
+        const newMap = {...prev};
+        delete newMap[datasetName];
+        return newMap;
       });
-    } else {
-      console.log(
-        "Dataset not found in savedDataSets for exposure/dataset name handling:",
-        id
-      );
     }
-  };
 
+    // Update exposure list
+    setExposureList((prevMap) => {
+      const newMap = new Map(prevMap);
+      if (isAdding) {
+        newMap.set(datasetName, newExposure);
+      } else {
+        newMap.delete(datasetName);
+      }
+      return newMap;
+    });
+
+    // Update dataset names
+    setDatasetNames((prev) => {
+      if (isAdding) {
+        return prev.includes(datasetName) ? prev : [...prev, datasetName];
+      } else {
+        return prev.filter((name) => name !== datasetName);
+      }
+    });
+  };
   const compareAndMergePatientData = () => {
     const allPatients = selectedDataSetIds.flatMap(
       (id) => patientDataMap[id] || []

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./PatientSelector.module.css";
 import axios from "axios";
 import BoxPlotGraph from "./BoxPlotGraph";
@@ -230,6 +230,36 @@ export default function PatientSelector() {
     useSampleInfo();
   const [graphType, setGraphType] = useState("line"); // State to toggle between line and box plot
   const [selectedExposures, setSelectedExposures] = useState([]); // State to store selected exposures
+  const [refreshKey, setRefreshKey] = useState(0); // Add this state for forcing refresh
+
+  const prevDatasetNamesRef = useRef([]);
+  const isInitialMount = useRef(true);
+
+  // Modified refresh function to reset necessary state
+  const handleRefresh2 = useCallback(() => {
+    setSelectedReports([]);
+    setGlobalData({});
+    setdatasetantigen([]);
+  }, []);
+
+  // Watch for changes in DatasetNames and refresh only when the array content changes
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+
+    const hasChanged =
+      DatasetNames.length !== prevDatasetNamesRef.current.length ||
+      DatasetNames.some((name, i) => name !== prevDatasetNamesRef.current[i]);
+
+    if (hasChanged) {
+      console.log("DatasetNames changed - refreshing component");
+      prevDatasetNamesRef.current = DatasetNames;
+      setRefreshKey((prevKey) => prevKey + 1); // Increment key to force refresh
+      handleRefresh2();
+    }
+  }, [DatasetNames, handleRefresh2]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -249,68 +279,78 @@ export default function PatientSelector() {
     );
   };
 
-  // Filter data based on selected exposures
-  const filterDataByExposure = (data) => {
-    if (selectedExposures.length === 0) return data;
+  // Stable version of filterDataByExposure using useCallback
+  const filterDataByExposure = useCallback(
+    (data) => {
+      if (selectedExposures.length === 0) return data;
+      return data.filter((item) => selectedExposures.includes(item.Exposure));
+    },
+    [selectedExposures]
+  );
 
-    return data.filter((item) => selectedExposures.includes(item.Exposure));
-  };
-
+  // Main data fetching effect
   useEffect(() => {
-    console.log("provider sampleInfoList", sampleInfoList);
-    console.log("provider DatasetPatientMap", DatasetPatientMap);
-    if (selectedUser) {
-      const fetchAppendData = async () => {
-        try {
-          const { slide, block } = selectedUser;
+    if (!selectedUser) return;
 
-          if (slide && block) {
-            const response = await axios.get(
-              `/api/getAppendData?slide=${slide}&block=${block}`
-            );
+    const controller = new AbortController();
+    const signal = controller.signal;
 
-            if (response.data.length === 0) {
-              setPatientData([]);
-              setDiseases([]);
-            } else {
-              const filteredData = filterDataByExposure(response.data);
-              setPatientData(filteredData);
+    const fetchAppendData = async () => {
+      try {
+        const { slide, block } = selectedUser;
 
-              // Map names to their types and filter for unique types
-              const diseaseTypes = [
-                ...new Set(
-                  filteredData
-                    .map(
-                      (item) =>
-                        diseaseMapping.find((map) => map.name === item.Name)
-                          ?.type
-                    )
-                    .filter(Boolean) // Remove undefined values
-                ),
-              ];
+        if (slide && block) {
+          setLoadingDiseases(true);
+          const response = await axios.get(
+            `/api/getAppendData?slide=${slide}&block=${block}`,
+            { signal }
+          );
 
-              setDiseases(
-                diseaseTypes.map((type) => ({
-                  type,
-                  data: filteredData.filter((item) =>
-                    diseaseMapping.some(
-                      (map) => map.name === item.Name && map.type === type
-                    )
-                  ),
-                }))
-              );
-            }
+          if (response.data.length === 0) {
+            setPatientData([]);
+            setDiseases([]);
           } else {
-            console.error("Slide and Block are required to fetch Append data.");
+            const filteredData = filterDataByExposure(response.data);
+            setPatientData(filteredData);
+
+            const diseaseTypes = [
+              ...new Set(
+                filteredData
+                  .map(
+                    (item) =>
+                      diseaseMapping.find((map) => map.name === item.Name)?.type
+                  )
+                  .filter(Boolean)
+              ),
+            ];
+
+            setDiseases(
+              diseaseTypes.map((type) => ({
+                type,
+                data: filteredData.filter((item) =>
+                  diseaseMapping.some(
+                    (map) => map.name === item.Name && map.type === type
+                  )
+                ),
+              }))
+            );
           }
-        } catch (error) {
+        }
+      } catch (error) {
+        if (!axios.isCancel(error)) {
           console.error("Error fetching append data:", error);
         }
-      };
+      } finally {
+        setLoadingDiseases(false);
+      }
+    };
 
-      fetchAppendData();
-    }
-  }, [selectedUser, selectedExposures]);
+    fetchAppendData();
+
+    return () => {
+      controller.abort();
+    };
+  }, [selectedUser, filterDataByExposure]);
 
   const handleSearch = async (e) => {
     const value = e.target.value;
@@ -756,10 +796,18 @@ export default function PatientSelector() {
           setLoadingDiseases(false);
         });
     } else {
+      // remove data in the whisker graph
       const uniqueNames2 = getUniqueNamesByType(disease.type);
+      const combinedNames = DatasetNames.flatMap((datasetName) =>
+        uniqueNames2.map((uniqueName) => `${datasetName}, ${uniqueName}`)
+      );
       console.log("unchecked uniquename:", uniqueNames2);
       if (Object.keys(DatasetPatientMap).length > 0) {
+        console.log("combined uniquenames: ", combinedNames);
+        removeSelectedKeys(combinedNames);
+        removeSelectedKeys(uniqueNames2);
       } else {
+        removeSelectedKeys(combinedNames);
         removeSelectedKeys(uniqueNames2);
       }
 
@@ -1312,7 +1360,7 @@ export default function PatientSelector() {
   const parseDateString = (dateString) => {
     // Split the date string into day, month, and year
     const [day, month, year] = dateString.split("/");
-  
+
     // Return a Date object in the format YYYY-MM-DD (which new Date() can parse)
     return new Date(`${year}-${month}-${day}`);
   };
@@ -1433,7 +1481,11 @@ export default function PatientSelector() {
   };
 
   return (
-    <div className={styles.container} id="patient-data-selector">
+    <div
+      className={styles.container}
+      id="patient-data-selector"
+      key={refreshKey}
+    >
       <h1 className={styles.title}>Select Patient</h1>
       <div className={styles.dashboard}>
         <div className={styles.patientSelection}>

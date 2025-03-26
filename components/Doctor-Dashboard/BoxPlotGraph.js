@@ -7,24 +7,51 @@ import { useSampleInfo } from "./ContextProvider";
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 // Function to calculate immunity levels
-const getImmunityLevel = (uniqueNames, patientData) => {
-  return uniqueNames
-    .map((name) => {
-      const matchingData = patientData.filter((item) => item.Name === name);
-      if (matchingData.length === 0) return null;
+const getImmunityLevel = (uniqueNames, patientData, sampleInfoList) => {
+  // Function to extract just the antigen name from combined dataset strings
+  const extractAntigenName = (combinedName) => {
+    const parts = combinedName.split(', ');
+    return parts.length > 1 ? parts[1] : combinedName;
+  };
 
-      const filteredData = matchingData.filter((item) => Number(item.Value) !== 0);
-      const immunityLevels = filteredData.map(
-        (item) => Number(item.Value || 0) - Number(item.Background || 0)
-      );
+  // Function to process immunity levels for a single antigen
+  const processAntigen = (name) => {
+    const cleanName = sampleInfoList.length > 0 ? extractAntigenName(name) : name;
+    const matchingData = patientData.filter((item) => item.Name === cleanName);
+    if (matchingData.length === 0) return null;
 
-      const averageValue =
-        immunityLevels.reduce((sum, value) => sum + value, 0) /
-        (filteredData.length || 1);
+    const filteredData = matchingData.filter((item) => Number(item.Value) !== 0);
+    const immunityLevels = filteredData.map(
+      (item) => Number(item.Value || 0) - Number(item.Background || 0)
+    );
 
-      return Math.round(averageValue); // Round to the nearest integer
-    })
-    .filter((value) => value !== null);
+    const averageValue =
+      immunityLevels.reduce((sum, value) => sum + value, 0) /
+      (filteredData.length || 1);
+
+    return Math.round(averageValue);
+  };
+
+  // Process each unique name
+  const immunityLevels = uniqueNames.map(processAntigen).filter((value) => value !== null);
+  console.log('calculated immunity level',immunityLevels );
+
+  // Handle the periodic duplication for multiple datasets
+  // if (sampleInfoList.length > 1) {
+  //   // For multiple datasets, we duplicate the immunity levels periodically
+  //   const antigenCount = uniqueNames.length / sampleInfoList.length;
+  //   const baseLevels = immunityLevels.slice(0, antigenCount);
+    
+  //   // Duplicate the base levels for each dataset
+  //   const duplicatedLevels = [];
+  //   for (let i = 0; i < sampleInfoList.length; i++) {
+  //     duplicatedLevels.push(...baseLevels);
+  //   }
+  //   console.log('duplicated immunity level',duplicatedLevels );
+  //   return duplicatedLevels;
+  // }
+
+  return immunityLevels;
 };
 
 // Function to generate annotations for the box plot
@@ -61,6 +88,34 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
     .filter((annotation) => annotation !== null);
 };
 
+// Function to calculate dynamic margins based on number of boxes
+const calculateMargins = (numBoxes) => {
+  // Base margins
+  let margins = {
+    l: 50,  // Left margin (fixed)
+    r: 50,  // Right margin (will be adjusted)
+    b: 50,  // Bottom margin (will be adjusted)
+    t: 50,  // Top margin (fixed)
+    pad: 4
+  };
+
+  // Adjust right margin based on number of boxes
+  if (numBoxes > 10) {
+    margins.r = 100 + (numBoxes - 10) * 5; // Increase right margin for more boxes
+  }
+
+  // Adjust bottom margin based on number of boxes
+  if (numBoxes > 5) {
+    margins.b = 70 + (numBoxes - 5) * 3; // Increase bottom margin for more boxes
+  }
+
+  // Ensure margins don't exceed reasonable limits
+  margins.r = Math.min(margins.r, 200);
+  margins.b = Math.min(margins.b, 150);
+
+  return margins;
+};
+
 // Box plot graph component
 const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser, reportDate, diseaseName, sampleInfoList }) => {
   const plotContainerRef = useRef(null); // Ref for the container div
@@ -82,8 +137,12 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
 
   // Get immunity levels and annotations
   const uniqueNames = Object.keys(globalData);
-  const immunityLevels = getImmunityLevel(uniqueNames, patientData);
+  console.log('whisker uniquename:', uniqueNames);
+  const immunityLevels = getImmunityLevel(uniqueNames, patientData, sampleInfoList);
   const annotations = showImmunityLines ? getAnnotationForReport(immunityLevels, uniqueNames) : [];
+
+  // Calculate dynamic margins based on number of boxes
+  const dynamicMargins = calculateMargins(uniqueNames.length);
 
   // Function to handle PDF download
   const handleDownloadPDF = () => {
@@ -181,13 +240,7 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
             },
             showlegend: false,
             autosize: true,
-            margin: {
-              l: 50, // Left margin
-              r: 10, // Right margin
-              b: 50, // Bottom margin
-              t: 50, // Top margin
-              pad: 4,
-            },
+            margin: dynamicMargins, // Use the dynamically calculated margins
             width: 800,
             height: 400,
             shapes: annotations, // Add the annotations (immunity lines)
