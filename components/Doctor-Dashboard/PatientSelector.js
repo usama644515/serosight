@@ -233,6 +233,7 @@ export default function PatientSelector() {
   const [refreshKey, setRefreshKey] = useState(0); // Add this state for forcing refresh
 
   const prevDatasetNamesRef = useRef([]);
+  const prevSelectedUserRef = useRef(selectedUser);
   const isInitialMount = useRef(true);
 
   // Modified refresh function to reset necessary state
@@ -240,6 +241,8 @@ export default function PatientSelector() {
     setSelectedReports([]);
     setGlobalData({});
     setdatasetantigen([]);
+    setWhiskerLines(false);  // Add this to uncheck the checkbox
+    setSelectedReport([]);   // Add this to clear selected reports
   }, []);
 
   // Watch for changes in DatasetNames and refresh only when the array content changes
@@ -249,17 +252,21 @@ export default function PatientSelector() {
       return;
     }
 
-    const hasChanged =
+    const hasDatasetChanged =
       DatasetNames.length !== prevDatasetNamesRef.current.length ||
       DatasetNames.some((name, i) => name !== prevDatasetNamesRef.current[i]);
 
-    if (hasChanged) {
-      console.log("DatasetNames changed - refreshing component");
+    const hasUserChanged = 
+      JSON.stringify(selectedUser) !== JSON.stringify(prevSelectedUserRef.current);
+
+    if (hasDatasetChanged || hasUserChanged) {
+      console.log("DatasetNames or selectedUser changed - refreshing component");
       prevDatasetNamesRef.current = DatasetNames;
-      setRefreshKey((prevKey) => prevKey + 1); // Increment key to force refresh
+      prevSelectedUserRef.current = selectedUser;
+      setRefreshKey((prevKey) => prevKey + 1);
       handleRefresh2();
     }
-  }, [DatasetNames, handleRefresh2]);
+  }, [DatasetNames, selectedUser, handleRefresh2]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -990,7 +997,11 @@ export default function PatientSelector() {
     yAxisMode,
     datasetIndexMap // Add this parameter
   ) => {
-    const immunityLevels = getimmunitylevel(uniqueNames, patientData, sampleInfoList);
+    const immunityLevels = getimmunitylevel(
+      uniqueNames,
+      patientData,
+      sampleInfoList
+    );
     const isIndependent = Object.keys(DatasetPatientMap).length > 0;
     const annotations = selectedReport.includes(selectedUser.date)
       ? getAnnotationForReport(
@@ -1076,7 +1087,7 @@ export default function PatientSelector() {
 
   const getimmunitylevel = (uniqueNames, patientData, sampleInfoList = []) => {
     console.error("function is running..............", uniqueNames);
-  
+
     // Validate inputs
     if (!Array.isArray(uniqueNames) || uniqueNames.length === 0) {
       console.error("Unique names are missing or not an array");
@@ -1086,72 +1097,77 @@ export default function PatientSelector() {
       console.error("Patient data is missing or not an array");
       return [];
     }
-  
+
     // Function to extract just the antigen name from combined dataset strings
     const extractAntigenName = (combinedName) => {
-      const parts = combinedName.split(', ');
+      const parts = combinedName.split(", ");
       return parts.length > 1 ? parts[1] : combinedName;
     };
-  
+
     const rangeStep = 1000; // Step size for grouping immunity levels
-  
+
     // Map uniqueNames to their corresponding average immunity range
     const avgValues = uniqueNames
       .map((name) => {
         // Clean the name based on sampleInfoList
-        const cleanName = sampleInfoList.length > 0 ? extractAntigenName(name) : name;
-        
+        const cleanName =
+          sampleInfoList.length > 0 ? extractAntigenName(name) : name;
+
         // Filter patientData for the current name
-        const matchingData = patientData.filter((item) => item.Name === cleanName);
-  
+        const matchingData = patientData.filter(
+          (item) => item.Name === cleanName
+        );
+
         if (matchingData.length === 0) {
           console.warn(`No matching data found for name: ${cleanName}`);
           return null;
         }
         console.log("matchingData", matchingData);
-  
+
         // Filter out entries with Value = 0 before processing
-        const filteredData = matchingData.filter((item) => Number(item.Value) !== 0);
+        const filteredData = matchingData.filter(
+          (item) => Number(item.Value) !== 0
+        );
         if (filteredData.length === 0) {
           console.warn(`All values are 0 for name: ${cleanName}`);
           return 0; // Return 0 instead of null to maintain array length
         }
-  
+
         // Extract immunity levels after subtracting Background
         const immunityLevels = filteredData.map((item) => {
           const value = Number(item.Value || 0);
           const background = Number(item.Background || 0);
-  
+
           // Subtract Background from Value
           const immunityLevel = value - background;
-  
+
           // If immunityLevel is negative, set it to 0
           if (immunityLevel < 0) {
             return 0;
           }
-  
+
           return immunityLevel;
         });
-  
+
         console.log("subtractedImmunityLevels", immunityLevels);
-  
+
         // Calculate the average immunity level
         const averageValue =
           immunityLevels.reduce((sum, value) => sum + value, 0) /
           (immunityLevels.length || 1);
-  
+
         console.log("averageValue", averageValue);
-  
+
         // Determine the range midpoint for this immunity level
         const rangeIndex = Math.floor(averageValue / rangeStep);
         const lowerBound = rangeIndex * rangeStep;
         const upperBound = (rangeIndex + 1) * rangeStep;
         const rangeMidpoint = (lowerBound + upperBound) / 2;
-  
+
         return Math.round(rangeMidpoint); // Round to nearest integer
       })
       .filter((value) => value !== null);
-  
+
     console.log("Final avgValues:", avgValues);
     return avgValues;
   };
@@ -1447,75 +1463,84 @@ export default function PatientSelector() {
             </div>
           </div>
           <div className={styles.section}>
-  <h3 className={styles.sectionTitle}>Exposure Selection</h3>
-  <div className={styles.checkboxGroup}>
-    <div className={styles.checkboxContainer}>
-      <input
-        type="checkbox"
-        id="exposure-200"
-        className={styles.checkboxInput}
-        checked={selectedExposures.includes("200")}
-        onChange={() => {
-          // If not already selected, replace current selection with "200"
-          if (!selectedExposures.includes("200")) {
-            setSelectedExposures(["200"]);
-          }
-          // If already selected, do nothing (prevent unchecking)
-        }}
-      />
-      <label htmlFor="exposure-200" className={styles.checkboxLabel}></label>
-      <span className={styles.checkboxText}>Exposure 200</span>
-    </div>
-    <div className={styles.checkboxContainer}>
-      <input
-        type="checkbox"
-        id="exposure-500"
-        className={styles.checkboxInput}
-        checked={selectedExposures.includes("500")}
-        onChange={() => {
-          // If not already selected, replace current selection with "500"
-          if (!selectedExposures.includes("500")) {
-            setSelectedExposures(["500"]);
-          }
-          // If already selected, do nothing (prevent unchecking)
-        }}
-      />
-      <label htmlFor="exposure-500" className={styles.checkboxLabel}></label>
-      <span className={styles.checkboxText}>Exposure 500</span>
-    </div>
-  </div>
-</div>
-<div className={styles.section}>
-  <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
-  {patientData.length === 0 ? (
-    <p className={styles.noReport}>No Report Found</p>
-  ) : (
-    <div className={styles.checkboxContainer2}>
-      <input
-        type="checkbox"
-        id="report"
-        className={styles.checkboxInput}
-        checked={whiskerLines}
-        onChange={() => {
-          const newWhiskerLines = !whiskerLines;
-          // When report is selected, ensure Exposure 200 is selected if none selected
-          if (newWhiskerLines && selectedExposures.length === 0) {
-            setSelectedExposures(["200"]);
-          }
-          handleReportChange(selectedUser.date);
-        }}
-      />
-      <label htmlFor="report" className={styles.checkboxLabel}></label>
-      <span className={styles.checkboxText2}>
-        {new Intl.DateTimeFormat("en-US", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-        }).format(parseDateString(selectedUser.date))}
-      </span>
-    </div>
-  )}
-</div>
+            <h3 className={styles.sectionTitle}>Exposure Selection</h3>
+            <div className={styles.checkboxGroup}>
+              <div className={styles.checkboxContainer}>
+                <input
+                  type="checkbox"
+                  id="exposure-200"
+                  className={styles.checkboxInput}
+                  checked={selectedExposures.includes("200")}
+                  onChange={() => {
+                    // If not already selected, replace current selection with "200"
+                    if (!selectedExposures.includes("200")) {
+                      setSelectedExposures(["200"]);
+                    }
+                    // If already selected, do nothing (prevent unchecking)
+                  }}
+                />
+                <label
+                  htmlFor="exposure-200"
+                  className={styles.checkboxLabel}
+                ></label>
+                <span className={styles.checkboxText}>Exposure 200</span>
+              </div>
+              <div className={styles.checkboxContainer}>
+                <input
+                  type="checkbox"
+                  id="exposure-500"
+                  className={styles.checkboxInput}
+                  checked={selectedExposures.includes("500")}
+                  onChange={() => {
+                    // If not already selected, replace current selection with "500"
+                    if (!selectedExposures.includes("500")) {
+                      setSelectedExposures(["500"]);
+                    }
+                    // If already selected, do nothing (prevent unchecking)
+                  }}
+                />
+                <label
+                  htmlFor="exposure-500"
+                  className={styles.checkboxLabel}
+                ></label>
+                <span className={styles.checkboxText}>Exposure 500</span>
+              </div>
+            </div>
+          </div>
+          <div className={styles.section}>
+            <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
+            {patientData.length === 0 ? (
+              <p className={styles.noReport}>No Report Found</p>
+            ) : (
+              <div className={styles.checkboxContainer2}>
+                <input
+                  type="checkbox"
+                  id="report"
+                  className={styles.checkboxInput}
+                  checked={whiskerLines}
+                  onChange={() => {
+                    const newWhiskerLines = !whiskerLines;
+                    // When report is selected, ensure Exposure 200 is selected if none selected
+                    if (newWhiskerLines && selectedExposures.length === 0) {
+                      setSelectedExposures(["200"]);
+                    }
+                    handleReportChange(selectedUser.date);
+                  }}
+                />
+                <label
+                  htmlFor="report"
+                  className={styles.checkboxLabel}
+                ></label>
+                <span className={styles.checkboxText2}>
+                  {new Intl.DateTimeFormat("en-US", {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  }).format(parseDateString(selectedUser.date))}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className={styles.patientData}>
