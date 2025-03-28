@@ -1447,63 +1447,75 @@ export default function PatientSelector() {
             </div>
           </div>
           <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Exposure Selection</h3>
-            <div className={styles.checkboxGroup}>
-              <div className={styles.checkboxContainer}>
-                <input
-                  type="checkbox"
-                  id="exposure-200"
-                  className={styles.checkboxInput}
-                  onChange={() => handleExposureChange("200")}
-                />
-                <label
-                  htmlFor="exposure-200"
-                  className={styles.checkboxLabel}
-                ></label>
-                <span className={styles.checkboxText}>Exposure 200</span>
-              </div>
-              <div className={styles.checkboxContainer}>
-                <input
-                  type="checkbox"
-                  id="exposure-500"
-                  className={styles.checkboxInput}
-                  onChange={() => handleExposureChange("500")}
-                />
-                <label
-                  htmlFor="exposure-500"
-                  className={styles.checkboxLabel}
-                ></label>
-                <span className={styles.checkboxText}>Exposure 500</span>
-              </div>
-            </div>
-          </div>
-          <div className={styles.section}>
-            <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
-            {patientData.length === 0 ? (
-              <p className={styles.noReport}>No Report Found</p>
-            ) : (
-              <div className={styles.checkboxContainer2}>
-                <input
-                  type="checkbox"
-                  id="report"
-                  className={styles.checkboxInput}
-                  checked={whiskerLines} // Controlled by state
-                  onChange={() => handleReportChange(selectedUser.date)}
-                />
-                <label
-                  htmlFor="report"
-                  className={styles.checkboxLabel}
-                ></label>
-                <span className={styles.checkboxText2}>
-                  {new Intl.DateTimeFormat("en-US", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  }).format(parseDateString(selectedUser.date))}
-                </span>
-              </div>
-            )}
-          </div>
+  <h3 className={styles.sectionTitle}>Exposure Selection</h3>
+  <div className={styles.checkboxGroup}>
+    <div className={styles.checkboxContainer}>
+      <input
+        type="checkbox"
+        id="exposure-200"
+        className={styles.checkboxInput}
+        checked={selectedExposures.includes("200")}
+        onChange={() => {
+          // If not already selected, replace current selection with "200"
+          if (!selectedExposures.includes("200")) {
+            setSelectedExposures(["200"]);
+          }
+          // If already selected, do nothing (prevent unchecking)
+        }}
+      />
+      <label htmlFor="exposure-200" className={styles.checkboxLabel}></label>
+      <span className={styles.checkboxText}>Exposure 200</span>
+    </div>
+    <div className={styles.checkboxContainer}>
+      <input
+        type="checkbox"
+        id="exposure-500"
+        className={styles.checkboxInput}
+        checked={selectedExposures.includes("500")}
+        onChange={() => {
+          // If not already selected, replace current selection with "500"
+          if (!selectedExposures.includes("500")) {
+            setSelectedExposures(["500"]);
+          }
+          // If already selected, do nothing (prevent unchecking)
+        }}
+      />
+      <label htmlFor="exposure-500" className={styles.checkboxLabel}></label>
+      <span className={styles.checkboxText}>Exposure 500</span>
+    </div>
+  </div>
+</div>
+<div className={styles.section}>
+  <h3 className={styles.sectionTitle}>Patient Report Selection</h3>
+  {patientData.length === 0 ? (
+    <p className={styles.noReport}>No Report Found</p>
+  ) : (
+    <div className={styles.checkboxContainer2}>
+      <input
+        type="checkbox"
+        id="report"
+        className={styles.checkboxInput}
+        checked={whiskerLines}
+        onChange={() => {
+          const newWhiskerLines = !whiskerLines;
+          // When report is selected, ensure Exposure 200 is selected if none selected
+          if (newWhiskerLines && selectedExposures.length === 0) {
+            setSelectedExposures(["200"]);
+          }
+          handleReportChange(selectedUser.date);
+        }}
+      />
+      <label htmlFor="report" className={styles.checkboxLabel}></label>
+      <span className={styles.checkboxText2}>
+        {new Intl.DateTimeFormat("en-US", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+        }).format(parseDateString(selectedUser.date))}
+      </span>
+    </div>
+  )}
+</div>
         </div>
 
         <div className={styles.patientData}>

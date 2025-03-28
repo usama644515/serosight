@@ -36,26 +36,11 @@ const getImmunityLevel = (uniqueNames, patientData, sampleInfoList) => {
   const immunityLevels = uniqueNames.map(processAntigen).filter((value) => value !== null);
   console.log('calculated immunity level',immunityLevels );
 
-  // Handle the periodic duplication for multiple datasets
-  // if (sampleInfoList.length > 1) {
-  //   // For multiple datasets, we duplicate the immunity levels periodically
-  //   const antigenCount = uniqueNames.length / sampleInfoList.length;
-  //   const baseLevels = immunityLevels.slice(0, antigenCount);
-    
-  //   // Duplicate the base levels for each dataset
-  //   const duplicatedLevels = [];
-  //   for (let i = 0; i < sampleInfoList.length; i++) {
-  //     duplicatedLevels.push(...baseLevels);
-  //   }
-  //   console.log('duplicated immunity level',duplicatedLevels );
-  //   return duplicatedLevels;
-  // }
-
   return immunityLevels;
 };
 
 // Function to generate annotations for the box plot
-const getAnnotationForReport = (immunityLevels, uniqueNames) => {
+const getAnnotationForReport = (immunityLevels, uniqueNames, sampleInfoList) => {
   return immunityLevels
     .map((immunity, index) => {
       const immunityLevel = Number(immunity);
@@ -77,7 +62,7 @@ const getAnnotationForReport = (immunityLevels, uniqueNames) => {
           dash: 'solid',
         },
         label: {
-          text: `Immunity: ${immunityLevel}`,
+          text: sampleInfoList.length < 0 ? `Immunity: ${immunityLevel}` : '', // Only show text if sampleInfoList has items
           showarrow: false,
           x: index + 0.5, // Position the label to the right of the line
           y: immunityLevel,
@@ -139,7 +124,7 @@ const BoxPlotGraph = ({ globalData, patientData, showImmunityLines, selectedUser
   const uniqueNames = Object.keys(globalData);
   console.log('whisker uniquename:', uniqueNames);
   const immunityLevels = getImmunityLevel(uniqueNames, patientData, sampleInfoList);
-  const annotations = showImmunityLines ? getAnnotationForReport(immunityLevels, uniqueNames) : [];
+  const annotations = showImmunityLines ? getAnnotationForReport(immunityLevels, uniqueNames, sampleInfoList) : [];
 
   // Calculate dynamic margins based on number of boxes
   const dynamicMargins = calculateMargins(uniqueNames.length);
