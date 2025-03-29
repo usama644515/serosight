@@ -511,7 +511,8 @@ export default function PatientSelector() {
                           const background = parseFloat(item.Background);
 
                           if (value > 0) {
-                            const finalValue = value - background;
+                            // Calculate final value and set to 0 if negative
+                            const finalValue = Math.max(0, value - background);
 
                             if (!processedData[patient.patientId][name]) {
                               processedData[patient.patientId][name] = {
@@ -684,7 +685,8 @@ export default function PatientSelector() {
                       const background = parseFloat(item.Background);
 
                       if (value > 0) {
-                        const finalValue = value - background;
+                        // Calculate final value and set to 0 if negative
+                        const finalValue = Math.max(0, value - background);
 
                         if (!processedData[patient.patientId][name]) {
                           processedData[patient.patientId][name] = {
